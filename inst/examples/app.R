@@ -1,43 +1,25 @@
 library(jsonlite)
-library(parallel)
 library(shiny)
 library(tablerDash)
 library(shinyWidgets)
 library(shinyEffects)
+library(echarts4r)
 
 source("pokeNames.R")
 
-# create the pokemon object
-pokeApi <- "https://pokeapi.co/api/v2/pokemon/"
-pokemons <- mclapply(seq_along(pokeNames), FUN = function(i) {
-  fromJSON(paste0(pokeApi, i, "/"))
-})
-names(pokemons) <- pokeNames
+pokeMain <- readRDS("pokeMain")
+pokeDetails <- readRDS("pokeDetails")
+firstGen <- readRDS("firstGen")
 
-# take the first example bulbasaur
-#bulbasaur <- pokemons[[1]]
-#front_face <- bulbasaur$sprites$front_default
-#browseURL(front_face)
-
-# generate the profile cards
-profileCards <- mclapply(seq_along(pokeNames), FUN = function(i) {
-  tablerProfileCard(
-    title = pokeNames[[i]],
-    subtitle = NULL,
-    background = NULL,
-    src = pokemons[[i]]$sprites$front_default,
-    socials = NULL,
-    width = 4
-  )
-})
-
+pokeTypes <- firstGen$types
+pokeMoves <- firstGen$moves
 
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
     navbar = tablerDashNav(
       id = "mymenu",
-      src = "https://preview.tabler.io/demo/brand/tabler.svg",
+      src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",
       navMenu = tablerNavMenu(
         tablerNavMenuItem(
           tabName = "Home",
@@ -78,22 +60,28 @@ shiny::shinyApp(
       tablerIcon(name = "mastercard", lib = "payment"),
       copyrights = "@David Granjon, 2019"
     ),
-    title = "tablerDash",
+    title = "The fucking Pokemon App",
     body = tablerDashBody(
 
-      setZoom(class = "card"),
+      # custom shinyWidgets skins
       chooseSliderSkin("Nice"),
+
       tablerTabItems(
         tablerTabItem(
           tabName = "Home",
-          fluidRow(profileCards)
+          pokeDataUi(id = "data"),
+          pokeInfosUi(id = "infos")
         ),
         tablerTabItem(
           tabName = "Test",
-          "Item 2"
+          pokeStatsUi(id = "stats")
         )
       )
     )
   ),
-  server = function(input, output, session) {}
+  server = function(input, output, session) {
+    main <- callModule(module = pokeData, id = "data", raw_data = pokeMain, raw_details = pokeDetails)
+    callModule(module = pokeInfos, id = "infos", mainData = main$pokemons, details = main$details, pokeNames = main$pokeNames)
+    callModule(module = pokeStats, id = "stats", skills = main$skills, pokeNames = main$pokeNames)
+  }
 )
