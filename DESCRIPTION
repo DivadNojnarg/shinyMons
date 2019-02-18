@@ -1,0 +1,17 @@
+Package: shinyMons
+Type: Package
+Title: Shiny App of The Famous 151 First Pokemons
+Version: 0.1.0
+Authors@R: c(
+  person("David", "Granjon", email = "dgranjon@ymail.com", role = c("aut", "cre")),
+  person(family = "RinteRface", role = "cph"))
+Maintainer: David Granjon <dgranjon@ymail.com>
+Description: Discover everything you want to know about your favorites pokemon.
+    Data are taken from the awesome API <https://pokeapi.co>.
+Imports: shiny, tablerDash, shinyWidgets
+URL: https://github.com/DivadNojnarg/shinyMons
+BugReports: https://github.com/DivadNojnarg/shinyMons/issues
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
