@@ -22,34 +22,37 @@ pokeStats <- function(input, output, session, skills, pokeNames) {
   ns <- session$ns
 
   # generate radar chart for pokemons
-  lapply(seq_along(pokeNames()), FUN = function(i) {
-    output[[paste0(pokeNames()[[i]], "_stats")]] <- renderEcharts4r({
-      skills()[[i]] %>%
-        e_charts(x) %>%
-        e_radar(y, name = paste0(pokeNames()[[i]], " Stats")) %>%
-        e_tooltip(trigger = "item")
+  observe({
+    req(pokeNames())
+    lapply(seq_along(pokeNames()), FUN = function(i) {
+      output[[paste0(pokeNames()[[i]], "_stats")]] <- renderEcharts4r({
+        skills()[[i]] %>%
+          e_charts(x) %>%
+          e_radar(y, name = paste0(pokeNames()[[i]], " Stats")) %>%
+          e_tooltip(trigger = "item")
+      })
     })
   })
 
-
-
   statCards <- reactive({
-    lapply(seq_along(pokeNames()), FUN = function(i) {
-      tablerCard(
-        title = paste0(pokeNames()[[i]], " Stats"),
-        options = NULL,
-        footer = NULL,
-        status = "info",
-        statusSide = "left",
-        collapsible = TRUE,
-        collapsed = FALSE,
-        closable = TRUE,
-        zoomable = TRUE,
-        width = 6,
-        overflow = FALSE,
-        echarts4rOutput(outputId = ns(paste0(pokeNames()[[i]], "_stats")))
-      )
-    })
+    fluidRow(
+      lapply(seq_along(pokeNames()), FUN = function(i) {
+        tablerCard(
+          title = paste0(pokeNames()[[i]], " Stats"),
+          options = NULL,
+          footer = NULL,
+          status = "info",
+          statusSide = "left",
+          collapsible = TRUE,
+          collapsed = FALSE,
+          closable = TRUE,
+          zoomable = TRUE,
+          width = 6,
+          overflow = FALSE,
+          echarts4rOutput(outputId = ns(paste0(pokeNames()[[i]], "_stats")))
+        )
+      })
+    )
   })
 
   output$poke_stats <- renderUI(statCards())
