@@ -9,6 +9,10 @@ pokeStatsUi <- function(id) {
   uiOutput(ns("poke_stats"))
 }
 
+# make R CMD check happy
+globalVariables("x")
+globalVariables("y")
+
 #' Server module generating the pokemon stats chart
 #'
 #' @param input Shiny inputs.
