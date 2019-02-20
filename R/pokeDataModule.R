@@ -5,23 +5,7 @@
 #' @return a \code{shiny::\link[shiny]{tagList}} containing UI elements
 #' @export
 pokeDataUi <- function(id) {
-
   ns <- shiny::NS(id)
-
-  #fluidRow(
-  #  column(
-  #    width = 12,
-  #    align = "center",
-  #    sliderInput(
-  #      inputId = ns("pokeSelect"),
-  #      label = h3("Selected Pokemons"),
-  #      min = 1,
-  #      max = 151,
-  #      value = c(1, 9)
-  #    )
-  #  )
-  #)
-
   uiOutput(ns("pokeChoice"))
 }
 

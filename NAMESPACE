@@ -2,6 +2,8 @@
 
 export(pokeData)
 export(pokeDataUi)
+export(pokeGallery)
+export(pokeGalleryUi)
 export(pokeInfos)
 export(pokeInfosUi)
 export(pokeStats)

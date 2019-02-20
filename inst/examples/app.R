@@ -80,7 +80,7 @@ shiny::shinyApp(
         ),
         tablerTabItem(
           tabName = "PokeGroup",
-          "test"
+          pokeGalleryUi(id = "gallery")
         )
       )
     )
@@ -114,6 +114,11 @@ shiny::shinyApp(
       id = "types",
       mainData = main$pokemons,
       selected = main$pokeSelect
+    )
+
+    # gallery module
+    callModule(
+      module = pokeData, id = "gallery", raw_data = pokeMain, raw_details = pokeDetails
     )
   }
 )
