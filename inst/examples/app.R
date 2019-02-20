@@ -106,6 +106,7 @@ shiny::shinyApp(
       module = pokeStats,
       id = "stats",
       mainData = main$pokemons,
+      details = main$details,
       skills = main$skills,
       selected = main$pokeSelect
     )

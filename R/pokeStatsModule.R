@@ -9,9 +9,10 @@ pokeStatsUi <- function(id) {
 
   tagList(
     fluidRow(
-      column(width = 4, uiOutput(ns("baseXp"))),
-      column(width = 4, uiOutput(ns("pokeHeight"))),
-      column(width = 4, uiOutput(ns("pokeWeight")))
+      column(width = 3, uiOutput(ns("pokeHappy"))),
+      column(width = 3, uiOutput(ns("baseXp"))),
+      column(width = 3, uiOutput(ns("pokeHeight"))),
+      column(width = 3, uiOutput(ns("pokeWeight")))
     ),
     uiOutput(ns("pokeStatsCard"))
   )
@@ -27,12 +28,25 @@ globalVariables("y")
 #' @param output Shiny outputs.
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
+#' @param details Object containing extra pokemon details.
 #' @param skills Object containing pokemon statistics.
 #' @param selected Input containing the selected pokemon index.
 #' @export
-pokeStats <- function(input, output, session, mainData, skills, selected) {
+pokeStats <- function(input, output, session, mainData, details, skills, selected) {
 
   ns <- session$ns
+
+  # happiness
+  output$pokeHappy <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = details[[selected()]]$base_happiness,
+      title = "Base Happiness",
+      width = 12
+    )
+  })
 
   # pokemon height
   output$pokeHeight <- renderUI({
