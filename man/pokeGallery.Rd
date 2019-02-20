@@ -2,7 +2,7 @@
 % Please edit documentation in R/pokeGalleryModule.R
 \name{pokeGallery}
 \alias{pokeGallery}
-\title{Server module generating the pokemon interface}
+\title{Server module generating the pokemon gallery interface}
 \usage{
 pokeGallery(input, output, session, raw_data, raw_details, shiny)
 }
@@ -20,5 +20,5 @@ pokeGallery(input, output, session, raw_data, raw_details, shiny)
 \item{shiny}{Whether to display a shiny version. FALSE by default.}
 }
 \description{
-Server module generating the pokemon interface
+Server module generating the pokemon gallery interface
 }

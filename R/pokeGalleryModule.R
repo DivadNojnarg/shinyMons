@@ -1,4 +1,4 @@
-#' UI module for sorting pokemon
+#' UI module for generating the gallery of the first 151 pokemons
 #'
 #' @param id, character used to specify namespace, see \code{shiny::\link[shiny]{NS}}
 #'
@@ -26,7 +26,7 @@ pokeGalleryUi <- function(id) {
 
 
 
-#' Server module generating the pokemon interface
+#' Server module generating the pokemon gallery interface
 #'
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pokeGalleryModule.R
 \name{pokeGalleryUi}
 \alias{pokeGalleryUi}
-\title{UI module for sorting pokemon}
+\title{UI module for generating the gallery of the first 151 pokemons}
 \usage{
 pokeGalleryUi(id)
 }
@@ -13,5 +13,5 @@ pokeGalleryUi(id)
 a \code{shiny::\link[shiny]{tagList}} containing UI elements
 }
 \description{
-UI module for sorting pokemon
+UI module for generating the gallery of the first 151 pokemons
 }

@@ -76,7 +76,8 @@ shiny::shinyApp(
               width = 8,
               pokeStatsUi(id = "stats")
             )
-          )
+          ),
+          fluidRow(pokeMoveUi(id = "moves"))
         ),
         tablerTabItem(
           tabName = "PokeGroup",
@@ -114,6 +115,15 @@ shiny::shinyApp(
       module = pokeType,
       id = "types",
       mainData = main$pokemons,
+      selected = main$pokeSelect
+    )
+
+    # moves module
+    callModule(
+      module = pokeMove,
+      id = "moves",
+      mainData = main$pokemons,
+      details = main$details,
       selected = main$pokeSelect
     )
 
