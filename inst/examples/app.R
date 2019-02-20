@@ -22,14 +22,14 @@ shiny::shinyApp(
       src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",
       navMenu = tablerNavMenu(
         tablerNavMenuItem(
-          tabName = "Home",
+          tabName = "PokeFilter",
           icon = "home",
-          "Home"
+          "PokeFilter"
         ),
         tablerNavMenuItem(
-          tabName = "Test",
+          tabName = "PokeGroup",
           icon = "box",
-          "Test"
+          "PokeGroup"
         )
       ),
 
@@ -65,11 +65,12 @@ shiny::shinyApp(
 
       tablerTabItems(
         tablerTabItem(
-          tabName = "Home",
+          tabName = "PokeFilter",
           fluidRow(
             column(
               width = 4,
-              pokeInfosUi(id = "infos")
+              pokeInfosUi(id = "infos"),
+              pokeTypeUi(id = "types")
             ),
             column(
               width = 8,
@@ -78,7 +79,7 @@ shiny::shinyApp(
           )
         ),
         tablerTabItem(
-          tabName = "Test",
+          tabName = "PokeGroup",
           "test"
         )
       )
@@ -95,7 +96,6 @@ shiny::shinyApp(
       id = "infos",
       mainData = main$pokemons,
       details = main$details,
-      pokeNames = main$pokeNames,
       selected = main$pokeSelect
     )
 
@@ -103,8 +103,16 @@ shiny::shinyApp(
     callModule(
       module = pokeStats,
       id = "stats",
+      mainData = main$pokemons,
       skills = main$skills,
-      pokeNames = main$pokeNames,
+      selected = main$pokeSelect
+    )
+
+    # types modules
+    callModule(
+      module = pokeType,
+      id = "types",
+      mainData = main$pokemons,
       selected = main$pokeSelect
     )
   }

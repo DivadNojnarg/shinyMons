@@ -6,7 +6,15 @@
 #' @export
 pokeStatsUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("pokeStatsCard"))
+
+  tagList(
+    fluidRow(
+      column(width = 4, uiOutput(ns("baseXp"))),
+      column(width = 4, uiOutput(ns("pokeHeight"))),
+      column(width = 4, uiOutput(ns("pokeWeight")))
+    ),
+    uiOutput(ns("pokeStatsCard"))
+  )
 }
 
 # make R CMD check happy
@@ -18,18 +26,56 @@ globalVariables("y")
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
+#' @param mainData Object containing the main pokemon data.
 #' @param skills Object containing pokemon statistics.
-#' @param pokeNames Object containing pokemon names.
 #' @param selected Input containing the selected pokemon index.
 #' @export
-pokeStats <- function(input, output, session, skills, pokeNames, selected) {
+pokeStats <- function(input, output, session, mainData, skills, selected) {
 
   ns <- session$ns
+
+  # pokemon height
+  output$pokeHeight <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = paste(0, mainData[[selected()]]$weight, sep = "."),
+      title = "Height in cms",
+      width = 12
+    )
+  })
+
+
+  # pokemon weight
+  output$pokeWeight <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = mainData[[selected()]]$weight / 10,
+      title = "Weight in Kgs",
+      width = 12
+    )
+  })
+
+
+  # base experience
+  output$baseXp <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = mainData[[selected()]]$base_experience,
+      title = "Base Xp",
+      width = 12
+    )
+  })
 
   # generate radar chart for pokemons
   output$pokeStats <- renderEcharts4r({
 
-    req(skills())
+    req(!is.null(skills()))
 
     skills() %>%
       e_charts(x) %>%
@@ -37,7 +83,12 @@ pokeStats <- function(input, output, session, skills, pokeNames, selected) {
       e_tooltip(trigger = "item")
   })
 
+
+  # card wrapper for the charts
   output$pokeStatsCard <- renderUI({
+
+    req(!is.null(selected()))
+
     fluidRow(
       tablerCard(
         title = paste0(selected(), " Stats"),

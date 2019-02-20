@@ -4,7 +4,7 @@
 \alias{pokeStats}
 \title{Server module generating the pokemon stats chart}
 \usage{
-pokeStats(input, output, session, skills, pokeNames, selected)
+pokeStats(input, output, session, mainData, skills, selected)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -13,9 +13,9 @@ pokeStats(input, output, session, skills, pokeNames, selected)
 
 \item{session}{Shiny session.}
 
-\item{skills}{Object containing pokemon statistics.}
+\item{mainData}{Object containing the main pokemon data.}
 
-\item{pokeNames}{Object containing pokemon names.}
+\item{skills}{Object containing pokemon statistics.}
 
 \item{selected}{Input containing the selected pokemon index.}
 }

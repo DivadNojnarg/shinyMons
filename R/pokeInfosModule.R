@@ -18,16 +18,17 @@ pokeInfosUi <- function(id) {
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
-#' @param pokeNames Object containing pokemon names.
 #' @param selected Input containing the selected pokemon index.
 #' @export
-pokeInfos <- function(input, output, session, mainData, details, pokeNames, selected) {
+pokeInfos <- function(input, output, session, mainData, details, selected) {
 
   #generate the profile cards (as many as the number of selected pokemons)
    output$poke_infos <- renderUI({
 
      # there is a quirk in the raw data: in details, names are in lower case
      # whereas in the main pokemon list, names start with a capital letter...
+
+     req(!is.null(selected()))
 
      fluidRow(
        tablerProfileCard(
