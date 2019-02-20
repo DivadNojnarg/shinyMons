@@ -40,14 +40,17 @@ pokeGallery <- function(input, output, session, raw_data, raw_details) {
 
   output$poke_gallery <- renderUI({
     lapply(seq_along(range()), FUN = function(i) {
-      tablerMediaCard(
-        title = range()[[i]]$name,
-        date = NULL,
-        href = "https://www.google.com",
-        src = range()[[i]]$sprites$front_shiny,
-        avatarUrl = range()[[i]]$sprites$back_shiny,
+      column(
         width = 4,
-        "Other elements"
+        tablerMediaCard(
+          title = range()[[i]]$name,
+          date = NULL,
+          href = "https://www.google.com",
+          src = range()[[i]]$sprites$front_shiny,
+          avatarUrl = range()[[i]]$sprites$back_shiny,
+          width = 12,
+          "Other elements"
+        )
       )
     })
   })

@@ -117,8 +117,6 @@ shiny::shinyApp(
     )
 
     # gallery module
-    callModule(
-      module = pokeData, id = "gallery", raw_data = pokeMain, raw_details = pokeDetails
-    )
+    callModule(module = pokeGallery, id = "gallery", raw_data = pokeMain, raw_details = pokeDetails)
   }
 )
