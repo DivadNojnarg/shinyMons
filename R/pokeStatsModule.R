@@ -6,7 +6,7 @@
 #' @export
 pokeStatsUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_stats"))
+  uiOutput(ns("pokeStatsCard"))
 }
 
 # make R CMD check happy
@@ -20,45 +20,39 @@ globalVariables("y")
 #' @param session Shiny session.
 #' @param skills Object containing pokemon statistics.
 #' @param pokeNames Object containing pokemon names.
+#' @param selected Input containing the selected pokemon index.
 #' @export
-pokeStats <- function(input, output, session, skills, pokeNames) {
+pokeStats <- function(input, output, session, skills, pokeNames, selected) {
 
   ns <- session$ns
 
   # generate radar chart for pokemons
-  observe({
-    req(pokeNames())
-    lapply(seq_along(pokeNames()), FUN = function(i) {
-      output[[paste0(pokeNames()[[i]], "_stats")]] <- renderEcharts4r({
-        skills()[[i]] %>%
-          e_charts(x) %>%
-          e_radar(y, name = paste0(pokeNames()[[i]], " Stats")) %>%
-          e_tooltip(trigger = "item")
-      })
-    })
+  output$pokeStats <- renderEcharts4r({
+
+    req(skills())
+
+    skills() %>%
+      e_charts(x) %>%
+      e_radar(y, name = paste0(selected(), " Stats")) %>%
+      e_tooltip(trigger = "item")
   })
 
-  statCards <- reactive({
+  output$pokeStatsCard <- renderUI({
     fluidRow(
-      lapply(seq_along(pokeNames()), FUN = function(i) {
-        tablerCard(
-          title = paste0(pokeNames()[[i]], " Stats"),
-          options = NULL,
-          footer = NULL,
-          status = "info",
-          statusSide = "left",
-          collapsible = TRUE,
-          collapsed = FALSE,
-          closable = TRUE,
-          zoomable = TRUE,
-          width = 6,
-          overflow = FALSE,
-          echarts4rOutput(outputId = ns(paste0(pokeNames()[[i]], "_stats")))
-        )
-      })
+      tablerCard(
+        title = paste0(selected(), " Stats"),
+        options = NULL,
+        footer = NULL,
+        status = "info",
+        statusSide = "left",
+        collapsible = FALSE,
+        closable = FALSE,
+        zoomable = FALSE,
+        width = 12,
+        overflow = FALSE,
+        echarts4rOutput(outputId = ns("pokeStats"))
+      )
     )
   })
-
-  output$poke_stats <- renderUI(statCards())
 
 }

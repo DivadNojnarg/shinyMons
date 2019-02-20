@@ -8,19 +8,21 @@ pokeDataUi <- function(id) {
 
   ns <- shiny::NS(id)
 
-  fluidRow(
-    column(
-      width = 12,
-      align = "center",
-      sliderInput(
-        inputId = ns("pokeSelect"),
-        label = h3("Selected Pokemons"),
-        min = 1,
-        max = 151,
-        value = c(1, 9)
-      )
-    )
-  )
+  #fluidRow(
+  #  column(
+  #    width = 12,
+  #    align = "center",
+  #    sliderInput(
+  #      inputId = ns("pokeSelect"),
+  #      label = h3("Selected Pokemons"),
+  #      min = 1,
+  #      max = 151,
+  #      value = c(1, 9)
+  #    )
+  #  )
+  #)
+
+  uiOutput(ns("pokeChoice"))
 }
 
 
@@ -36,19 +38,39 @@ pokeDataUi <- function(id) {
 #' @export
 pokeData <- function(input, output, session, raw_data, raw_details) {
 
+  ns <- session$ns
+
   # filter pokemon data according to the slider input
-  pokemons <- reactive(raw_data[c(input$pokeSelect[1]:input$pokeSelect[2])])
-  details <- reactive(raw_details[c(input$pokeSelect[1]:input$pokeSelect[2])])
-  pokeNames <- reactive(names(pokemons()))
+  pokemons <- raw_data
+  details <- raw_details
+  pokeNames <- names(pokemons)
+  sprites <- vapply(seq_along(pokeNames), FUN = function(i) pokemons[[i]]$sprites$front_default, FUN.VALUE = character(1))
 
   # pokemon skills dataframe
   skills <- reactive({
-    lapply(seq_along(pokeNames()), FUN = function(i) {
-      data.frame(
-        x = pokemons()[[i]]$stats$stat$name,
-        y = pokemons()[[i]]$stats$base_stat
-      )
-    })
+
+    req(input$pokeSelect)
+
+    data.frame(
+      x = pokemons[[input$pokeSelect]]$stats$stat$name,
+      y = pokemons[[input$pokeSelect]]$stats$base_stat
+    )
+  })
+
+
+  # pokemon selector
+  output$pokeChoice <- renderUI({
+    pickerInput(
+      inputId = ns("pokeSelect"),
+      width = NULL,
+      options = list(style = "btn-primary"),
+      multiple = FALSE,
+      choices = pokeNames,
+      choicesOpt = list(
+        content = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames)
+      ),
+      selected = pokeNames[[1]]
+    )
   })
 
   return(

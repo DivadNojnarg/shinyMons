@@ -19,22 +19,25 @@ pokeInfosUi <- function(id) {
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #' @param pokeNames Object containing pokemon names.
+#' @param selected Input containing the selected pokemon index.
 #' @export
-pokeInfos <- function(input, output, session, mainData, details, pokeNames) {
+pokeInfos <- function(input, output, session, mainData, details, pokeNames, selected) {
 
   #generate the profile cards (as many as the number of selected pokemons)
-  output$poke_infos <- renderUI({
-    fluidRow(
-      lapply(seq_along(pokeNames()), FUN = function(i) {
-        tablerProfileCard(
-          title = pokeNames()[[i]],
-          subtitle = details()[[i]]$flavor_text_entries$flavor_text[54],
-          background = NULL,
-          src = mainData()[[i]]$sprites$front_default,
-          socials = NULL,
-          width = 4
-        )
-      })
-    )
-  })
+   output$poke_infos <- renderUI({
+
+     # there is a quirk in the raw data: in details, names are in lower case
+     # whereas in the main pokemon list, names start with a capital letter...
+
+     fluidRow(
+       tablerProfileCard(
+         title = selected(),
+         subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
+         background = NULL,
+         src = mainData[[selected()]]$sprites$front_default,
+         socials = NULL,
+         width = 12
+       )
+     )
+   })
 }

@@ -19,7 +19,7 @@
 # })
 #
 # saveRDS(pokeDetails, file = "pokeDetails")
-#
+# names(pokeDetails) <- pokeNames
 #
 # # In what follows we need data only for the first generation of pokemons
 # firstGen <- fromJSON("https://pokeapi.co/api/v2/generation/1/")

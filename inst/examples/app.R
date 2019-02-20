@@ -32,8 +32,9 @@ shiny::shinyApp(
           "Test"
         )
       ),
-      tablerIcon(name = "fr", lib = "flag"),
-      tablerIcon(name = "ch", lib = "flag"),
+
+      pokeDataUi(id = "data"),
+
       tablerDropdown(
         tablerDropdownItem(
           title = "Item 1 title",
@@ -55,11 +56,7 @@ shiny::shinyApp(
         )
       )
     ),
-    footer = tablerDashFooter(
-      tablerIcon(name = "maestro", lib = "payment"),
-      tablerIcon(name = "mastercard", lib = "payment"),
-      copyrights = "@David Granjon, 2019"
-    ),
+    footer = tablerDashFooter(copyrights = "@David Granjon, 2019"),
     title = "The fucking Pokemon App",
     body = tablerDashBody(
 
@@ -69,19 +66,46 @@ shiny::shinyApp(
       tablerTabItems(
         tablerTabItem(
           tabName = "Home",
-          pokeDataUi(id = "data"),
-          pokeInfosUi(id = "infos")
+          fluidRow(
+            column(
+              width = 4,
+              pokeInfosUi(id = "infos")
+            ),
+            column(
+              width = 8,
+              pokeStatsUi(id = "stats")
+            )
+          )
         ),
         tablerTabItem(
           tabName = "Test",
-          pokeStatsUi(id = "stats")
+          "test"
         )
       )
     )
   ),
   server = function(input, output, session) {
+
+    # main module (data)
     main <- callModule(module = pokeData, id = "data", raw_data = pokeMain, raw_details = pokeDetails)
-    callModule(module = pokeInfos, id = "infos", mainData = main$pokemons, details = main$details, pokeNames = main$pokeNames)
-    callModule(module = pokeStats, id = "stats", skills = main$skills, pokeNames = main$pokeNames)
+
+    # infos module
+    callModule(
+      module = pokeInfos,
+      id = "infos",
+      mainData = main$pokemons,
+      details = main$details,
+      pokeNames = main$pokeNames,
+      selected = main$pokeSelect
+    )
+
+    # stats module
+    callModule(
+      module = pokeStats,
+      id = "stats",
+      skills = main$skills,
+      pokeNames = main$pokeNames,
+      selected = main$pokeSelect
+    )
   }
 )
