@@ -31,6 +31,8 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
 
      req(!is.null(selected()))
 
+     # TO DO: add habitat and shape (see details)
+
      fluidRow(
        tablerProfileCard(
          title = selected(),

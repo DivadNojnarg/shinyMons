@@ -36,6 +36,8 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
 
   ns <- session$ns
 
+  # TO DO: add capture rate/ growth rate
+
   # happiness
   output$pokeHappy <- renderUI({
 
