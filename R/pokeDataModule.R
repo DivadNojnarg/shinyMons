@@ -44,16 +44,29 @@ pokeData <- function(input, output, session, raw_data, raw_details) {
 
   # pokemon selector
   output$pokeChoice <- renderUI({
-    pickerInput(
-      inputId = ns("pokeSelect"),
-      width = NULL,
-      options = list(style = "btn-primary"),
-      multiple = FALSE,
-      choices = pokeNames,
-      choicesOpt = list(
-        content = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames)
+    fluidRow(
+      pickerInput(
+        inputId = ns("pokeSelect"),
+        width = NULL,
+        options = list(style = "btn-primary"),
+        multiple = FALSE,
+        choices = pokeNames,
+        choicesOpt = list(
+          content = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames)
+        ),
+        selected = pokeNames[[1]]
       ),
-      selected = pokeNames[[1]]
+      # because it's a shiny app ;)
+      tagAppendAttributes(
+        prettySwitch(
+          inputId = ns("pokeShiny"),
+          label = "Shiny?",
+          value = FALSE,
+          status = "primary",
+          slim = TRUE
+        ),
+        class = "m-2"
+      )
     )
   })
 
@@ -63,7 +76,8 @@ pokeData <- function(input, output, session, raw_data, raw_details) {
       details = details,
       pokeNames = pokeNames,
       skills = skills,
-      pokeSelect = reactive(input$pokeSelect)
+      pokeSelect = reactive(input$pokeSelect),
+      pokeShiny = reactive(input$pokeShiny)
     )
   )
 

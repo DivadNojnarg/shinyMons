@@ -20,7 +20,7 @@ pokeGalleryUi <- function(id) {
         )
       )
     ),
-    fluidRow(uiOutput(ns("poke_gallery")))
+    uiOutput(ns("poke_gallery"))
   )
 }
 
@@ -33,25 +33,33 @@ pokeGalleryUi <- function(id) {
 #' @param session Shiny session.
 #' @param raw_data Object containing the main pokemon data.
 #' @param raw_details Object containing extra pokemon details.
+#' @param shiny Whether to display a shiny version. FALSE by default.
 #' @export
-pokeGallery <- function(input, output, session, raw_data, raw_details) {
+pokeGallery <- function(input, output, session, raw_data, raw_details, shiny) {
 
   range <- reactive(raw_data[input$pokeRange[1]:input$pokeRange[2]])
 
   output$poke_gallery <- renderUI({
-    lapply(seq_along(range()), FUN = function(i) {
-      column(
-        width = 4,
+    fluidRow(
+      lapply(seq_along(range()), FUN = function(i) {
         tablerMediaCard(
           title = range()[[i]]$name,
           date = NULL,
           href = "https://www.google.com",
-          src = range()[[i]]$sprites$front_shiny,
-          avatarUrl = range()[[i]]$sprites$back_shiny,
-          width = 12,
+          src = if (!shiny()) {
+            range()[[i]]$sprites$front_default
+          } else {
+            range()[[i]]$sprites$front_shiny
+          },
+          avatarUrl = if (!shiny()) {
+            range()[[i]]$sprites$back_default
+          } else {
+            range()[[i]]$sprites$back_shiny
+          },
+          width = 4,
           "Other elements"
         )
-      )
-    })
+      })
+    )
   })
 }

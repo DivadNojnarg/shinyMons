@@ -4,7 +4,7 @@
 \alias{pokeGallery}
 \title{Server module generating the pokemon interface}
 \usage{
-pokeGallery(input, output, session, raw_data, raw_details)
+pokeGallery(input, output, session, raw_data, raw_details, shiny)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -16,6 +16,8 @@ pokeGallery(input, output, session, raw_data, raw_details)
 \item{raw_data}{Object containing the main pokemon data.}
 
 \item{raw_details}{Object containing extra pokemon details.}
+
+\item{shiny}{Whether to display a shiny version. FALSE by default.}
 }
 \description{
 Server module generating the pokemon interface

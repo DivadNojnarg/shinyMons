@@ -96,7 +96,8 @@ shiny::shinyApp(
       id = "infos",
       mainData = main$pokemons,
       details = main$details,
-      selected = main$pokeSelect
+      selected = main$pokeSelect,
+      shiny = main$pokeShiny
     )
 
     # stats module
@@ -117,6 +118,12 @@ shiny::shinyApp(
     )
 
     # gallery module
-    callModule(module = pokeGallery, id = "gallery", raw_data = pokeMain, raw_details = pokeDetails)
+    callModule(
+      module = pokeGallery,
+      id = "gallery",
+      raw_data = pokeMain,
+      raw_details = pokeDetails,
+      shiny = main$pokeShiny
+    )
   }
 )

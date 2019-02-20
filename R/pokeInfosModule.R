@@ -19,8 +19,9 @@ pokeInfosUi <- function(id) {
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
+#' @param shiny Whether to display a shiny version. FALSE by default.
 #' @export
-pokeInfos <- function(input, output, session, mainData, details, selected) {
+pokeInfos <- function(input, output, session, mainData, details, selected, shiny) {
 
   #generate the profile cards (as many as the number of selected pokemons)
    output$poke_infos <- renderUI({
@@ -35,7 +36,11 @@ pokeInfos <- function(input, output, session, mainData, details, selected) {
          title = selected(),
          subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
          background = NULL,
-         src = mainData[[selected()]]$sprites$front_default,
+         src = if (!shiny()) {
+           mainData[[selected()]]$sprites$front_default
+         } else {
+           mainData[[selected()]]$sprites$front_shiny
+         },
          socials = NULL,
          width = 12
        )
