@@ -31,8 +31,8 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
 
      req(!is.null(selected()))
 
-     habitats <- unique(unlist(lapply(1:151, function(i) pokeDetails[[i]]$habitat$name)))
-     habitatColor <- switch (pokeDetails[[selected()]]$habitat$name,
+     habitats <- unique(unlist(lapply(1:151, function(i) details[[i]]$habitat$name)))
+     habitatColor <- switch (details[[selected()]]$habitat$name,
        "grassland" = "lime",
        "mountain" = "orange",
        "waters-edge" = "azure",
