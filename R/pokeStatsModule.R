@@ -9,10 +9,14 @@ pokeStatsUi <- function(id) {
 
   tagList(
     fluidRow(
-      column(width = 3, uiOutput(ns("pokeHappy"))),
-      column(width = 3, uiOutput(ns("baseXp"))),
-      column(width = 3, uiOutput(ns("pokeHeight"))),
-      column(width = 3, uiOutput(ns("pokeWeight")))
+      column(width = 4, uiOutput(ns("pokeHappy"))),
+      column(width = 4, uiOutput(ns("pokeHeight"))),
+      column(width = 4, uiOutput(ns("pokeWeight")))
+    ),
+    fluidRow(
+      column(width = 4, uiOutput(ns("baseXp"))),
+      column(width = 4, uiOutput(ns("pokeGrowth"))),
+      column(width = 4, uiOutput(ns("pokeCapture")))
     ),
     uiOutput(ns("pokeStatsCard"))
   )
@@ -37,6 +41,36 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
   ns <- session$ns
 
   # TO DO: add capture rate/ growth rate
+
+  # growth rate
+  output$pokeGrowth <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = switch(
+        details[[selected()]]$growth_rate$name,
+        "slow" = tablerProgress(value = 0, size = "xs", status = "danger"),
+        "medium-slow" = tablerProgress(value = 25, size = "xs", status = "warning"),
+        "medium" = tablerProgress(value = 60, size = "xs", status = "yellow"),
+        "fast" = tablerProgress(value = 90, size = "xs", status = "success")
+      ),
+      title = "Growth Rate",
+      width = 12
+    )
+  })
+
+  # capture rate
+  output$pokeCapture <- renderUI({
+
+    req(!is.null(selected()))
+
+    tablerStatCard(
+      value = details[[selected()]]$capture_rate,
+      title = "Capture Rate",
+      width = 12
+    )
+  })
 
   # happiness
   output$pokeHappy <- renderUI({

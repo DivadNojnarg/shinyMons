@@ -28,8 +28,6 @@ pokeType <- function(input, output, session, mainData, selected) {
     mainData[[selected()]]$types
   })
 
-  observe(print(types()))
-
   # render infoBoxes
   output$poke_types <- renderUI({
 

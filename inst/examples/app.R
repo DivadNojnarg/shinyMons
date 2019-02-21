@@ -70,7 +70,8 @@ shiny::shinyApp(
             column(
               width = 4,
               pokeInfosUi(id = "infos"),
-              pokeTypeUi(id = "types")
+              pokeTypeUi(id = "types"),
+              pokeEvolveUi(id = "evol")
             ),
             column(
               width = 8,
@@ -126,6 +127,16 @@ shiny::shinyApp(
       mainData = main$pokemons,
       details = main$details,
       selected = main$pokeSelect
+    )
+
+    # evolutions module
+    callModule(
+      module = pokeEvolve,
+      id = "evol",
+      mainData = main$pokemons,
+      details = main$details,
+      selected = main$pokeSelect,
+      shiny = main$pokeShiny
     )
 
     # gallery module
