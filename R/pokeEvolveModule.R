@@ -30,14 +30,6 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
     fromJSON(details[[selected()]]$evolution_chain$url, flatten = TRUE)
   })
 
-  observe({
-    chain <- evolve_chain()$chain
-    minLevelBis <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$min_level
-    evolutionBis <- chain$evolves_to$evolves_to[[1]]$species.name
-    evolSpriteBis <- mainData[[stringr::str_to_title(evolutionBis)]]$sprites$front_default
-    print(evolSpriteBis)
-  })
-
   # treat data and generate the timeline
   output$poke_evolve <- renderUI({
 
@@ -71,6 +63,13 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
               img(src = evolSpriteBis),
               triggerBis
             )
+          )
+        } else {
+          tablerAlert(
+            title = "Alert",
+            "This Pokemon cannot evolve.",
+            icon = "alert-triangle",
+            status = "danger"
           )
         }
 

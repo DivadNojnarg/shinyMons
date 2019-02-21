@@ -31,21 +31,40 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
 
      req(!is.null(selected()))
 
-     # TO DO: add habitat and shape (see details)
+     habitats <- unique(unlist(lapply(1:151, function(i) pokeDetails[[i]]$habitat$name)))
+     habitatColor <- switch (pokeDetails[[selected()]]$habitat$name,
+       "grassland" = "lime",
+       "mountain" = "orange",
+       "waters-edge" = "azure",
+       "forest" = "green",
+       "rough-terrain" = "yellow",
+       "cave" = "gray-dark",
+       "urban" = "gray",
+       "sea" = "blue",
+       "rare" = "purple"
+     )
 
-     fluidRow(
-       tablerProfileCard(
-         title = selected(),
-         subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
-         background = NULL,
-         src = if (!shiny()) {
-           mainData[[selected()]]$sprites$front_default
-         } else {
-           mainData[[selected()]]$sprites$front_shiny
-         },
-         socials = NULL,
-         width = 12
-       )
+     tagList(
+       fluidRow(
+         tablerProfileCard(
+           title = selected(),
+           subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
+           background = NULL,
+           src = if (!shiny()) {
+             mainData[[selected()]]$sprites$front_default
+           } else {
+             mainData[[selected()]]$sprites$front_shiny
+           },
+           socials = NULL,
+           width = 12
+         )
+       ),
+       tablerTagList(
+         align = "center",
+         tablerTag(name = details[[selected()]]$shape$name, rounded = TRUE, color = "default"),
+         tablerTag(name = details[[selected()]]$habitat$name, rounded = TRUE, color = habitatColor)
+       ),
+       br()
      )
    })
 }
