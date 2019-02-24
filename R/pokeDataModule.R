@@ -30,18 +30,6 @@ pokeData <- function(input, output, session, raw_data, raw_details) {
   pokeNames <- names(pokemons)
   sprites <- vapply(seq_along(pokeNames), FUN = function(i) pokemons[[i]]$sprites$front_default, FUN.VALUE = character(1))
 
-  # pokemon skills dataframe
-  skills <- reactive({
-
-    req(input$pokeSelect)
-
-    data.frame(
-      x = pokemons[[input$pokeSelect]]$stats$stat$name,
-      y = pokemons[[input$pokeSelect]]$stats$base_stat
-    )
-  })
-
-
   # pokemon selector
   output$pokeChoice <- renderUI({
     fluidRow(
@@ -75,7 +63,7 @@ pokeData <- function(input, output, session, raw_data, raw_details) {
       pokemons = pokemons,
       details = details,
       pokeNames = pokeNames,
-      skills = skills,
+      sprites = sprites,
       pokeSelect = reactive(input$pokeSelect),
       pokeShiny = reactive(input$pokeShiny)
     )

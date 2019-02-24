@@ -33,12 +33,16 @@ globalVariables("y")
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
-#' @param skills Object containing pokemon statistics.
 #' @param selected Input containing the selected pokemon index.
+#' @param sprites Vector containing all pokemon images url.
 #' @export
-pokeStats <- function(input, output, session, mainData, details, skills, selected) {
+pokeStats <- function(input, output, session, mainData, details, selected, sprites) {
 
   ns <- session$ns
+
+  # ################################################################
+  # Basic Stats
+  # ################################################################
 
   # basic stats
   outputNames <- c(
@@ -92,6 +96,39 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
   })
 
 
+  # ################################################################
+  # Skills
+  # ################################################################
+
+  # pokemon skills dataframe
+  skills <- reactive({
+
+    req(input$pokeSelect)
+
+    data.frame(
+      x = pokemons[[input$pokeSelect]]$stats$stat$name,
+      y = pokemons[[input$pokeSelect]]$stats$base_stat
+    )
+  })
+
+  # pokemon comparison multi input
+  output$poke_compare <- renderUI({
+    req(!is.null(input$pokeCompare))
+    if (input$pokeCompare) {
+      multiInput(
+        inputId = ns("pokeCompareSelect"),
+        label = "Select multiple pokemons :",
+        choices = NULL,
+        choiceNames = lapply(
+          seq_along(sprites),
+          function(i) tags$img(src = sprites[[i]], width = 20, height = 15)
+        ),
+        choiceValues = names(mainData)
+      )
+    }
+  })
+
+
   # generate radar chart for pokemons
   output$pokeStats <- renderEcharts4r({
 
@@ -109,10 +146,21 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
 
     req(!is.null(selected()))
 
-    fluidRow(
+    #fluidRow(
       tablerCard(
         title = paste0(selected(), " Stats"),
-        options = NULL,
+        options = tagList(
+          tagAppendAttributes(
+            prettySwitch(
+              inputId = ns("pokeCompare"),
+              label = "Compare?",
+              value = FALSE,
+              status = "danger",
+              slim = TRUE
+            ),
+            class = "m-2"
+          )
+        ),
         footer = NULL,
         status = "info",
         statusSide = "left",
@@ -121,9 +169,22 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
         zoomable = FALSE,
         width = 12,
         overflow = FALSE,
-        echarts4rOutput(outputId = ns("pokeStats"))
+        if (input$pokeCompare) {
+          fluidRow(
+            column(
+              width = 8,
+              echarts4rOutput(outputId = ns("pokeStats"))
+            ),
+            column(
+              width = 4,
+              uiOutput(ns("poke_compare"))
+            )
+          )
+        } else {
+          echarts4rOutput(outputId = ns("pokeStats"))
+        }
       )
-    )
+    #)
   })
 
 }
