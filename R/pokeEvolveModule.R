@@ -70,14 +70,23 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             }
           }
 
-          # the timeline
-          tablerTimelineItem(
-            title = paste0("Evolves to: ", evolutionBis),
-            status = "green",
-            date = if (triggerBis == "level-up") paste0("At level: ", minLevelBis),
-            img(src = evolSpriteBis),
-            if (triggerBis == "level-up") triggerBis else tagList(triggerBisName, img(src = triggerBisImage))
-          )
+          # handle the case where the evolution might not be in the first gen
+          if (evolutionBis %in% names(mainData)) {
+            tablerTimelineItem(
+              title = paste0("Evolves to: ", evolutionBis),
+              status = "green",
+              date = if (triggerBis == "level-up") paste0("At level: ", minLevelBis),
+              img(src = evolSpriteBis),
+              if (triggerBis == "level-up") triggerBis else tagList(triggerBisName, img(src = triggerBisImage))
+            )
+          } else {
+            tablerAlert(
+              title = "Alert",
+              "This Pokemon can evolve but not in the first generation.",
+              icon = "alert-triangle",
+              status = "danger"
+            )
+          }
         } else {
           tablerAlert(
             title = "Alert",
@@ -86,7 +95,6 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             status = "danger"
           )
         }
-
       }
     } else {
       # continue only if at least 1 evolution is found
@@ -160,18 +168,7 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             }
           }
 
-          # in the first gen, pokemon cannot evolve when wearing an item
-          # this was introduced later.
-          held_item  <- chain$evolves_to$evolution_details[[1]]$held_item.url
-          if (!is.null(held_item)) {
-            tablerAlert(
-              title = "Alert",
-              "This Pokemon cannot evolve in the first generation.",
-              icon = "alert-triangle",
-              status = "danger"
-            )
-          } else {
-            # the timeline
+          if (evolution %in% names(mainData)) {
             tablerTimelineItem(
               title = paste0("Evolves to: ", evolution),
               status = "green",
@@ -179,7 +176,16 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
               img(src = evolSprite),
               if (trigger == "level-up") trigger else tagList(triggerName, img(src = triggerImage))
             )
+            # handle the case where the evolution is not in the first generation
+          } else {
+            tablerAlert(
+              title = "Alert",
+              "This Pokemon can evolve but not in the first generation.",
+              icon = "alert-triangle",
+              status = "danger"
+            )
           }
+
         }
       }
     }

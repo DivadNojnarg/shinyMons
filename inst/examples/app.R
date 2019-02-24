@@ -19,10 +19,6 @@ pokeMoves <- readRDS("pokeMoves")
 pokeTypes <- readRDS("pokeTypes")
 pokeEvolutions <- readRDS("pokeEvolutions")
 
-
-#pokeTypes <- firstGen$types
-#pokeMoves <- firstGen$moves
-
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
