@@ -6,7 +6,7 @@
 #' @export
 pokeLocationUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_locations"))
+  uiOutput(ns("poke_locations"), class = "col-sm-12")
 }
 
 
@@ -17,20 +17,32 @@ pokeLocationUi <- function(id) {
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
-#' @param mainData Object containing the main pokemon data.
-#' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
+#' @param locations Contains preprocessed data of the selected pokemon location
 #' @export
-pokeLocation <- function(input, output, session, mainData, details, selected) {
+pokeLocation <- function(input, output, session, selected, locations) {
 
-  locations <- reactive({
+  pokeLocations <- reactive({
     req(!is.null(selected()))
-    locationUrl <- fromJSON(mainData[[selected]]$location_area_encounters)
-    locationUrl$location_area$name
-    # there are locations not related to the first generation ...
+    locations[[selected()]]$name
   })
 
   output$poke_locations <- renderUI({
 
+    req(!is.null(selected()))
+
+    tablerCard(
+      title = paste0("Where to find ",  selected()),
+      collapsible = FALSE,
+      closable = FALSE,
+      zoomable = FALSE,
+      statusSide = "top",
+      width = 12,
+      if (!is.null(pokeLocations())) {
+        lapply(seq_along(pokeLocations()), function(i) fluidRow(paste(i, ":", pokeLocations()[[i]])))
+      } else {
+        "This pokemon cannot be found in the wild."
+      }
+    )
   })
 }

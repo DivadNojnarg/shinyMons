@@ -4,7 +4,7 @@
 \alias{pokeLocation}
 \title{Server module generating the pokemon location card}
 \usage{
-pokeLocation(input, output, session, mainData, details, selected)
+pokeLocation(input, output, session, selected, locations)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -13,11 +13,9 @@ pokeLocation(input, output, session, mainData, details, selected)
 
 \item{session}{Shiny session.}
 
-\item{mainData}{Object containing the main pokemon data.}
-
-\item{details}{Object containing extra pokemon details.}
-
 \item{selected}{Input containing the selected pokemon index.}
+
+\item{locations}{Contains preprocessed data of the selected pokemon location}
 }
 \description{
 Server module generating the pokemon location card

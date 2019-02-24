@@ -17,16 +17,15 @@ pokeMoveUi <- function(id) {
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
-#' @param mainData Object containing the main pokemon data.
-#' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
+#' @param moves Contains preprocessed pokemon moves.
 #' @export
-pokeMove <- function(input, output, session, mainData, details, selected) {
+pokeMove <- function(input, output, session, selected, moves) {
 
   # take the whole ability dataframe
-  abilities <- reactive({
+  pokeMoves <- reactive({
     req(!is.null(selected()))
-    mainData[[selected()]]$abilities
+    moves[[selected()]]
   })
 
   # generate the card
@@ -41,16 +40,11 @@ pokeMove <- function(input, output, session, mainData, details, selected) {
       width = 12,
 
       # card content
-      lapply(seq_along(abilities()$slot), FUN = function(i) {
-        moveName <- abilities()$ability$name[[i]]
-        moveSlot <- abilities()$slot[[i]]
-        moveUrl <- abilities()$ability$url[[i]]
-
-        # potentially bottleneck
-        moveDetails <- fromJSON(moveUrl)
-
-        moveEffect <- moveDetails$effect_entries$short_effect
-        moveId <- moveDetails$id
+      lapply(seq_along(pokeMoves()), FUN = function(i) {
+        moveName <- pokeMoves()[[i]]$name
+        moveSlot <- pokeMoves()[[i]]$moveSlot
+        moveEffect <- pokeMoves()[[i]]$moveEffect
+        moveId <- pokeMoves()[[i]]$id
 
         fluidRow(
           paste("Slot: ", moveSlot),

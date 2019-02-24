@@ -20,6 +20,40 @@
 #
 # saveRDS(pokeDetails, file = "pokeDetails")
 # names(pokeDetails) <- pokeNames
+
+
+# there are locations not related to the first generation ...
+#locationUrl <- mclapply(names(pokeMain), function(i) {
+#  locationUrl <- fromJSON(pokeMain[[i]]$location_area_encounters)
+#  if (length(locationUrl) > 0) {
+#    locationArea <- locationUrl$location_area
+#    locationArea  %>%
+#      filter(str_detect(name, pattern = "kanto")) %>%
+#      select(name)
+#  } else {
+#    NULL
+#  }
+#})
+#
+#names(locationUrl) <- pokeNames
+#saveRDS(locationUrl, file = "pokeLocations")
+
+# preprocess abilities
+#pokeMoves <- lapply(names(pokeMain), function(i) {
+#  abilities <- pokeMain[[i]]$abilities
+#  lapply(seq_along(abilities$slot), function(j) {
+#    moveUrl <- abilities$ability$url[[j]]
+#    # potentially bottleneck
+#    moveDetails <- fromJSON(moveUrl)
+#    moveEffect <- moveDetails$effect_entries$short_effect
+#    moveId <- moveDetails$id
+#    moveSlot <- abilities$slot[[j]]
+#    cbind(abilities$ability[j, ], moveId, moveEffect, moveSlot)
+#  })
+#})
+#names(pokeMoves) <- pokeNames
+#saveRDS(pokeMoves, file = "pokeMoves")
+
 #
 # # In what follows we need data only for the first generation of pokemons
 # firstGen <- fromJSON("https://pokeapi.co/api/v2/generation/1/")

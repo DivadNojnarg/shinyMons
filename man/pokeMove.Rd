@@ -4,7 +4,7 @@
 \alias{pokeMove}
 \title{Server module generating the pokemon interface}
 \usage{
-pokeMove(input, output, session, mainData, details, selected)
+pokeMove(input, output, session, selected, moves)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -13,11 +13,9 @@ pokeMove(input, output, session, mainData, details, selected)
 
 \item{session}{Shiny session.}
 
-\item{mainData}{Object containing the main pokemon data.}
-
-\item{details}{Object containing extra pokemon details.}
-
 \item{selected}{Input containing the selected pokemon index.}
+
+\item{moves}{Contains preprocessed pokemon moves.}
 }
 \description{
 Server module generating the pokemon interface

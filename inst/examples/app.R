@@ -4,6 +4,9 @@ library(tablerDash)
 library(shinyWidgets)
 library(shinyEffects)
 library(echarts4r)
+library(parallel)
+library(stringr)
+library(dplyr)
 
 source("pokeNames.R")
 
@@ -11,8 +14,12 @@ pokeMain <- readRDS("pokeMain")
 pokeDetails <- readRDS("pokeDetails")
 firstGen <- readRDS("firstGen")
 
-pokeTypes <- firstGen$types
-pokeMoves <- firstGen$moves
+pokeLocations <- readRDS("pokeLocations")
+pokeMoves <- readRDS("pokeMoves")
+
+
+#pokeTypes <- firstGen$types
+#pokeMoves <- firstGen$moves
 
 # shiny app code
 shiny::shinyApp(
@@ -78,7 +85,8 @@ shiny::shinyApp(
               pokeStatsUi(id = "stats")
             )
           ),
-          fluidRow(pokeMoveUi(id = "moves"))
+          pokeMoveUi(id = "moves"),
+          pokeLocationUi(id = "location")
         ),
         tablerTabItem(
           tabName = "PokeGroup",
@@ -124,9 +132,8 @@ shiny::shinyApp(
     callModule(
       module = pokeMove,
       id = "moves",
-      mainData = main$pokemons,
-      details = main$details,
-      selected = main$pokeSelect
+      selected = main$pokeSelect,
+      moves = pokeMoves
     )
 
     # evolutions module
@@ -137,6 +144,14 @@ shiny::shinyApp(
       details = main$details,
       selected = main$pokeSelect,
       shiny = main$pokeShiny
+    )
+
+    # location
+    callModule(
+      module = pokeLocation,
+      id = "location",
+      selected = main$pokeSelect,
+      locations = pokeLocations
     )
 
     # gallery module
