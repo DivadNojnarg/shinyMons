@@ -54,6 +54,36 @@
 #names(pokeMoves) <- pokeNames
 #saveRDS(pokeMoves, file = "pokeMoves")
 
+
+# preprocess types
+#pokeTypes <- lapply(names(pokeMain), function(i) {
+#  types <- pokeMain[[i]]$types
+#  lapply(seq_along(types$slot), function(j) {
+#    typeName <- types$type[["name"]][[j]]
+#    typeSlot <- types$slot[[j]]
+#    damageRelations <- fromJSON(types$type[["url"]][[j]])$damage_relations
+#    double_damage_from <- damageRelations$double_damage_from$name
+#    double_damage_to <- damageRelations$double_damage_to$name
+#    half_damage_from <- damageRelations$half_damage_from$name
+#    half_damage_to <- damageRelations$half_damage_to$name
+#    no_damage_from <- damageRelations$no_damage_from$name
+#    no_damage_to <- damageRelations$no_damage_to$name
+#
+#    list(
+#      name = typeName,
+#      slot = typeSlot,
+#      double_damage_from = double_damage_from,
+#      double_damage_to = double_damage_to,
+#      half_damage_from = half_damage_from,
+#      half_damage_to = half_damage_to,
+#      no_damage_from = no_damage_from,
+#      no_damage_to = no_damage_to
+#    )
+#  })
+#})
+#names(pokeTypes) <- pokeNames
+#saveRDS(pokeTypes, file = "pokeTypes")
+
 #
 # # In what follows we need data only for the first generation of pokemons
 # firstGen <- fromJSON("https://pokeapi.co/api/v2/generation/1/")

@@ -16,6 +16,7 @@ firstGen <- readRDS("firstGen")
 
 pokeLocations <- readRDS("pokeLocations")
 pokeMoves <- readRDS("pokeMoves")
+pokeTypes <- readRDS("pokeTypes")
 
 
 #pokeTypes <- firstGen$types
@@ -124,7 +125,7 @@ shiny::shinyApp(
     callModule(
       module = pokeType,
       id = "types",
-      mainData = main$pokemons,
+      types = pokeTypes,
       selected = main$pokeSelect
     )
 

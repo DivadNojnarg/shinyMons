@@ -4,7 +4,7 @@
 \alias{pokeType}
 \title{Server module generating the pokemon types info boxes}
 \usage{
-pokeType(input, output, session, mainData, selected)
+pokeType(input, output, session, types, selected)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -13,7 +13,7 @@ pokeType(input, output, session, mainData, selected)
 
 \item{session}{Shiny session.}
 
-\item{mainData}{Object containing the main pokemon data.}
+\item{types}{Object containing the preprocessed pokemon types.}
 
 \item{selected}{Input containing the selected pokemon index.}
 }

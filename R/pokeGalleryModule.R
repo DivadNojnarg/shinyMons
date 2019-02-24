@@ -45,7 +45,7 @@ pokeGallery <- function(input, output, session, raw_data, raw_details, shiny) {
         tablerMediaCard(
           title = range()[[i]]$name,
           date = NULL,
-          href = "https://www.google.com",
+          href = NULL,
           src = if (!shiny()) {
             range()[[i]]$sprites$front_default
           } else {
