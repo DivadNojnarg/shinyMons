@@ -34,9 +34,8 @@ globalVariables("y")
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
-#' @param sprites Vector containing all pokemon images url.
 #' @export
-pokeStats <- function(input, output, session, mainData, details, selected, sprites) {
+pokeStats <- function(input, output, session, mainData, details, selected) {
 
   ns <- session$ns
 
@@ -102,32 +101,14 @@ pokeStats <- function(input, output, session, mainData, details, selected, sprit
 
   # pokemon skills dataframe
   skills <- reactive({
-
-    req(input$pokeSelect)
+    req(!is.null(selected()))
 
     data.frame(
-      x = pokemons[[input$pokeSelect]]$stats$stat$name,
-      y = pokemons[[input$pokeSelect]]$stats$base_stat
+      x = mainData[[selected()]]$stats$stat$name,
+      y = mainData[[selected()]]$stats$base_stat
     )
-  })
 
-  # pokemon comparison multi input
-  output$poke_compare <- renderUI({
-    req(!is.null(input$pokeCompare))
-    if (input$pokeCompare) {
-      multiInput(
-        inputId = ns("pokeCompareSelect"),
-        label = "Select multiple pokemons :",
-        choices = NULL,
-        choiceNames = lapply(
-          seq_along(sprites),
-          function(i) tags$img(src = sprites[[i]], width = 20, height = 15)
-        ),
-        choiceValues = names(mainData)
-      )
-    }
   })
-
 
   # generate radar chart for pokemons
   output$pokeStats <- renderEcharts4r({
@@ -146,45 +127,19 @@ pokeStats <- function(input, output, session, mainData, details, selected, sprit
 
     req(!is.null(selected()))
 
-    #fluidRow(
-      tablerCard(
-        title = paste0(selected(), " Stats"),
-        options = tagList(
-          tagAppendAttributes(
-            prettySwitch(
-              inputId = ns("pokeCompare"),
-              label = "Compare?",
-              value = FALSE,
-              status = "danger",
-              slim = TRUE
-            ),
-            class = "m-2"
-          )
-        ),
-        footer = NULL,
-        status = "info",
-        statusSide = "left",
-        collapsible = FALSE,
-        closable = FALSE,
-        zoomable = FALSE,
-        width = 12,
-        overflow = FALSE,
-        if (input$pokeCompare) {
-          fluidRow(
-            column(
-              width = 8,
-              echarts4rOutput(outputId = ns("pokeStats"))
-            ),
-            column(
-              width = 4,
-              uiOutput(ns("poke_compare"))
-            )
-          )
-        } else {
-          echarts4rOutput(outputId = ns("pokeStats"))
-        }
-      )
-    #)
+    tablerCard(
+      title = paste0(selected(), " Stats"),
+      options = NULL,
+      footer = NULL,
+      status = "info",
+      statusSide = "left",
+      collapsible = FALSE,
+      closable = FALSE,
+      zoomable = FALSE,
+      width = 12,
+      overflow = FALSE,
+      echarts4rOutput(outputId = ns("pokeStats"))
+    )
   })
 
 }

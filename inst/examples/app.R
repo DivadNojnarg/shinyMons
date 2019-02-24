@@ -35,6 +35,11 @@ shiny::shinyApp(
           tabName = "PokeGroup",
           icon = "box",
           "PokeGroup"
+        ),
+        tablerNavMenuItem(
+          tabName = "PokeOther",
+          icon = "box",
+          "PokeOther"
         )
       ),
 
@@ -42,26 +47,18 @@ shiny::shinyApp(
 
       tablerDropdown(
         tablerDropdownItem(
-          title = "Item 1 title",
-          href = "http://google.com",
-          url = "https://image.flaticon.com/icons/svg/1301/1301804.svg",
-          status = "danger",
-          date = "now",
-          "This is the first dropdown item"
-        ),
-        tablerDropdownItem(
-          url = "https://image.flaticon.com/icons/svg/1301/1301809.svg",
-          status = "warning",
-          "This is the second dropdown item",
-          date = "yesterday"
-        ),
-        tablerDropdownItem(
-          title = "Item 3 title",
-          "This is the third dropdown item"
+          title = NULL,
+          href = "https://pokeapi.co",
+          url = "https://pokeapi.co/static/logo-6221638601ef7fa7c835eae08ef67a16.png",
+          status = "success",
+          date = NULL,
+          "This app use pokeApi by Paul Hallet and PokéAPI contributors."
         )
       )
     ),
-    footer = tablerDashFooter(copyrights = "@David Granjon, 2019"),
+    footer = tablerDashFooter(
+      copyrights = "Disclaimer: this app is purely intended for learning purpose. @David Granjon, 2019"
+    ),
     title = "The fucking Pokemon App",
     body = tablerDashBody(
 
@@ -89,6 +86,10 @@ shiny::shinyApp(
         tablerTabItem(
           tabName = "PokeGroup",
           pokeGalleryUi(id = "gallery")
+        ),
+        tablerTabItem(
+          tabName = "PokeOther",
+          pokeOtherUi(id = "other")
         )
       )
     )
@@ -114,8 +115,7 @@ shiny::shinyApp(
       id = "stats",
       mainData = main$pokemons,
       details = main$details,
-      selected = main$pokeSelect,
-      sprites = main$sprites
+      selected = main$pokeSelect
     )
 
     # types modules
@@ -161,5 +161,13 @@ shiny::shinyApp(
       raw_details = pokeDetails,
       shiny = main$pokeShiny
     )
+
+    callModule(
+      module = pokeOther,
+      id = "other",
+      mainData = pokeMain,
+      details = pokeDetails
+    )
+
   }
 )
