@@ -84,6 +84,13 @@
 #names(pokeTypes) <- pokeNames
 #saveRDS(pokeTypes, file = "pokeTypes")
 
+# preprocess evolutions
+#pokeEvolutions <- lapply(names(pokeDetails), function(i) {
+#  fromJSON(pokeDetails[[i]]$evolution_chain$url, flatten = TRUE)$chain
+#})
+#names(pokeEvolutions) <- pokeNames
+#saveRDS(pokeEvolutions, file = "pokeEvolutions")
+
 #
 # # In what follows we need data only for the first generation of pokemons
 # firstGen <- fromJSON("https://pokeapi.co/api/v2/generation/1/")

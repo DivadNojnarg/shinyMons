@@ -4,7 +4,8 @@
 \alias{pokeEvolve}
 \title{Server module generating the pokemon evolution timeline}
 \usage{
-pokeEvolve(input, output, session, mainData, details, selected, shiny)
+pokeEvolve(input, output, session, mainData, details, selected, shiny,
+  evolutions)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -20,6 +21,8 @@ pokeEvolve(input, output, session, mainData, details, selected, shiny)
 \item{selected}{Input containing the selected pokemon index.}
 
 \item{shiny}{Whether to display a shiny version. FALSE by default.}
+
+\item{evolutions}{Preprocessed pokemon evolutions data.}
 }
 \description{
 Server module generating the pokemon evolution timeline

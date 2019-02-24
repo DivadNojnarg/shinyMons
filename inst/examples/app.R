@@ -17,6 +17,7 @@ firstGen <- readRDS("firstGen")
 pokeLocations <- readRDS("pokeLocations")
 pokeMoves <- readRDS("pokeMoves")
 pokeTypes <- readRDS("pokeTypes")
+pokeEvolutions <- readRDS("pokeEvolutions")
 
 
 #pokeTypes <- firstGen$types
@@ -144,7 +145,8 @@ shiny::shinyApp(
       mainData = main$pokemons,
       details = main$details,
       selected = main$pokeSelect,
-      shiny = main$pokeShiny
+      shiny = main$pokeShiny,
+      evolutions = pokeEvolutions
     )
 
     # location

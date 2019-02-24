@@ -21,13 +21,14 @@ pokeEvolveUi <- function(id) {
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
 #' @param shiny Whether to display a shiny version. FALSE by default.
+#' @param evolutions Preprocessed pokemon evolutions data.
 #' @export
-pokeEvolve <- function(input, output, session, mainData, details, selected, shiny) {
+pokeEvolve <- function(input, output, session, mainData, details, selected, shiny, evolutions) {
 
   # extract the data
   evolve_chain <- reactive({
     req(!is.null(selected()))
-    fromJSON(details[[selected()]]$evolution_chain$url, flatten = TRUE)
+    evolutions[[selected()]]
   })
 
   # treat data and generate the timeline
@@ -35,14 +36,14 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
 
     req(!is.null(selected()))
     fromSpecie <- details[[selected()]]$evolves_from_species
-    chain <- evolve_chain()$chain
+    chain <- evolve_chain()
 
     if (!is.null(fromSpecie)) {
       # handle a possible second evolution
       minLevelBis <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$min_level
       if (!is.null(minLevelBis)) {
         triggerBis <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$trigger.name
-        evolutionBis <- chain$evolves_to$evolves_to[[1]]$species.name
+        evolutionBis <- chain$evolves_to$evolves_to[[1]]$species.name[[1]]
         evolutionBis <- stringr::str_to_title(evolutionBis) # title case
 
         # handle the case of the last family member which cannot evolve in itself
@@ -54,15 +55,28 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             evolSpriteBis <- mainData[[evolutionBis]]$sprites$front_default
           }
 
+          # recover item
+          if (triggerBis != "level-up") {
+            if (triggerBis == "use-item") {
+              triggerBisUrl <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$item.url
+              # fromJSON could be a bottlneck
+              triggerBisImage <- fromJSON(triggerBisUrl)$sprites$default
+              triggerBisName <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$item.name
+            } else {
+              triggerBisUrl <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$trigger.url
+              # fromJSON could be a bottlneck
+              triggerBisImage <- fromJSON(triggerBisUrl)$sprites$default
+              triggerBisName <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$trigger.name
+            }
+          }
+
           # the timeline
-          tablerTimeline(
-            tablerTimelineItem(
-              title = paste0("Evolves to: ", evolutionBis),
-              status = "green",
-              date = paste0("At level: ", minLevelBis),
-              img(src = evolSpriteBis),
-              triggerBis
-            )
+          tablerTimelineItem(
+            title = paste0("Evolves to: ", evolutionBis),
+            status = "green",
+            date = if (triggerBis == "level-up") paste0("At level: ", minLevelBis),
+            img(src = evolSpriteBis),
+            if (triggerBis == "level-up") triggerBis else tagList(triggerBisName, img(src = triggerBisImage))
           )
         } else {
           tablerAlert(
@@ -77,28 +91,96 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
     } else {
       # continue only if at least 1 evolution is found
       if (length(chain$evolves_to) > 0) {
-        evolution <- chain$evolves_to$species.name
-        evolution <- stringr::str_to_title(evolution) # title case
-        minLevel <- chain$evolves_to$evolution_details[[1]]$min_level
-        trigger <- chain$evolves_to$evolution_details[[1]]$trigger.name
+        # handle Eevee that has 3 base evolutions instead of 1
+        if (selected() == "Eevee") {
+          evolutions <- chain$evolves_to$species.name[c(1:3)]
+          evolutions <- stringr::str_to_title(evolutions) # title case
+          # the timeline
+          tablerTimeline(
+            lapply(seq_along(evolutions), function(i) {
+              # take the sprite
+              if (shiny()) {
+                evolSprite <- mainData[[evolutions[[i]]]]$sprites$front_shiny
+              } else {
+                evolSprite <- mainData[[evolutions[[i]]]]$sprites$front_default
+              }
+              trigger <- chain$evolves_to$evolution_details[[i]]$trigger.name
+              minLevel <- chain$evolves_to$evolution_details[[i]]$min_level
 
-        # take the sprite
-        if (shiny()) {
-          evolSprite <- mainData[[evolution]]$sprites$front_shiny
-        } else {
-          evolSprite <- mainData[[evolution]]$sprites$front_default
-        }
+              # recover item
+              if (trigger != "level-up") {
+                if (trigger == "use-item") {
+                  triggerUrl <- chain$evolves_to$evolution_details[[i]]$item.url
+                  # fromJSON could be a bottlneck here (however this only applies for Eevee)
+                  triggerImage <- fromJSON(triggerUrl)$sprites$default
+                  triggerName <- chain$evolves_to$evolution_details[[i]]$item.name
+                } else {
+                  triggerUrl <- chain$evolves_to$evolution_details[[i]]$trigger.url
+                  # fromJSON could be a bottlneck here (however this only applies for Eevee)
+                  triggerImage <- fromJSON(triggerUrl)$sprites$default
+                  triggerName <- chain$evolves_to$evolution_details[[i]]$trigger.name
+                }
+              }
 
-        # the timeline
-        tablerTimeline(
-          tablerTimelineItem(
-            title = paste0("Evolves to: ", evolution),
-            status = "green",
-            date = paste0("At level: ", minLevel),
-            img(src = evolSprite),
-            trigger
+              tablerTimelineItem(
+                title = paste0("Evolves to: ", evolutions[[i]]),
+                status = "green",
+                date = if (trigger == "level-up") paste0("At level: ", minLevel),
+                img(src = evolSprite),
+                if (trigger == "level-up") trigger else tagList(triggerName, img(src = triggerImage))
+              )
+
+            })
           )
-        )
+        } else {
+          evolution <- chain$evolves_to$species.name
+          evolution <- stringr::str_to_title(evolution) # title case
+          minLevel <- chain$evolves_to$evolution_details[[1]]$min_level
+          trigger <- chain$evolves_to$evolution_details[[1]]$trigger.name
+
+          # take the sprite
+          if (shiny()) {
+            evolSprite <- mainData[[evolution]]$sprites$front_shiny
+          } else {
+            evolSprite <- mainData[[evolution]]$sprites$front_default
+          }
+
+          # recover item
+          if (trigger != "level-up") {
+            if (trigger == "use-item") {
+              triggerUrl <- chain$evolves_to$evolution_details[[1]]$item.url
+              # fromJSON could be a bottlneck here (however this only applies for Eevee)
+              triggerImage <- fromJSON(triggerUrl)$sprites$default
+              triggerName <- chain$evolves_to$evolution_details[[1]]$item.name
+            } else {
+              triggerUrl <- chain$evolves_to$evolution_details[[1]]$trigger.url
+              # fromJSON could be a bottlneck here (however this only applies for Eevee)
+              triggerImage <- fromJSON(triggerUrl)$sprites$default
+              triggerName <- chain$evolves_to$evolution_details[[1]]$trigger.name
+            }
+          }
+
+          # in the first gen, pokemon cannot evolve when wearing an item
+          # this was introduced later.
+          held_item  <- chain$evolves_to$evolution_details[[1]]$held_item.url
+          if (!is.null(held_item)) {
+            tablerAlert(
+              title = "Alert",
+              "This Pokemon cannot evolve in the first generation.",
+              icon = "alert-triangle",
+              status = "danger"
+            )
+          } else {
+            # the timeline
+            tablerTimelineItem(
+              title = paste0("Evolves to: ", evolution),
+              status = "green",
+              date = if (trigger == "level-up") paste0("At level: ", minLevel),
+              img(src = evolSprite),
+              if (trigger == "level-up") trigger else tagList(triggerName, img(src = triggerImage))
+            )
+          }
+        }
       }
     }
 
