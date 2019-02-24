@@ -40,87 +40,57 @@ pokeStats <- function(input, output, session, mainData, details, skills, selecte
 
   ns <- session$ns
 
-  # TO DO: add capture rate/ growth rate
+  # basic stats
+  outputNames <- c(
+    "pokeGrowth",
+    "pokeCapture",
+    "pokeHappy",
+    "pokeHeight",
+    "pokeWeight",
+    "baseXp"
+  )
 
-  # growth rate
-  output$pokeGrowth <- renderUI({
+  basicStats <- reactive({
 
     req(!is.null(selected()))
 
-    tablerStatCard(
-      value = switch(
-        details[[selected()]]$growth_rate$name,
-        "slow" = tablerProgress(value = 0, size = "xs", status = "danger"),
-        "medium-slow" = tablerProgress(value = 25, size = "xs", status = "warning"),
-        "medium" = tablerProgress(value = 60, size = "xs", status = "yellow"),
-        "fast" = tablerProgress(value = 90, size = "xs", status = "success")
+    list(
+      values = tagList(
+        switch(
+          details[[selected()]]$growth_rate$name,
+          "slow" = tablerProgress(value = 0, size = "xs", status = "danger"),
+          "medium-slow" = tablerProgress(value = 25, size = "xs", status = "warning"),
+          "medium" = tablerProgress(value = 60, size = "xs", status = "yellow"),
+          "fast" = tablerProgress(value = 90, size = "xs", status = "success")
+        ),
+        details[[selected()]]$capture_rate,
+        details[[selected()]]$base_happiness,
+        mainData[[selected()]]$height * 10,
+        mainData[[selected()]]$weight / 10,
+        mainData[[selected()]]$base_experience
       ),
-      title = "Growth Rate",
-      width = 12
+      titles = c(
+        "Growth Rate",
+        "Capture Rate",
+        "Base Happiness",
+        "Height in cms",
+        "Weight in Kgs",
+        "Base Xp"
+      )
     )
   })
 
-  # capture rate
-  output$pokeCapture <- renderUI({
+  lapply(seq_along(outputNames), FUN = function(i) {
+    output[[outputNames[[i]]]] <- renderUI({
 
-    req(!is.null(selected()))
-
-    tablerStatCard(
-      value = details[[selected()]]$capture_rate,
-      title = "Capture Rate",
-      width = 12
-    )
+      tablerStatCard(
+        value = basicStats()$values[[i]],
+        title = basicStats()$titles[[i]],
+        width = 12
+      )
+    })
   })
 
-  # happiness
-  output$pokeHappy <- renderUI({
-
-    req(!is.null(selected()))
-
-    tablerStatCard(
-      value = details[[selected()]]$base_happiness,
-      title = "Base Happiness",
-      width = 12
-    )
-  })
-
-  # pokemon height
-  output$pokeHeight <- renderUI({
-
-    req(!is.null(selected()))
-
-    tablerStatCard(
-      value = paste(0, mainData[[selected()]]$weight, sep = "."),
-      title = "Height in cms",
-      width = 12
-    )
-  })
-
-
-  # pokemon weight
-  output$pokeWeight <- renderUI({
-
-    req(!is.null(selected()))
-
-    tablerStatCard(
-      value = mainData[[selected()]]$weight / 10,
-      title = "Weight in Kgs",
-      width = 12
-    )
-  })
-
-
-  # base experience
-  output$baseXp <- renderUI({
-
-    req(!is.null(selected()))
-
-    tablerStatCard(
-      value = mainData[[selected()]]$base_experience,
-      title = "Base Xp",
-      width = 12
-    )
-  })
 
   # generate radar chart for pokemons
   output$pokeStats <- renderEcharts4r({
