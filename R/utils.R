@@ -91,6 +91,15 @@
 #names(pokeEvolutions) <- pokeNames
 #saveRDS(pokeEvolutions, file = "pokeEvolutions")
 
+
+# preprocess attacks
+#firstGen <- readRDS("firstGen")
+#pokeAttacks <- mclapply(seq_along(firstGen$moves$url), function(i) {
+#  fromJSON(firstGen$moves$url[[i]])
+#})
+#names(pokeAttacks) <- firstGen$moves$name
+#saveRDS(pokeAttacks, file = "pokeAttacks")
+
 #
 # # In what follows we need data only for the first generation of pokemons
 # firstGen <- fromJSON("https://pokeapi.co/api/v2/generation/1/")

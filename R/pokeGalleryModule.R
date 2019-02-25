@@ -31,18 +31,18 @@ pokeGalleryUi <- function(id) {
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
-#' @param raw_data Object containing the main pokemon data.
-#' @param raw_details Object containing extra pokemon details.
+#' @param mainData Object containing the main pokemon data.
+#' @param details Object containing extra pokemon details.
 #' @param shiny Whether to display a shiny version. FALSE by default.
 #' @export
-pokeGallery <- function(input, output, session, raw_data, raw_details, shiny) {
+pokeGallery <- function(input, output, session, mainData, details, shiny) {
 
-  range <- reactive(raw_data[input$pokeRange[1]:input$pokeRange[2]])
+  range <- reactive(mainData[input$pokeRange[1]:input$pokeRange[2]])
 
   output$poke_gallery <- renderUI({
     fluidRow(
       lapply(seq_along(range()), FUN = function(i) {
-        tablerMediaCard(
+        cardTag <- tablerMediaCard(
           title = range()[[i]]$name,
           date = NULL,
           href = NULL,
@@ -57,8 +57,10 @@ pokeGallery <- function(input, output, session, raw_data, raw_details, shiny) {
             range()[[i]]$sprites$back_shiny
           },
           width = 4,
-          "Other elements"
+          paste0("Pokemon n°: ", range()[[i]]$id)
         )
+        cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
+        cardTag
       })
     )
   })

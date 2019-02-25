@@ -108,7 +108,7 @@ pokeOther <- function(input, output, session, mainData, details) {
     names(df) <- c("type", "n")
     df %>%
       e_charts(type) %>%
-      e_bar(n) %>%
+      e_pie(n, roseType = "radius") %>%
       e_tooltip()
   })
 

@@ -10,14 +10,16 @@ library(dplyr)
 
 source("pokeNames.R")
 
+# main data
 pokeMain <- readRDS("pokeMain")
 pokeDetails <- readRDS("pokeDetails")
-firstGen <- readRDS("firstGen")
 
+# subdata from main
 pokeLocations <- readRDS("pokeLocations")
 pokeMoves <- readRDS("pokeMoves")
 pokeTypes <- readRDS("pokeTypes")
 pokeEvolutions <- readRDS("pokeEvolutions")
+pokeAttacks <- readRDS("pokeAttacks")
 
 # shiny app code
 shiny::shinyApp(
@@ -35,6 +37,11 @@ shiny::shinyApp(
           tabName = "PokeGroup",
           icon = "box",
           "PokeGroup"
+        ),
+        tablerNavMenuItem(
+          tabName = "PokeAttacks",
+          icon = "box",
+          "PokeAttacks"
         ),
         tablerNavMenuItem(
           tabName = "PokeOther",
@@ -65,6 +72,10 @@ shiny::shinyApp(
       # custom shinyWidgets skins
       chooseSliderSkin("Nice"),
 
+      # use shinyEffects
+      setShadow(class = "galleryCard"),
+      setZoom(class = "galleryCard"),
+
       tablerTabItems(
         tablerTabItem(
           tabName = "PokeFilter",
@@ -86,6 +97,10 @@ shiny::shinyApp(
         tablerTabItem(
           tabName = "PokeGroup",
           pokeGalleryUi(id = "gallery")
+        ),
+        tablerTabItem(
+          tabName = "PokeAttacks",
+          pokeAttackUi(id = "attacks")
         ),
         tablerTabItem(
           tabName = "PokeOther",
@@ -157,11 +172,19 @@ shiny::shinyApp(
     callModule(
       module = pokeGallery,
       id = "gallery",
-      raw_data = pokeMain,
-      raw_details = pokeDetails,
+      mainData = pokeMain,
+      details = pokeDetails,
       shiny = main$pokeShiny
     )
 
+    # pokemon attacks
+    callModule(
+      module = pokeAttack,
+      id = "attacks",
+      attacks = pokeAttacks
+    )
+
+    # other elements
     callModule(
       module = pokeOther,
       id = "other",
