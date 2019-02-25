@@ -43,7 +43,7 @@ shiny::shinyApp(
         )
       ),
 
-      pokeDataUi(id = "data"),
+      pokeInputUi(id = "input"),
 
       tablerDropdown(
         tablerDropdownItem(
@@ -97,14 +97,14 @@ shiny::shinyApp(
   server = function(input, output, session) {
 
     # main module (data)
-    main <- callModule(module = pokeData, id = "data", raw_data = pokeMain, raw_details = pokeDetails)
+    main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails)
 
     # infos module
     callModule(
       module = pokeInfos,
       id = "infos",
-      mainData = main$pokemons,
-      details = main$details,
+      mainData = pokeMain,
+      details = pokeDetails,
       selected = main$pokeSelect,
       shiny = main$pokeShiny
     )
@@ -113,8 +113,8 @@ shiny::shinyApp(
     callModule(
       module = pokeStats,
       id = "stats",
-      mainData = main$pokemons,
-      details = main$details,
+      mainData = pokeMain,
+      details = pokeDetails,
       selected = main$pokeSelect
     )
 
@@ -138,8 +138,8 @@ shiny::shinyApp(
     callModule(
       module = pokeEvolve,
       id = "evol",
-      mainData = main$pokemons,
-      details = main$details,
+      mainData = pokeMain,
+      details = pokeDetails,
       selected = main$pokeSelect,
       shiny = main$pokeShiny,
       evolutions = pokeEvolutions

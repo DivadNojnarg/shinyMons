@@ -4,7 +4,7 @@
 #'
 #' @return a \code{shiny::\link[shiny]{tagList}} containing UI elements
 #' @export
-pokeDataUi <- function(id) {
+pokeInputUi <- function(id) {
   ns <- shiny::NS(id)
   uiOutput(ns("pokeChoice"))
 }
@@ -17,18 +17,15 @@ pokeDataUi <- function(id) {
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
-#' @param raw_data Object containing the main pokemon data.
-#' @param raw_details Object containing extra pokemon details.
+#' @param mainData Object containing the main pokemon data.
+#' @param details Object containing extra pokemon details.
 #' @export
-pokeData <- function(input, output, session, raw_data, raw_details) {
+pokeInput <- function(input, output, session, mainData, details) {
 
   ns <- session$ns
 
-  # filter pokemon data according to the slider input
-  pokemons <- raw_data
-  details <- raw_details
-  pokeNames <- names(pokemons)
-  sprites <- vapply(seq_along(pokeNames), FUN = function(i) pokemons[[i]]$sprites$front_default, FUN.VALUE = character(1))
+  pokeNames <- names(mainData)
+  sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
 
   # pokemon selector
   output$pokeChoice <- renderUI({
@@ -60,10 +57,6 @@ pokeData <- function(input, output, session, raw_data, raw_details) {
 
   return(
     list(
-      pokemons = pokemons,
-      details = details,
-      pokeNames = pokeNames,
-      sprites = sprites,
       pokeSelect = reactive(input$pokeSelect),
       pokeShiny = reactive(input$pokeShiny)
     )

@@ -76,7 +76,7 @@ pokeOther <- function(input, output, session, mainData, details) {
         prettyRadioButtons(
           inputId = ns("distribChoice"),
           label = "Choose a distribution:",
-          choices = c("Height", "Weight"),
+          choices = c("Height (cm)" = "Height", "Weight (kg)" = "Weight"),
           selected = "Height",
           animation = "pulse",
           inline = TRUE
@@ -108,14 +108,14 @@ pokeOther <- function(input, output, session, mainData, details) {
     names(df) <- c("type", "n")
     df %>%
       e_charts(type) %>%
-      e_histogram(n) %>%
+      e_bar(n) %>%
       e_tooltip()
   })
 
 
   output$poke_types_distrib <- renderUI({
     tablerCard(
-      title = paste("All Pokemons Types Distribution"),
+      title = paste("All Pokemons Types"),
       options = NULL,
       footer = NULL,
       status = "info",
