@@ -6,9 +6,9 @@
 #' @export
 pokeOtherUi <- function(id) {
   ns <- shiny::NS(id)
-  tagList(
-    uiOutput(ns("poke_distrib")),
-    uiOutput(ns("poke_types_distrib"))
+  fluidRow(
+    uiOutput(ns("poke_distrib"), class = "col-sm-6"),
+    uiOutput(ns("poke_types_distrib"), class = "col-sm-6")
   )
 }
 

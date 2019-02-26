@@ -7,19 +7,7 @@
 pokeAttackUi <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    fluidRow(
-      column(
-        width = 12,
-        align = "center",
-        multiInput(
-          inputId = ns("pokeAttackSelect"),
-          label = "Select pokemon abilities:",
-          choices = names(pokeAttacks),
-          selected = names(pokeAttacks)[c(1:10)],
-          width = "350px"
-        )
-      )
-    ),
+    uiOutput(ns("poke_attack_select")),
     uiOutput(ns("poke_attack"))
   )
 }
@@ -35,6 +23,24 @@ pokeAttackUi <- function(id) {
 pokeAttack <- function(input, output, session, attacks) {
 
   ns <- session$ns
+
+
+  output$poke_attack_select <- renderUI({
+    fluidRow(
+      column(
+        width = 12,
+        align = "center",
+        multiInput(
+          inputId = ns("pokeAttackSelect"),
+          label = "Select pokemon abilities:",
+          choices = names(attacks),
+          selected = names(attacks)[c(1:10)],
+          width = "350px"
+        )
+      )
+    )
+  })
+
 
   output$poke_attack <- renderUI({
 

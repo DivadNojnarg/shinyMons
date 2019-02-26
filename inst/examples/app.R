@@ -69,6 +69,25 @@ shiny::shinyApp(
     title = "The fucking Pokemon App",
     body = tablerDashBody(
 
+      # custom jquery to hide some inputs based on the selected tag
+      # actually tablerDash would need a custom input/output binding
+      # to solve this issue once for all
+      tags$head(
+        tags$script(
+          "$(function () {
+            $('#mymenu .nav-item a').click(function(){
+              var tab = $(this).attr('id');
+              console.log(tab);
+              if (tab == 'tab-PokeFilter' || tab == 'tab-PokeGroup') {
+                $('#input-pokeChoice').show();
+              } else {
+                $('#input-pokeChoice').hide();
+              }
+            });
+           });"
+         )
+      ),
+
       # custom shinyWidgets skins
       chooseSliderSkin("Nice"),
 

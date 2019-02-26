@@ -76,8 +76,8 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
         "Growth Rate",
         "Capture Rate",
         "Base Happiness",
-        "Height in cms",
-        "Weight in Kgs",
+        "Height in cm",
+        "Weight in Kg",
         "Base Xp"
       )
     )
