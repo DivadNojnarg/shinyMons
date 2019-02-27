@@ -6,7 +6,7 @@
 #' @export
 pokeMoveUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_moves"), class = "col-sm-12")
+  uiOutput(ns("poke_moves"), class = "col-sm-8")
 }
 
 

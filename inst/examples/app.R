@@ -7,6 +7,8 @@ library(echarts4r)
 library(parallel)
 library(stringr)
 library(dplyr)
+library(pushbar)
+library(visNetwork)
 
 source("pokeNames.R")
 
@@ -44,6 +46,11 @@ shiny::shinyApp(
           "PokeAttacks"
         ),
         tablerNavMenuItem(
+          tabName = "PokeNetwork",
+          icon = "box",
+          "PokeNetwork"
+        ),
+        tablerNavMenuItem(
           tabName = "PokeOther",
           icon = "box",
           "PokeOther"
@@ -68,6 +75,9 @@ shiny::shinyApp(
     ),
     title = "The fucking Pokemon App",
     body = tablerDashBody(
+
+      # load pushbar dependencies
+      pushbar_deps(),
 
       # custom jquery to hide some inputs based on the selected tag
       # actually tablerDash would need a custom input/output binding
@@ -110,8 +120,10 @@ shiny::shinyApp(
               pokeStatsUi(id = "stats")
             )
           ),
-          pokeMoveUi(id = "moves"),
-          pokeLocationUi(id = "location")
+          fluidRow(
+            pokeMoveUi(id = "moves"),
+            pokeLocationUi(id = "location")
+          )
         ),
         tablerTabItem(
           tabName = "PokeGroup",
@@ -120,6 +132,10 @@ shiny::shinyApp(
         tablerTabItem(
           tabName = "PokeAttacks",
           pokeAttackUi(id = "attacks")
+        ),
+        tablerTabItem(
+          tabName = "PokeNetwork",
+          pokeNetworkUi(id = "network")
         ),
         tablerTabItem(
           tabName = "PokeOther",
@@ -144,29 +160,11 @@ shiny::shinyApp(
     )
 
     # stats module
-    callModule(
-      module = pokeStats,
-      id = "stats",
-      mainData = pokeMain,
-      details = pokeDetails,
-      selected = main$pokeSelect
-    )
-
+    callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
-    callModule(
-      module = pokeType,
-      id = "types",
-      types = pokeTypes,
-      selected = main$pokeSelect
-    )
-
+    callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
     # moves module
-    callModule(
-      module = pokeMove,
-      id = "moves",
-      selected = main$pokeSelect,
-      moves = pokeMoves
-    )
+    callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 
     # evolutions module
     callModule(
@@ -180,36 +178,15 @@ shiny::shinyApp(
     )
 
     # location
-    callModule(
-      module = pokeLocation,
-      id = "location",
-      selected = main$pokeSelect,
-      locations = pokeLocations
-    )
-
+    callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
     # gallery module
-    callModule(
-      module = pokeGallery,
-      id = "gallery",
-      mainData = pokeMain,
-      details = pokeDetails,
-      shiny = main$pokeShiny
-    )
-
+    callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
-    callModule(
-      module = pokeAttack,
-      id = "attacks",
-      attacks = pokeAttacks
-    )
-
+    callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
+    # Network module
+    callModule(module = pokeNetwork, id = "network", mainData = pokeMain)
     # other elements
-    callModule(
-      module = pokeOther,
-      id = "other",
-      mainData = pokeMain,
-      details = pokeDetails
-    )
+    callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
   }
 )
