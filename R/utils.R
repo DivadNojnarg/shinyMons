@@ -113,3 +113,140 @@
 #
 # # locations (maybe useful)
 # kantoLocations <- fromJSON(firstGen$main_region$url)
+
+
+# build pokemon families (preprocess)
+source("pokeNames.R")
+pokeMain <- readRDS("pokeMain")
+family <-  vector("list", length = 9)
+evolutions <- readRDS("pokeEvolutions")
+details <- readRDS("pokeDetails")
+
+# parallel for loop
+for (i in 1:9) {
+
+  print(i)
+  # we start to build Bulbasaur's family and we know it has 2 evolutions
+  # this is cheating ;)
+  if (i == 1) {
+
+    starter <- pokeNames[[i]]
+    evolution_1 <- evolutions[[i]]$evolves_to$species.name
+
+    # check for the first evolution
+    if (!is.null(evolution_1)) {
+      evolution_2 <- evolutions[[i]]$evolves_to$evolves_to[[1]]$species.name
+      # check for second evolution
+      if (!is.null(evolution_2)) {
+        family[[i]]$from <- rep(starter, 2)
+        family[[i]]$to <- stringr::str_to_title(c(evolution_1, evolution_2))
+      }
+    } else {
+      family[[i]] <- NULL
+    }
+
+    # after building the first family
+  } else {
+    starter <- pokeNames[[i]]
+
+    # check whether the starter is already included in the previous family
+    # except the current one
+    for (j in 1:(i-1)) {
+      print(starter %in% unlist(family[[j]]))
+      if (!is.na(family[j])) {
+        if (starter %in% unlist(family[[j]])) {
+          # then it means that this pokemon is included in the previous family
+          # we do not include it
+          family[[j + 1]] <- NA
+        } else {
+          # need to check for Eevee's family
+          if (starter == "Eevee") {
+            family[[i]]$from <- rep(starter, 3)
+            family[[i]]$to <- evolutions[[i]]$evolves_to$species.name[c(1:3)]
+          } else if (starter == "Vaporeon") {
+            family[[i]] <- NA
+          } else if (starter == "Jolteon") {
+            family[[i]] <- NA
+          } else if (starter == "Flareon") {
+            family[[i]] <- NA
+          } else {
+            evolution_1 <- evolutions[[i]]$evolves_to$species.name
+
+            # check for the first evolution
+            if (!is.null(evolution_1)) {
+              evolution_1 <- stringr::str_to_title(evolution_1)
+
+              # handle the case of multiple evolutions at first stage
+              # not possible in the first gen
+              if (length(evolution_1) > 1) {
+                evolution_1 <- evolution_1[1]
+              }
+              # check if the first evolution belongs to the first gen
+              if (!evolution_1 %in% pokeNames) {
+                family[[i]] <- NA
+              } else {
+                evolution_2 <- evolutions[[i]]$evolves_to$evolves_to[[1]]$species.name
+
+                # check for second evolution,
+                if (!is.null(evolution_2)) {
+                  # also look for a third evolution
+                  # which is not possible in the first gen
+                  if (length(evolution_2) == 1) {
+                    evolution_2 <- stringr::str_to_title(evolution_2)
+                    # check if evolution 2 belongs to the first gen
+                    if (evolution_2 %in% pokeNames) {
+                      family[[i]]$from <- rep(starter, 2)
+                      family[[i]]$to <- c(evolution_1, evolution_2)
+                    } else {
+                      family[[i]]$from <- starter
+                      family[[i]]$to <- evolution_1
+                    }
+                  } else {
+                    evolution_2 <- stringr::str_to_title(evolution_2[1])
+                    # check if evolution 2 belongs to the first gen
+                    if (evolution_2 %in% pokeNames) {
+                      family[[i]]$from <- rep(starter, 2)
+                      family[[i]]$to <- c(evolution_1, evolution_2)
+                    } else {
+                      family[[i]]$from <- starter
+                      family[[i]]$to <- evolution_1
+                    }
+                  }
+                } else {
+                  family[[i]]$from <- starter
+                  family[[i]]$to <- evolution_1
+                }
+              }
+            } else {
+              family[[i]] <- NA
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# only get other family members
+family <- lapply(seq_along(pokeNames), function(i) {
+  if (pokeNames[[i]] %in% family[[i]]) {
+    id <- match(pokeNames[[i]], family[[i]])
+    if (!is.na(id)) family[[i]] <- family[[i]][-id]
+  }
+  unique(family[[i]])
+})
+
+# transform name in ids
+family <- lapply(seq_along(pokeNames), function(i) {
+  if (!is.na(family[i])) {
+    unlist(
+      lapply(seq_along(family[[i]]), function(j) {
+        pokeId <- family[[i]][[j]]
+        family[[i]][j] <- pokeMain[[pokeId]]$id
+      })
+    )
+  }
+})
+
+
+saveRDS(family, file = "pokeEdges")

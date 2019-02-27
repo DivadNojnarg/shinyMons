@@ -4,7 +4,7 @@
 \alias{pokeNetwork}
 \title{Server module for generating the pokeNetwork section}
 \usage{
-pokeNetwork(input, output, session, mainData)
+pokeNetwork(input, output, session, mainData, families)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -13,7 +13,9 @@ pokeNetwork(input, output, session, mainData)
 
 \item{session}{Shiny session.}
 
-\item{attacks}{Data containing all pokemon abilities.}
+\item{mainData}{All pokemon main data.}
+
+\item{families}{List containg all pokemon connections.}
 }
 \description{
 Server module for generating the pokeNetwork section

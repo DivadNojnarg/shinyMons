@@ -22,6 +22,7 @@ pokeMoves <- readRDS("pokeMoves")
 pokeTypes <- readRDS("pokeTypes")
 pokeEvolutions <- readRDS("pokeEvolutions")
 pokeAttacks <- readRDS("pokeAttacks")
+pokeEdges <- readRDS("pokeEdges")
 
 # shiny app code
 shiny::shinyApp(
@@ -184,7 +185,7 @@ shiny::shinyApp(
     # pokemon attacks
     callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # Network module
-    callModule(module = pokeNetwork, id = "network", mainData = pokeMain)
+    callModule(module = pokeNetwork, id = "network", mainData = pokeMain, families = pokeEdges)
     # other elements
     callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 

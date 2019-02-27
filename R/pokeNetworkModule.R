@@ -16,7 +16,7 @@ pokeNetworkUi <- function(id) {
       # content
       h4("Hi")
     ),
-    visNetworkOutput(ns("pokeNet"))
+    visNetworkOutput(ns("pokeNet"), height = "100%")
   )
 }
 
@@ -26,9 +26,10 @@ pokeNetworkUi <- function(id) {
 #' @param input Shiny inputs.
 #' @param output Shiny outputs.
 #' @param session Shiny session.
-#' @param attacks Data containing all pokemon abilities.
+#' @param mainData All pokemon main data.
+#' @param families List containg all pokemon connections.
 #' @export
-pokeNetwork <- function(input, output, session, mainData) {
+pokeNetwork <- function(input, output, session, mainData, families) {
 
   ns <- session$ns
 
@@ -45,25 +46,39 @@ pokeNetwork <- function(input, output, session, mainData) {
   # Network: nodes, edges, events, ...
   #-------------------------------------------------------------------------
 
-  pokeNames <- names(mainData)
-  sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
-
-  output$pokeNet <- renderVisNetwork({
-
-    nodes <- data.frame(
+  nodes <- reactive({
+    data.frame(
       id = 1:length(mainData),
       shape = rep("image", length(mainData)),
       image = sprites,
       label = pokeNames,
       fixed = list("x" = FALSE, "y" = FALSE),
       size = rep(100, length(mainData)),
-      #physics = rep(FALSE, 16)
+      physics = rep(TRUE, length(mainData)),
       hidden = rep(FALSE, length(mainData)),
       stringsAsFactors = FALSE
     )
-    edges <- NULL
+  })
 
-    visNetwork(nodes, edges, width = "100%") %>%
+  edges <- reactive({
+    data.frame(
+      width = 10,
+      color = list(color = c(rep("black", 181)), highlight = "yellow"),
+      dashes = TRUE,
+      smooth = TRUE,
+      hidden = FALSE,
+      from = 1:181,
+      to = unlist(families),
+      stringsAsFactors = FALSE
+    )
+  })
+
+  pokeNames <- names(mainData)
+  sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
+
+  output$pokeNet <- renderVisNetwork({
+
+    visNetwork(nodes(), edges(), width = "100%") %>%
       visEvents(selectNode = paste0("function(nodes) { Shiny.setInputValue('", ns("current_node_id"), "', nodes.nodes); }")) %>%
       visEvents(deselectNode = paste0(
         "function(nodes) {
@@ -85,7 +100,8 @@ pokeNetwork <- function(input, output, session, mainData) {
         clickToUse = FALSE,
         manipulation = FALSE, # to manually add nodes and edges. Could be interesting ...
         collapse = FALSE,
-        autoResize = TRUE
+        autoResize = TRUE,
+        nodesIdSelection = TRUE
       ) %>%
       visInteraction(
         hover = TRUE,
@@ -97,6 +113,27 @@ pokeNetwork <- function(input, output, session, mainData) {
         zoomView = TRUE,
         navigationButtons = FALSE,
         selectable = TRUE
-      )
+      ) %>%
+      visPhysics(stabilization = TRUE, enabled = TRUE)
+  })
+
+
+  # increase the current node size on selection
+  observeEvent(input$current_node_id, {
+
+    selected_node <- input$current_node_id
+
+    # javascript returns null and not NULL like R
+    if (!identical(selected_node, "null")) {
+      nodes()$size[selected_node] <- nodes()$size[1] * 10
+      nodes()$hidden[-selected_node] <- rep(TRUE, length(nodes()$hidden) - 1)
+      visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
+        visUpdateNodes(nodes = nodes())
+    } else {
+      nodes()$size <- 100
+      nodes()$hidden <- rep(FALSE, length(nodes()$hidden))
+      visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
+        visUpdateNodes(nodes = nodes())
+    }
   })
 }
