@@ -88,7 +88,6 @@ shiny::shinyApp(
           "$(function () {
             $('#mymenu .nav-item a').click(function(){
               var tab = $(this).attr('id');
-              console.log(tab);
               if (tab == 'tab-PokeFilter' || tab == 'tab-PokeGroup') {
                 $('#input-pokeChoice').show();
               } else {

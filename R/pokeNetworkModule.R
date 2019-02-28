@@ -16,7 +16,7 @@ pokeNetworkUi <- function(id) {
       # content
       h4("Hi")
     ),
-    visNetworkOutput(ns("pokeNet"), height = "100%")
+    visNetworkOutput(ns("pokeNet"), height = "900px")
   )
 }
 
@@ -63,12 +63,12 @@ pokeNetwork <- function(input, output, session, mainData, families) {
   edges <- reactive({
     data.frame(
       width = 10,
-      color = list(color = c(rep("black", 181)), highlight = "yellow"),
+      color = list(color = c(rep("black", length(families$from))), highlight = "yellow"),
       dashes = TRUE,
       smooth = TRUE,
       hidden = FALSE,
-      from = 1:181,
-      to = unlist(families),
+      from = families$from,
+      to = families$to,
       stringsAsFactors = FALSE
     )
   })
@@ -80,6 +80,8 @@ pokeNetwork <- function(input, output, session, mainData, families) {
 
     visNetwork(nodes(), edges(), width = "100%") %>%
       visEvents(selectNode = paste0("function(nodes) { Shiny.setInputValue('", ns("current_node_id"), "', nodes.nodes); }")) %>%
+      # add the doubleclick for nodes (zoom view)
+      visNetwork::visEvents(doubleClick = paste0("function(nodes) { Shiny.setInputValue('", ns("current_node_id_zoom"), "', nodes.nodes); }")) %>%
       visEvents(deselectNode = paste0(
         "function(nodes) {
           Shiny.setInputValue('", ns("current_node_id"), "', 'null');
@@ -122,18 +124,19 @@ pokeNetwork <- function(input, output, session, mainData, families) {
   observeEvent(input$current_node_id, {
 
     selected_node <- input$current_node_id
+    nodes <- nodes()
 
     # javascript returns null and not NULL like R
     if (!identical(selected_node, "null")) {
-      nodes()$size[selected_node] <- nodes()$size[1] * 10
-      nodes()$hidden[-selected_node] <- rep(TRUE, length(nodes()$hidden) - 1)
+      nodes$size[selected_node] <- nodes$size[1] * 5
+      #nodes$hidden[-selected_node] <- rep(TRUE, length(nodes()$hidden) - 1)
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
-        visUpdateNodes(nodes = nodes())
+        visUpdateNodes(nodes = nodes)
     } else {
-      nodes()$size <- 100
-      nodes()$hidden <- rep(FALSE, length(nodes()$hidden))
+      nodes$size <- 100
+      #nodes$hidden <- rep(FALSE, length(nodes$hidden))
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
-        visUpdateNodes(nodes = nodes())
+        visUpdateNodes(nodes = nodes)
     }
   })
 }
