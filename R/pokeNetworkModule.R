@@ -7,18 +7,143 @@
 pokeNetworkUi <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("open"), "Network Options"),
+    fluidRow(
+      column(
+        width = 1,
+        align = "left",
+        actionButton(ns("open"), "Network Options")
+      ),
+      column(
+        width = 11,
+        align = "center",
+        visNetworkOutput(ns("pokeNet"), height = "900px")
+      )
+    ),
     pushbar(
-      #style = "padding:20px;",
       from = "bottom",
       id = ns("myPushbar"),
-
       # content
-      h4("Hi")
-    ),
-    visNetworkOutput(ns("pokeNet"), height = "900px")
+      fluidRow(
+        column(
+          width = 3,
+          align = "center",
+          # nodes shape
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("pokeNodesShape"),
+            label = "Nodes shape:",
+            thick = TRUE,
+            inline = TRUE,
+            selected = "image",
+            choices = c("Circles" = "circle", "Sprites" = "image"),
+            animation = "pulse",
+            status = "info"
+          ),
+          # can we drag nodes?
+          shinyWidgets::prettySwitch(
+            inputId = ns("pokeNodesDrag"),
+            label = "Drag nodes?",
+            value = TRUE,
+            status = "default",
+            slim = FALSE,
+            fill = TRUE,
+            bigger = TRUE,
+            inline = FALSE,
+            width = NULL
+          )
+        ),
+        column(
+          width = 3,
+          align = "center",
+          # nodes size
+          shiny::numericInput(
+            inputId = ns("pokeNodesSize"),
+            label = "Size of nodes:",
+            value = 200,
+            min = 100,
+            max = NA,
+            step = 10,
+            width = NULL
+          ),
+          # edges width
+          shiny::numericInput(
+            inputId = ns("pokeEdgesWidth"),
+            label = "Width of edges:",
+            value = 10,
+            min = 5,
+            max = NA,
+            step = 1,
+            width = NULL
+          )
+        ),
+        column(
+          width = 3,
+          align = "center",
+          prettyToggle(
+            inputId = ns("dragView"),
+            label_on = "DragView on",
+            label_off = "DragView off",
+            value = TRUE,
+            status_on = "success",
+            status_off = "danger",
+            shape = "curve",
+            outline = TRUE,
+            animation = "pulse"
+          ),
+          prettyToggle(
+            inputId = ns("zoomView"),
+            label_on = "ZoomView on",
+            label_off = "ZoomView off",
+            value = TRUE,
+            status_on = "success",
+            status_off = "danger",
+            shape = "curve",
+            outline = TRUE,
+            animation = "pulse"
+          ),
+          shinyWidgets::prettySwitch(
+            inputId = ns("nodesInterp"),
+            label = "Nodes interpolation?",
+            value = FALSE,
+            status = "primary",
+            slim = TRUE,
+            fill = FALSE,
+            bigger = TRUE,
+            inline = FALSE
+          )
+        ),
+        column(
+          width = 3,
+          align = "center",
+          sliderInput(
+            inputId = ns("nodeDistance"),
+            label = "Distance between nodes:",
+            min = 50,
+            value = 500,
+            max = 500
+          ),
+          sliderInput(
+            inputId = ns("centralGravity"),
+            label = "Central gravity:",
+            min = 0,
+            value = 0,
+            max = 1
+          ),
+          sliderInput(
+            inputId = ns("springLength"),
+            label = "Spring lenght:",
+            min = 50,
+            value = 200,
+            max = 600
+          )
+        )
+      )
+    )
   )
 }
+
+
+
+pushBarContent <- NULL
 
 
 #' Server module for generating the pokeNetwork section
@@ -28,18 +153,36 @@ pokeNetworkUi <- function(id) {
 #' @param session Shiny session.
 #' @param mainData All pokemon main data.
 #' @param families List containg all pokemon connections.
+#' @param groups List containing data for grouping pokemons by evolution family.
+#' @param mobile Shiny input checking if the app is running on a cellphone/tablet.
 #' @export
-pokeNetwork <- function(input, output, session, mainData, families) {
+pokeNetwork <- function(input, output, session, mainData, families, groups, mobile) {
 
   ns <- session$ns
 
   #-------------------------------------------------------------------------
   # Pushbar setup, events, ...
   #-------------------------------------------------------------------------
-  setup_pushbar(session, blur = TRUE) # setup
+  setup_pushbar(blur = TRUE, overlay = TRUE) # setup
+
+  # the pushbar orientation depends if we are on mobile or not...
+  # output$networkPushbar <- renderUI({
+  #   req(!is.null(mobile()))
+  #   if (mobile()) {
+  #
+  #   } else {
+  #     pushbar(
+  #       from = "bottom",
+  #       id = ns("myPushbar"),
+  #
+  #       # content
+  #       pushBarContent
+  #     )
+  #   }
+  # })
 
   observeEvent(input$open, {
-    pushbar_open(session, id = ns("myPushbar"))
+    pushbar_open(id = ns("myPushbar"))
   })
 
   #-------------------------------------------------------------------------
@@ -47,25 +190,31 @@ pokeNetwork <- function(input, output, session, mainData, families) {
   #-------------------------------------------------------------------------
 
   nodes <- reactive({
-    data.frame(
+
+    df <- data.frame(
       id = 1:length(mainData),
-      shape = rep("image", length(mainData)),
-      image = sprites,
+      group = groups,
+      shape = input$pokeNodesShape,
       label = pokeNames,
-      fixed = list("x" = FALSE, "y" = FALSE),
-      size = rep(100, length(mainData)),
-      physics = rep(TRUE, length(mainData)),
+      #fixed = list("x" = FALSE, "y" = FALSE),
+      size = input$pokeNodesSize,
+      physics = TRUE,
       hidden = rep(FALSE, length(mainData)),
       stringsAsFactors = FALSE
     )
+
+    if (input$pokeNodesShape == "image") df$image <-  sprites
+
+    return(df)
   })
 
   edges <- reactive({
+
     data.frame(
-      width = 10,
-      color = list(color = c(rep("black", length(families$from))), highlight = "yellow"),
+      width = input$pokeEdgesWidth,
+      color = list(color = c(rep("black", length(families$from))), highlight = "blue"),
       dashes = TRUE,
-      smooth = TRUE,
+      smooth = FALSE,
       hidden = FALSE,
       from = families$from,
       to = families$to,
@@ -88,35 +237,46 @@ pokeNetwork <- function(input, output, session, mainData, families) {
           //Shiny.setInputValue('", ns("current_node_id_zoom"), "', 'null');
          }
         "
-        )
+      )
       ) %>%
       visNodes(
         shapeProperties =
           list(
             useBorderWithImage = FALSE,
-            interpolation = FALSE
+            interpolation = input$nodesInterp # time consumming
           )
       ) %>%
+      visEdges(arrows = "to") %>%
       visOptions(
         highlightNearest = FALSE,
         clickToUse = FALSE,
         manipulation = FALSE, # to manually add nodes and edges. Could be interesting ...
-        collapse = FALSE,
+        collapse = list(enabled = TRUE, clusterOptions = list(shape = "square")),
         autoResize = TRUE,
-        nodesIdSelection = TRUE
+        nodesIdSelection = FALSE,
+        selectedBy = "group"
       ) %>%
       visInteraction(
         hover = TRUE,
         hoverConnectedEdges = FALSE,
         selectConnectedEdges = FALSE,
         multiselect = FALSE,
-        dragNodes = TRUE,
-        dragView = TRUE,
-        zoomView = TRUE,
+        dragNodes = input$pokeNodesDrag,
+        dragView = input$dragView,
+        zoomView = input$zoomView,
         navigationButtons = FALSE,
         selectable = TRUE
       ) %>%
-      visPhysics(stabilization = TRUE, enabled = TRUE)
+      visPhysics(
+        stabilization = TRUE,
+        solver = "repulsion",
+        repulsion = list(
+          nodeDistance = input$nodeDistance,
+          centralGravity = input$centralGravity,
+          springLength = input$springLength
+        ),
+        enabled = TRUE
+      )
   })
 
 
@@ -133,7 +293,7 @@ pokeNetwork <- function(input, output, session, mainData, families) {
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
         visUpdateNodes(nodes = nodes)
     } else {
-      nodes$size <- 100
+      nodes$size <- input$pokeNodesSize
       #nodes$hidden <- rep(FALSE, length(nodes$hidden))
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
         visUpdateNodes(nodes = nodes)

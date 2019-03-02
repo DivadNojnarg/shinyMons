@@ -123,7 +123,8 @@
 # # kantoLocations <- fromJSON(firstGen$main_region$url)
 #
 #
-# # build pokemon families (preprocess)
+# build pokemon families (preprocess)
+# source("pokeNames.R")
 # pokeMain <- readRDS("pokeMain")
 # family <-  vector("list", length = length(pokeNames))
 # evolutions <- readRDS("pokeEvolutions")
@@ -134,8 +135,10 @@
 #   pokemon <- pokeNames[[i]]
 #
 #   if (pokemon == "Eevee") {
+#     evols <- stringr::str_to_title(evolutions[[i]]$evolves_to$species.name[c(1:3)])
+#     family[[i]]$pokemons <- c("Eevee", evols)
 #     family[[i]]$from <- rep(pokemon, 3)
-#     family[[i]]$to <- stringr::str_to_title(evolutions[[i]]$evolves_to$species.name[c(1:3)])
+#     family[[i]]$to <- evols
 #     # increment i from 3 species
 #     i <- i + 3
 #   } else {
@@ -219,6 +222,25 @@
 #   }
 # }
 #
+# # run before removing NULL elements since we still need the name of
+# # pokemons that cannot evolve
+# familyGroup <- lapply(seq_along(family), function(i) family[[i]]$pokemons)
+#
+# cannot_evolve <- match(pokeNames[-unique(c(familyFrom, familyTo))], pokeNames)
+#
+# groups <- c()
+# for (i in seq_along(familyGroup)) {
+#   len_family <- length(familyGroup[[i]])
+#   if (len_family > 0) {
+#     groups <- c(groups, rep(familyGroup[[i]][1], len_family))
+#   } else {
+#    if (i %in% cannot_evolve)
+#     groups <- c(groups, pokeNames[[i]])
+#   }
+# }
+#
+# saveRDS(groups, file = "pokeGroups")
+#
 #
 # family <- family[which(!sapply(family, is.null))]
 #
@@ -233,10 +255,11 @@
 #   list(from = m[1, ], to = m[2, ])
 # })
 #
-#
 # familyFrom <- unlist(lapply(seq_along(family), function(i) family[[i]]$from))
 # familyTo <- unlist(lapply(seq_along(family), function(i) family[[i]]$to))
 #
 # family <- data.frame(from = familyFrom, to = familyTo)
+#
+#
 #
 # saveRDS(family, file = "pokeEdges")

@@ -23,6 +23,7 @@ pokeTypes <- readRDS("pokeTypes")
 pokeEvolutions <- readRDS("pokeEvolutions")
 pokeAttacks <- readRDS("pokeAttacks")
 pokeEdges <- readRDS("pokeEdges")
+pokeGroups <- readRDS("pokeGroups")
 
 # shiny app code
 shiny::shinyApp(
@@ -95,7 +96,16 @@ shiny::shinyApp(
               }
             });
            });"
-         )
+         ),
+
+        # test whether mobile or not
+        tags$script(
+          "$(document).on('shiny:connected', function(event) {
+            var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            Shiny.onInputChange('isMobile', isMobile);
+          });
+          "
+        )
       ),
 
       # custom shinyWidgets skins
@@ -146,6 +156,10 @@ shiny::shinyApp(
   ),
   server = function(input, output, session) {
 
+    # determine whether we are on mobile or not
+    # relies on a simple Shiny.onInputChange
+    isMobile <- reactive(input$isMobile)
+
     # main module (data)
     main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails)
 
@@ -184,7 +198,7 @@ shiny::shinyApp(
     # pokemon attacks
     callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # Network module
-    callModule(module = pokeNetwork, id = "network", mainData = pokeMain, families = pokeEdges)
+    callModule(module = pokeNetwork, id = "network", mainData = pokeMain, families = pokeEdges, groups = pokeGroups, mobile = isMobile)
     # other elements
     callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
