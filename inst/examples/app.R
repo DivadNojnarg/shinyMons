@@ -30,6 +30,8 @@ pokeGroups <- readRDS("pokeGroups")
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
+    enable_preloader = TRUE,
+    loading_duration = 4,
     navbar = tablerDashNav(
       id = "mymenu",
       src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",

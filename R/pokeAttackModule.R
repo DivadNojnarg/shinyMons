@@ -55,7 +55,7 @@ pokeAttack <- function(input, output, session, attacks) {
     "accuracy"
   )
 
-  stats <- lapply(seq_along(names_means), function(i) {
+  stats <- lapply(seq_along(names_stats), function(i) {
     current_stat <- names_stats[[i]]
     unlist(
       lapply(seq_along(attacks), function(j) {
