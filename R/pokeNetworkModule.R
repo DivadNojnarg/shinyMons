@@ -11,7 +11,7 @@ pokeNetworkUi <- function(id) {
       column(
         width = 1,
         align = "left",
-        actionButton(ns("open"), "Network Options")
+        tagAppendAttributes(actionButton(ns("open"), "Network Options"), class = "btn-outline-primary")
       ),
       column(
         width = 11,
@@ -328,32 +328,38 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
       name = details[[selected]]$names$name
     )
 
-    showModal(modalDialog(
-      title = fluidRow(
-        column(
-          width = 2,
-          align = "left",
-          tablerAvatar(url = sprites[[selected]])
-        ),
-        column(
-          width = 8,
-          align = "center",
-          paste0(names(mainData)[[selected]], " 's names")
-        ),
-        column(width = 2, align = "right", modalButton("X"))
-      ),
-      tablerTable(
-        lapply(seq_along(names$languages), function(i) {
-          tablerTableItem(
-            left = names$languages[[i]],
-            right = names$name[[i]]
+    showModal(
+      modalDialog(
+        title = fluidRow(
+          column(
+            width = 2,
+            align = "left",
+            tablerAvatar(url = sprites[[selected]])
+          ),
+          column(
+            width = 8,
+            align = "center",
+            paste0(names(mainData)[[selected]], " 's names")
+          ),
+          column(
+            width = 2,
+            align = "right",
+            HTML('<a href="#" data-dismiss="modal" class="btn btn-outline-primary">Close</a>')
           )
-        }),
-        stacked = FALSE
-      ),
-      easyClose = TRUE,
-      footer = NULL
-    ))
+        ),
+        tablerTable(
+          lapply(seq_along(names$languages), function(i) {
+            tablerTableItem(
+              left = names$languages[[i]],
+              right = names$name[[i]]
+            )
+          }),
+          stacked = FALSE
+        ),
+        easyClose = TRUE,
+        footer = NULL
+      )
+    )
   })
 
   return(list(selected = reactive(input$current_node_id_zoom)))

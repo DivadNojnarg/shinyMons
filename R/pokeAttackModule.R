@@ -169,6 +169,7 @@ pokeAttack <- function(input, output, session, attacks) {
       avatarUrl = NULL,
       width = 12,
       fluidRow(
+        # basic box
         column(
           width = 4,
           align = "center",

@@ -44,7 +44,7 @@ pokeLocation <- function(input, output, session, selected, locations) {
       if (!is.null(pokeLocations())) {
         lapply(seq_along(pokeLocations()), function(i) fluidRow(paste(i, ":", pokeLocations()[[i]])))
       } else {
-        "This pokemon cannot be found in the wild."
+        "This pokemon cannot be find in the wild."
       }
     )
   })

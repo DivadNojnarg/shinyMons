@@ -35,9 +35,9 @@ shiny::shinyApp(
       src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",
       navMenu = tablerNavMenu(
         tablerNavMenuItem(
-          tabName = "PokeFilter",
+          tabName = "PokeInfo",
           icon = "home",
-          "PokeFilter"
+          "PokeInfo"
         ),
         tablerNavMenuItem(
           tabName = "PokeList",
@@ -91,7 +91,7 @@ shiny::shinyApp(
           "$(function () {
             $('#mymenu .nav-item a').click(function(){
               var tab = $(this).attr('id');
-              if (tab == 'tab-PokeFilter' || tab == 'tab-PokeList') {
+              if (tab == 'tab-PokeInfo' || tab == 'tab-PokeList') {
                 $('#input-pokeChoice').show();
               } else {
                 $('#input-pokeChoice').hide();
@@ -119,7 +119,7 @@ shiny::shinyApp(
 
       tablerTabItems(
         tablerTabItem(
-          tabName = "PokeFilter",
+          tabName = "PokeInfo",
           fluidRow(
             column(
               width = 4,
