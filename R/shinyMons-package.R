@@ -1,6 +1,6 @@
 #' shinyMons
 #'
 #' @name shinyMons
-#' @import tablerDash shiny echarts4r
+#' @import shiny
 #' @docType package
 NULL

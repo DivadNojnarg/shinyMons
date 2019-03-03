@@ -34,6 +34,9 @@ pokeGalleryUi <- function(id) {
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #' @param shiny Whether to display a shiny version. FALSE by default.
+#'
+#' @importFrom tablerDash tablerMediaCard
+#'
 #' @export
 pokeGallery <- function(input, output, session, mainData, details, shiny) {
 
@@ -57,7 +60,7 @@ pokeGallery <- function(input, output, session, mainData, details, shiny) {
             range()[[i]]$sprites$back_shiny
           },
           width = 4,
-          paste0("Pokemon n°: ", range()[[i]]$id)
+          paste0("Pokemon: ", range()[[i]]$id)
         )
         cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
         cardTag

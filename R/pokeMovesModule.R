@@ -19,6 +19,9 @@ pokeMoveUi <- function(id) {
 #' @param session Shiny session.
 #' @param selected Input containing the selected pokemon index.
 #' @param moves Contains preprocessed pokemon moves.
+#'
+#' @import tablerDash
+#'
 #' @export
 pokeMove <- function(input, output, session, selected, moves) {
 

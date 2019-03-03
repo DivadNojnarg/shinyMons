@@ -20,6 +20,9 @@ pokeInfosUi <- function(id) {
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
 #' @param shiny Whether to display a shiny version. FALSE by default.
+#'
+#' @import tablerDash
+#'
 #' @export
 pokeInfos <- function(input, output, session, mainData, details, selected, shiny) {
 
@@ -28,6 +31,12 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
 
      # there is a quirk in the raw data: in details, names are in lower case
      # whereas in the main pokemon list, names start with a capital letter...
+
+     pokeNames <- names(mainData)
+     sprites <- vapply(seq_along(pokeNames), FUN = function(i) {
+       paste0("http://www.pokestadium.com/sprites/xy/", mainData[[i]]$name, ".gif")
+     }, FUN.VALUE = character(1))
+     names(sprites) <- pokeNames
 
      req(!is.null(selected()))
 
@@ -51,7 +60,7 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
            subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
            background = NULL,
            src = if (!shiny()) {
-             mainData[[selected()]]$sprites$front_default
+             sprites[[selected()]]
            } else {
              mainData[[selected()]]$sprites$front_shiny
            },

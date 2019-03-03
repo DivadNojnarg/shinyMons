@@ -20,6 +20,9 @@ pokeOtherUi <- function(id) {
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
+#'
+#' @import echarts4r tablerDash
+#'
 #' @export
 pokeOther <- function(input, output, session, mainData, details) {
 
@@ -129,9 +132,10 @@ pokeOther <- function(input, output, session, mainData, details) {
     )
   })
 
-
-  # ################################################################
-  # TO DO: stats on firstGen <- readRDS("firstGen") firstenGen$moves
-  # ################################################################
-
 }
+
+
+# make R CMD check happy
+globalVariables("h")
+globalVariables("w")
+globalVariables("type")

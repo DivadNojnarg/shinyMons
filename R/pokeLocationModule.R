@@ -19,6 +19,9 @@ pokeLocationUi <- function(id) {
 #' @param session Shiny session.
 #' @param selected Input containing the selected pokemon index.
 #' @param locations Contains preprocessed data of the selected pokemon location
+#'
+#' @importFrom tablerDash tablerCard
+#'
 #' @export
 pokeLocation <- function(input, output, session, selected, locations) {
 
@@ -32,7 +35,7 @@ pokeLocation <- function(input, output, session, selected, locations) {
     req(!is.null(selected()))
 
     tablerCard(
-      title = paste0("Where to find ",  selected()),
+      title = paste0("Where to find ",  selected(), " ?"),
       collapsible = FALSE,
       closable = FALSE,
       zoomable = FALSE,

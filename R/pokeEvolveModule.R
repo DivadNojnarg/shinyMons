@@ -22,6 +22,9 @@ pokeEvolveUi <- function(id) {
 #' @param selected Input containing the selected pokemon index.
 #' @param shiny Whether to display a shiny version. FALSE by default.
 #' @param evolutions Preprocessed pokemon evolutions data.
+#'
+#' @import tablerDash
+#'
 #' @export
 pokeEvolve <- function(input, output, session, mainData, details, selected, shiny, evolutions) {
 
@@ -60,12 +63,12 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             if (triggerBis == "use-item") {
               triggerBisUrl <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$item.url
               # fromJSON could be a bottlneck
-              triggerBisImage <- fromJSON(triggerBisUrl)$sprites$default
+              triggerBisImage <- jsonlite::fromJSON(triggerBisUrl)$sprites$default
               triggerBisName <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$item.name
             } else {
               triggerBisUrl <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$trigger.url
               # fromJSON could be a bottlneck
-              triggerBisImage <- fromJSON(triggerBisUrl)$sprites$default
+              triggerBisImage <- jsonlite::fromJSON(triggerBisUrl)$sprites$default
               triggerBisName <- chain$evolves_to$evolves_to[[1]]$evolution_details[[1]]$trigger.name
             }
           }
@@ -120,12 +123,12 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
                 if (trigger == "use-item") {
                   triggerUrl <- chain$evolves_to$evolution_details[[i]]$item.url
                   # fromJSON could be a bottlneck here (however this only applies for Eevee)
-                  triggerImage <- fromJSON(triggerUrl)$sprites$default
+                  triggerImage <- jsonlite::fromJSON(triggerUrl)$sprites$default
                   triggerName <- chain$evolves_to$evolution_details[[i]]$item.name
                 } else {
                   triggerUrl <- chain$evolves_to$evolution_details[[i]]$trigger.url
                   # fromJSON could be a bottlneck here (however this only applies for Eevee)
-                  triggerImage <- fromJSON(triggerUrl)$sprites$default
+                  triggerImage <- jsonlite::fromJSON(triggerUrl)$sprites$default
                   triggerName <- chain$evolves_to$evolution_details[[i]]$trigger.name
                 }
               }
@@ -158,12 +161,12 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
             if (trigger == "use-item") {
               triggerUrl <- chain$evolves_to$evolution_details[[1]]$item.url
               # fromJSON could be a bottlneck here (however this only applies for Eevee)
-              triggerImage <- fromJSON(triggerUrl)$sprites$default
+              triggerImage <- jsonlite::fromJSON(triggerUrl)$sprites$default
               triggerName <- chain$evolves_to$evolution_details[[1]]$item.name
             } else {
               triggerUrl <- chain$evolves_to$evolution_details[[1]]$trigger.url
               # fromJSON could be a bottlneck here (however this only applies for Eevee)
-              triggerImage <- fromJSON(triggerUrl)$sprites$default
+              triggerImage <- jsonlite::fromJSON(triggerUrl)$sprites$default
               triggerName <- chain$evolves_to$evolution_details[[1]]$trigger.name
             }
           }

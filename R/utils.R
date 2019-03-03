@@ -263,3 +263,32 @@
 #
 #
 # saveRDS(family, file = "pokeEdges")
+
+# pokemon types tree map
+#types <- readRDS("firstGen")$types$name
+#source("pokeNames.R")
+#typesTree <- vector(mode = "list", length = length(types))
+#names(typesTree) <- types
+#for(i in seq_along(pokeNames)) {
+#  current_type <- pokeMain[[i]]$types$type$name
+#  current_pkmn <- pokeMain[[i]]$sprites$front_default
+#  for(j in seq_along(current_type)) {
+#    typesTree[[current_type[[j]]]] <- c(typesTree[[current_type[[j]]]], current_pkmn)
+#  }
+#}
+#
+#parentType <- unlist(lapply(seq_along(typesTree), function(i) rep(names(typesTree)[[i]], length(typesTree[[i]]))))
+#childrenType <- unlist(sapply(seq_along(typesTree), function(i) typesTree[[i]]))
+#valueType <-  unlist(sapply(seq_along(typesTree), function(i) rep(length(typesTree[[i]]), length(typesTree[[i]]))))
+#
+#typesTree <- data.frame(
+#  parent = parentType,
+#  child = unlist(lapply(seq_along(childrenType), function(i) tags$img(src = childrenType[[i]]))),
+#  value = valueType
+#)
+#
+#typesTree %>%
+#  e_charts() %>%
+#  e_treemap(parent, child, value) %>%
+#  e_title("Treemap charts")
+#

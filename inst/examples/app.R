@@ -38,9 +38,9 @@ shiny::shinyApp(
           "PokeFilter"
         ),
         tablerNavMenuItem(
-          tabName = "PokeGroup",
+          tabName = "PokeList",
           icon = "box",
-          "PokeGroup"
+          "PokeList"
         ),
         tablerNavMenuItem(
           tabName = "PokeAttacks",
@@ -89,7 +89,7 @@ shiny::shinyApp(
           "$(function () {
             $('#mymenu .nav-item a').click(function(){
               var tab = $(this).attr('id');
-              if (tab == 'tab-PokeFilter' || tab == 'tab-PokeGroup') {
+              if (tab == 'tab-PokeFilter' || tab == 'tab-PokeList') {
                 $('#input-pokeChoice').show();
               } else {
                 $('#input-pokeChoice').hide();
@@ -127,16 +127,16 @@ shiny::shinyApp(
             ),
             column(
               width = 8,
-              pokeStatsUi(id = "stats")
+              pokeStatsUi(id = "stats"),
+              fluidRow(
+                pokeMoveUi(id = "moves"),
+                pokeLocationUi(id = "location")
+              )
             )
-          ),
-          fluidRow(
-            pokeMoveUi(id = "moves"),
-            pokeLocationUi(id = "location")
           )
         ),
         tablerTabItem(
-          tabName = "PokeGroup",
+          tabName = "PokeList",
           pokeGalleryUi(id = "gallery")
         ),
         tablerTabItem(
@@ -160,8 +160,22 @@ shiny::shinyApp(
     # relies on a simple Shiny.onInputChange
     isMobile <- reactive(input$isMobile)
 
+
+    # Network module: network stores a potential selected node in the
+    # network and pass it to the pickerInput function in the main
+    # module to update its value
+    network <- callModule(
+      module = pokeNetwork,
+      id = "network",
+      mainData = pokeMain,
+      details = pokeDetails,
+      families = pokeEdges,
+      groups = pokeGroups,
+      mobile = isMobile
+    )
+
     # main module (data)
-    main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails)
+    main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails, selected = network$selected)
 
     # infos module
     callModule(
@@ -197,8 +211,6 @@ shiny::shinyApp(
     callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
     callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
-    # Network module
-    callModule(module = pokeNetwork, id = "network", mainData = pokeMain, families = pokeEdges, groups = pokeGroups, mobile = isMobile)
     # other elements
     callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 

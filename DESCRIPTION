@@ -8,7 +8,15 @@ Authors@R: c(
 Maintainer: David Granjon <dgranjon@ymail.com>
 Description: Discover everything you want to know about your favorites pokemon.
     Data are taken from the awesome API <https://pokeapi.co>.
-Imports: shiny, tablerDash, shinyWidgets, echarts4r, dplyr, pushbar, visNetwork
+Imports: shiny, 
+    tablerDash, 
+    shinyWidgets, 
+    echarts4r, 
+    pushbar, 
+    visNetwork, 
+    shinyjs, 
+    stringr,
+    jsonlite
 Remotes: RinteRface/tablerDash, JohnCoene/pushbar
 URL: https://github.com/DivadNojnarg/shinyMons
 BugReports: https://github.com/DivadNojnarg/shinyMons/issues

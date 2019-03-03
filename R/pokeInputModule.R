@@ -19,8 +19,12 @@ pokeInputUi <- function(id) {
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
+#' @param selected Object containing the selected pokemon in the network, if not NULL.
+#'
+#' @import shinyWidgets
+#'
 #' @export
-pokeInput <- function(input, output, session, mainData, details) {
+pokeInput <- function(input, output, session, mainData, details, selected) {
 
   ns <- session$ns
 
@@ -53,6 +57,16 @@ pokeInput <- function(input, output, session, mainData, details) {
         class = "m-2"
       )
     )
+  })
+
+  observe({
+    if (!is.null(selected())) {
+      updatePickerInput(
+        session,
+        inputId = "pokeSelect",
+        selected = pokeNames[selected()]
+      )
+    }
   })
 
   return(

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Server module generating the pokemon info cards — pokeInfos • shinyMons</title>
+<title>Server module generating the pokemon evolution timeline — pokeEvolve • shinyMons</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Server module generating the pokemon info cards — pokeInfos" />
+<meta property="og:title" content="Server module generating the pokemon evolution timeline — pokeEvolve" />
 
-<meta property="og:description" content="Server module generating the pokemon info cards" />
+<meta property="og:description" content="Server module generating the pokemon evolution timeline" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,18 +102,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Server module generating the pokemon info cards</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeInfosModule.R'><code>R/pokeInfosModule.R</code></a></small>
-    <div class="hidden name"><code>pokeInfos.Rd</code></div>
+    <h1>Server module generating the pokemon evolution timeline</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeEvolveModule.R'><code>R/pokeEvolveModule.R</code></a></small>
+    <div class="hidden name"><code>pokeEvolve.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Server module generating the pokemon info cards</p>
+    <p>Server module generating the pokemon evolution timeline</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>pokeInfos</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>details</span>, <span class='no'>selected</span>, <span class='no'>shiny</span>)</pre>
+    <pre class="usage"><span class='fu'>pokeEvolve</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>details</span>, <span class='no'>selected</span>, <span class='no'>shiny</span>,
+  <span class='no'>evolutions</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +146,10 @@
     <tr>
       <th>shiny</th>
       <td><p>Whether to display a shiny version. FALSE by default.</p></td>
+    </tr>
+    <tr>
+      <th>evolutions</th>
+      <td><p>Preprocessed pokemon evolutions data.</p></td>
     </tr>
     </table>
     

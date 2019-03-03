@@ -13,7 +13,7 @@ pokeAttack(input, output, session, attacks)
 
 \item{session}{Shiny session.}
 
-\item{attacks}{Data containing all pokemon abilities.}
+\item{attacks}{Data containing all pokemon abilities in the first generation.}
 }
 \description{
 Server module for generating the pokeAttacks section

@@ -34,6 +34,9 @@ globalVariables("y")
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
+#'
+#' @import tablerDash
+#'
 #' @export
 pokeStats <- function(input, output, session, mainData, details, selected) {
 

@@ -19,6 +19,9 @@ pokeTypeUi <- function(id) {
 #' @param session Shiny session.
 #' @param types Object containing the preprocessed pokemon types.
 #' @param selected Input containing the selected pokemon index.
+#'
+#' @import tablerDash
+#'
 #' @export
 pokeType <- function(input, output, session, types, selected) {
 
@@ -81,7 +84,7 @@ pokeType <- function(input, output, session, types, selected) {
             lapply(seq_along(double_damage_from), FUN = function(j) double_damage_from[[j]]), br(),
             HTML(paste0(tablerTag(name = "0.5X", rounded = FALSE, color = "green"), " ")),
             lapply(seq_along(half_damage_from), FUN = function(j) half_damage_from[[j]]), br(),
-            HTML(paste0(tablerTag(name = "∅", rounded = FALSE, color = "default"), " ")),
+            HTML(paste0(tablerTag(name = "0", rounded = FALSE, color = "default"), " ")),
             lapply(seq_along(no_damage_from), FUN = function(j) no_damage_from[[j]])
           ),
           column(
@@ -92,7 +95,7 @@ pokeType <- function(input, output, session, types, selected) {
             lapply(seq_along(double_damage_to), FUN = function(j) double_damage_to[[j]]), br(),
             HTML(paste0(tablerTag(name = "0.5X", rounded = FALSE, color = "red"), " ")),
             lapply(seq_along(half_damage_to), FUN = function(j) half_damage_to[[j]]), br(),
-            HTML(paste0(tablerTag(name = "∅", rounded = FALSE, color = "default"), " ")),
+            HTML(paste0(tablerTag(name = "0", rounded = FALSE, color = "default"), " ")),
             lapply(seq_along(no_damage_to), FUN = function(j) no_damage_to[[j]])
           )
         ),
