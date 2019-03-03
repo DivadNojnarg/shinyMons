@@ -16,7 +16,7 @@ pokeGalleryUi <- function(id) {
           label = h3("Selected Pokemons"),
           min = 1,
           max = 151,
-          value = c(1, 9)
+          value = c(1, 151)
         )
       )
     ),

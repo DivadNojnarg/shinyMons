@@ -1,0 +1,12 @@
+name: shinyMons
+title: shinyMons
+username:
+account: dgranjon
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 757055
+bundleId: 1912121
+url: https://dgranjon.shinyapps.io/shinyMons/
+when: 1551621524.51246
+asMultiple: FALSE
+asStatic: FALSE

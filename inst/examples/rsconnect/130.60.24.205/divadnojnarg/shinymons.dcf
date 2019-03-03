@@ -1,0 +1,12 @@
+name: shinymons
+title: shinyMons
+username: divadnojnarg
+account: divadnojnarg
+server: 130.60.24.205
+hostUrl: http://130.60.24.205:3939/__api__
+appId: 8
+bundleId: 25
+url: http://130.60.24.205:3939/content/8/
+when: 1551579077.23607
+asMultiple: FALSE
+asStatic: FALSE

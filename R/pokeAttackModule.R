@@ -142,8 +142,7 @@ pokeAttack <- function(input, output, session, attacks) {
   output$attackTypes <- renderEcharts4r({
     df %>%
       e_charts() %>%
-      e_treemap(parent, child, value) %>%
-      e_title("Attack Types")
+      e_treemap(parent, child, value)
   })
 
 

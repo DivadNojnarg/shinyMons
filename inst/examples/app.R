@@ -9,6 +9,8 @@ library(stringr)
 library(dplyr)
 library(pushbar)
 library(visNetwork)
+library(shinyMons)
+library(curl)
 
 source("pokeNames.R")
 
@@ -75,7 +77,7 @@ shiny::shinyApp(
     footer = tablerDashFooter(
       copyrights = "Disclaimer: this app is purely intended for learning purpose. @David Granjon, 2019"
     ),
-    title = "The fucking Pokemon App",
+    title = "Gotta Catch'Em (Almost) All",
     body = tablerDashBody(
 
       # load pushbar dependencies
@@ -96,7 +98,7 @@ shiny::shinyApp(
               }
             });
            });"
-         ),
+        ),
 
         # test whether mobile or not
         tags$script(
@@ -109,7 +111,7 @@ shiny::shinyApp(
       ),
 
       # custom shinyWidgets skins
-      chooseSliderSkin("Nice"),
+      chooseSliderSkin("Round"),
 
       # use shinyEffects
       setShadow(class = "galleryCard"),

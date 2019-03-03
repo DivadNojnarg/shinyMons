@@ -20,7 +20,7 @@ pokeNetworkUi <- function(id) {
       )
     ),
     pushbar(
-      from = "bottom",
+      from = "right",
       id = ns("myPushbar"),
       # content
       uiOutput(ns("pushbarContent"))
@@ -56,151 +56,33 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   #-------------------------------------------------------------------------
   setup_pushbar(blur = TRUE, overlay = TRUE) # setup
 
-  # the pushbar orientation depends if we are on mobile or not...
+  # the pushbar
   output$pushbarContent <- renderUI({
-    req(!is.null(mobile()))
 
-    content_desktop <- fluidRow(
-      column(
-        width = 3,
-        align = "center",
-        # nodes shape
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("pokeNodesShape"),
-          label = "Nodes shape:",
-          thick = TRUE,
-          inline = TRUE,
-          selected = "image",
-          choices = c("Circles" = "circle", "Sprites" = "image"),
-          animation = "pulse",
-          status = "info"
-        ),
-        # can we drag nodes?
-        shinyWidgets::prettySwitch(
-          inputId = ns("pokeNodesDrag"),
-          label = "Drag nodes?",
-          value = TRUE,
-          status = "default",
-          slim = FALSE,
-          fill = TRUE,
-          bigger = TRUE,
-          inline = FALSE,
-          width = NULL
-        )
-      ),
-      column(
-        width = 3,
-        align = "center",
-        # nodes size
-        shiny::numericInput(
-          inputId = ns("pokeNodesSize"),
-          label = "Size of nodes:",
-          value = 200,
-          min = 100,
-          max = NA,
-          step = 10,
-          width = NULL
-        ),
-        # edges width
-        shiny::numericInput(
-          inputId = ns("pokeEdgesWidth"),
-          label = "Width of edges:",
-          value = 10,
-          min = 5,
-          max = NA,
-          step = 1,
-          width = NULL
-        )
-      ),
-      column(
-        width = 3,
-        align = "center",
-        prettyToggle(
-          inputId = ns("dragView"),
-          label_on = "DragView on",
-          label_off = "DragView off",
-          value = TRUE,
-          status_on = "success",
-          status_off = "danger",
-          shape = "curve",
-          outline = TRUE,
-          animation = "pulse"
-        ),
-        prettyToggle(
-          inputId = ns("zoomView"),
-          label_on = "ZoomView on",
-          label_off = "ZoomView off",
-          value = TRUE,
-          status_on = "success",
-          status_off = "danger",
-          shape = "curve",
-          outline = TRUE,
-          animation = "pulse"
-        ),
-        shinyWidgets::prettySwitch(
-          inputId = ns("nodesInterp"),
-          label = "Nodes interpolation?",
-          value = FALSE,
-          status = "primary",
-          slim = TRUE,
-          fill = FALSE,
-          bigger = TRUE,
-          inline = FALSE
-        )
-      ),
-      column(
-        width = 3,
-        align = "center",
-        sliderInput(
-          inputId = ns("nodeDistance"),
-          label = "Distance between nodes:",
-          min = 50,
-          value = 500,
-          max = 500
-        ),
-        sliderInput(
-          inputId = ns("centralGravity"),
-          label = "Central gravity:",
-          min = 0,
-          value = 0,
-          max = 1
-        ),
-        sliderInput(
-          inputId = ns("springLength"),
-          label = "Spring lenght:",
-          min = 50,
-          value = 200,
-          max = 600
-        )
-      )
-    )
+    tagList(
 
-    content_mobile <- tagList(
-      fluidRow(
-        align = "center",
-        # nodes shape
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("pokeNodesShape"),
-          label = "Nodes shape:",
-          thick = TRUE,
-          inline = TRUE,
-          selected = "image",
-          choices = c("Circles" = "circle", "Sprites" = "image"),
-          animation = "pulse",
-          status = "info"
-        ),
-        # can we drag nodes?
-        shinyWidgets::prettySwitch(
-          inputId = ns("pokeNodesDrag"),
-          label = "Drag nodes?",
-          value = TRUE,
-          status = "default",
-          slim = FALSE,
-          fill = TRUE,
-          bigger = TRUE,
-          inline = FALSE,
-          width = NULL
-        )
+      h2("Nodes"),
+      # nodes shape
+      shinyWidgets::prettyRadioButtons(
+        inputId = ns("pokeNodesShape"),
+        label = "Nodes shape:",
+        thick = TRUE,
+        inline = TRUE,
+        selected = "image",
+        choices = c("Circles" = "circle", "Sprites" = "image"),
+        animation = "pulse",
+        status = "info"
+      ),
+      # can we drag nodes?
+      shinyWidgets::prettySwitch(
+        inputId = ns("pokeNodesDrag"),
+        label = "Drag nodes?",
+        value = TRUE,
+        status = "default",
+        slim = TRUE,
+        fill = FALSE,
+        bigger = TRUE,
+        inline = FALSE
       ),
       # nodes size
       shiny::numericInput(
@@ -212,6 +94,26 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         step = 10,
         width = NULL
       ),
+      shinyWidgets::prettySwitch(
+        inputId = ns("nodesInterp"),
+        label = "Nodes interpolation?",
+        value = FALSE,
+        status = "primary",
+        slim = TRUE,
+        fill = FALSE,
+        bigger = TRUE,
+        inline = FALSE
+      ),
+      sliderInput(
+        inputId = ns("nodeDistance"),
+        label = "Distance between nodes:",
+        min = 50,
+        value = 500,
+        max = 500
+      ),
+
+      hr(),
+      h2("Edges"),
       # edges width
       shiny::numericInput(
         inputId = ns("pokeEdgesWidth"),
@@ -222,6 +124,26 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         step = 1,
         width = NULL
       ),
+      shinyWidgets::prettySwitch(
+        inputId = ns("displayEdges"),
+        label = "Display edges?",
+        value = TRUE,
+        status = "primary",
+        slim = TRUE,
+        fill = FALSE,
+        bigger = TRUE,
+        inline = FALSE
+      ),
+      sliderInput(
+        inputId = ns("springLength"),
+        label = "Spring lenght:",
+        min = 50,
+        value = 200,
+        max = 600
+      ),
+
+      hr(),
+      h2("Others"),
       prettyToggle(
         inputId = ns("dragView"),
         label_on = "DragView on",
@@ -244,56 +166,18 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         outline = TRUE,
         animation = "pulse"
       ),
-      shinyWidgets::prettySwitch(
-        inputId = ns("nodesInterp"),
-        label = "Nodes interpolation?",
-        value = FALSE,
-        status = "primary",
-        slim = TRUE,
-        fill = FALSE,
-        bigger = TRUE,
-        inline = FALSE
-      ),
-      sliderInput(
-        inputId = ns("nodeDistance"),
-        label = "Distance between nodes:",
-        min = 50,
-        value = 500,
-        max = 500
-      ),
       sliderInput(
         inputId = ns("centralGravity"),
         label = "Central gravity:",
         min = 0,
         value = 0,
         max = 1
-      ),
-      sliderInput(
-        inputId = ns("springLength"),
-        label = "Spring lenght:",
-        min = 50,
-        value = 200,
-        max = 600
       )
     )
-
-    if (mobile()) {
-      content_mobile
-    } else {
-      content_desktop
-    }
   })
 
   observeEvent(input$open, {
     pushbar_open(id = ns("myPushbar"))
-  })
-
-  observe({
-    req(!is.null(mobile()))
-    if (mobile()) {
-      shinyjs::runjs("$('#myPushbar').removeClass('from_bottom');")
-      shinyjs::runjs("$('#myPushbar').addClass('from_right');")
-    }
   })
 
   #-------------------------------------------------------------------------
@@ -323,18 +207,20 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
 
   edges <- reactive({
 
-    req(!is.null(input$pokeEdgesWidth))
+    req(!is.null(input$pokeEdgesWidth), !is.null(input$displayEdges))
 
-    data.frame(
-      width = input$pokeEdgesWidth,
-      color = list(color = c(rep("black", length(families$from))), highlight = "blue"),
-      dashes = TRUE,
-      smooth = FALSE,
-      hidden = FALSE,
-      from = families$from,
-      to = families$to,
-      stringsAsFactors = FALSE
-    )
+    if (input$displayEdges) {
+      data.frame(
+        width = input$pokeEdgesWidth,
+        color = list(color = c(rep("black", length(families$from))), highlight = "blue"),
+        dashes = TRUE,
+        smooth = FALSE,
+        hidden = FALSE,
+        from = families$from,
+        to = families$to,
+        stringsAsFactors = FALSE
+      )
+    }
   })
 
   pokeNames <- names(mainData)

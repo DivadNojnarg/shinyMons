@@ -8,16 +8,7 @@ pokeStatsUi <- function(id) {
   ns <- shiny::NS(id)
 
   tagList(
-    fluidRow(
-      column(width = 4, uiOutput(ns("pokeHappy"))),
-      column(width = 4, uiOutput(ns("pokeHeight"))),
-      column(width = 4, uiOutput(ns("pokeWeight")))
-    ),
-    fluidRow(
-      column(width = 4, uiOutput(ns("baseXp"))),
-      column(width = 4, uiOutput(ns("pokeGrowth"))),
-      column(width = 4, uiOutput(ns("pokeCapture")))
-    ),
+    uiOutput(ns("basic_stats")),
     uiOutput(ns("pokeStatsCard"))
   )
 }
@@ -98,6 +89,25 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
   })
 
 
+  output$basic_stats <- renderUI({
+    req(!is.null(input$pokeBasicStats))
+    if (input$pokeBasicStats) {
+      tagList(
+        fluidRow(
+          column(width = 4, uiOutput(ns("pokeHappy"))),
+          column(width = 4, uiOutput(ns("pokeHeight"))),
+          column(width = 4, uiOutput(ns("pokeWeight")))
+        ),
+        fluidRow(
+          column(width = 4, uiOutput(ns("baseXp"))),
+          column(width = 4, uiOutput(ns("pokeGrowth"))),
+          column(width = 4, uiOutput(ns("pokeCapture")))
+        )
+      )
+    }
+  })
+
+
   # ################################################################
   # Skills
   # ################################################################
@@ -132,7 +142,18 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
 
     tablerCard(
       title = paste0(selected(), " Stats"),
-      options = NULL,
+      options = tagList(
+        shinyWidgets::prettySwitch(
+          inputId = ns("pokeBasicStats"),
+          label = "Display Basic Stats?",
+          value = TRUE,
+          status = "default",
+          slim = TRUE,
+          fill = FALSE,
+          bigger = TRUE,
+          inline = FALSE
+        )
+      ),
       footer = NULL,
       status = "info",
       statusSide = "left",

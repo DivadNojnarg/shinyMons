@@ -34,6 +34,7 @@ pokeInput <- function(input, output, session, mainData, details, selected) {
   # pokemon selector
   output$pokeChoice <- renderUI({
     fluidRow(
+      align = "center",
       pickerInput(
         inputId = ns("pokeSelect"),
         width = NULL,
@@ -52,7 +53,8 @@ pokeInput <- function(input, output, session, mainData, details, selected) {
           label = "Shiny?",
           value = FALSE,
           status = "primary",
-          slim = TRUE
+          slim = TRUE,
+          width = NULL
         ),
         class = "m-2"
       )

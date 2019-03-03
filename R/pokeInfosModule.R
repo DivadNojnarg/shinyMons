@@ -58,13 +58,24 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
          tablerProfileCard(
            title = selected(),
            subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
-           background = NULL,
+           background = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png",
            src = if (!shiny()) {
              sprites[[selected()]]
            } else {
              mainData[[selected()]]$sprites$front_shiny
            },
-           socials = NULL,
+           socials = tablerSocialLinks(
+             tablerSocialLink(
+               name = "pokeApi",
+               href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())),
+               icon = "at"
+             ),
+             tablerSocialLink(
+               name = "Bulbapedia",
+               href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pokémon)"),
+               icon = "address-card"
+             )
+           ),
            width = 12
          )
        ),
