@@ -62,13 +62,12 @@ pokeInput <- function(input, output, session, mainData, details, selected) {
   })
 
   observe({
-    if (!is.null(selected())) {
-      updatePickerInput(
-        session,
-        inputId = "pokeSelect",
-        selected = pokeNames[selected()]
-      )
-    }
+    req(!is.null(selected()))
+    updatePickerInput(
+      session,
+      inputId = "pokeSelect",
+      selected = pokeNames[selected()]
+    )
   })
 
   return(

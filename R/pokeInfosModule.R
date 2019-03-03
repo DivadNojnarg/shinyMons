@@ -57,7 +57,14 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
        fluidRow(
          tablerProfileCard(
            title = selected(),
-           subtitle = details[[selected()]]$flavor_text_entries$flavor_text[54],
+           subtitle = tagList(
+             align = "center",
+             details[[selected()]]$flavor_text_entries$flavor_text[54],
+             tablerTagList(
+               tablerTag(name = details[[selected()]]$shape$name, rounded = TRUE, color = "default"),
+               tablerTag(name = details[[selected()]]$habitat$name, rounded = TRUE, color = habitatColor)
+             )
+           ),
            background = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png",
            src = if (!shiny()) {
              sprites[[selected()]]
@@ -72,17 +79,12 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
              ),
              tablerSocialLink(
                name = "Bulbapedia",
-               href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pokémon)"),
+               href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"),
                icon = "address-card"
              )
            ),
            width = 12
          )
-       ),
-       tablerTagList(
-         align = "center",
-         tablerTag(name = details[[selected()]]$shape$name, rounded = TRUE, color = "default"),
-         tablerTag(name = details[[selected()]]$habitat$name, rounded = TRUE, color = habitatColor)
        ),
        br()
      )

@@ -37,6 +37,39 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
   # Basic Stats
   # ################################################################
 
+  # mean values
+  names_means <- c(
+    "capture_rate",
+    "base_happiness",
+    "height",
+    "weight",
+    "base_experience"
+  )
+
+  means <- round(
+    unlist(
+      lapply(seq_along(names_means), function(i) {
+        current_mean <- names_means[[i]]
+        if (i %in% c(3:5)) {
+          mean(sapply(seq_along(mainData), function(j) {
+            mainData[[j]][[current_mean]]
+          }))
+        } else {
+          mean(sapply(seq_along(details), function(j) {
+            details[[j]][[current_mean]]
+          }))
+        }
+      })
+    )
+  )
+
+  # height and weight need to be scaled
+  means[[3]] <- means[[3]] * 10
+  means[[4]] <- means[[4]] / 10
+  names(means) <- paste0("mean_", names_means)
+
+  means <- c(NA, means)
+
   # basic stats
   outputNames <- c(
     "pokeGrowth",
@@ -78,12 +111,17 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
   })
 
   lapply(seq_along(outputNames), FUN = function(i) {
+
     output[[outputNames[[i]]]] <- renderUI({
+
+      # calculate trends in %
+      trend <- if (i == 1) NA else round(100 * (basicStats()$values[[i]] - means[[i]]) / means[[i]])
 
       tablerStatCard(
         value = basicStats()$values[[i]],
         title = basicStats()$titles[[i]],
-        width = 12
+        width = 12,
+        trend = if (!is.na(trend)) trend else NULL
       )
     })
   })
