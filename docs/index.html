@@ -75,6 +75,66 @@
 <blockquote>
 <p>shiny app for pokemons</p>
 </blockquote>
+<div id="purpose-of-this-app" class="section level2">
+<h2 class="hasAnchor">
+<a href="#purpose-of-this-app" class="anchor"></a>Purpose of this App:</h2>
+<p>This app was designed for two reasons:</p>
+<ul>
+<li>propose something original for the upcoming <a href="https://blog.rstudio.com/2019/01/07/first-shiny-contest/">shiny contest</a> event</li>
+<li>serve as a gallery for the RinteRface <a href="https://github.com/RinteRface/tablerDash">tablerDash</a> dashboard template</li>
+</ul>
+</div>
+<div id="original-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#original-data" class="anchor"></a>Original Data</h2>
+<p>The original data are taken from the amazing <a href="https://pokeapi.co">pokeApi</a>. However, I did not use any GET request. Instead, I built my own data from what I found relevant in the API. Moreover, I chose to deal only with the first 151 pokemons (because I played with them as a child). Such a restriction is actually not as straightforward as it seems to handle, since each element need to belong to the first pokemon generation (while the API provides unfiltered data). There are features that exist now but not in the first games (namely red/blue):</p>
+<ul>
+<li>eggs</li>
+<li>special objects</li>
+<li>day/night cycle</li>
+<li>mega evolutions</li>
+<li>…</li>
+</ul>
+</div>
+<div id="app-skeleton" class="section level2">
+<h2 class="hasAnchor">
+<a href="#app-skeleton" class="anchor"></a>App skeleton</h2>
+<p>This app is packaged into 11 shiny modules that tightly interact together to pass useful informations, such as the currently selected pokemon. All outputs are mainly generated with the excellents <a href="https://github.com/JohnCoene/echarts4r">echarts4r</a> and <a href="https://datastorm-open.github.io/visNetwork/">visNetwork</a>.</p>
+</div>
+<div id="interface" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interface" class="anchor"></a>Interface</h2>
+<p>This app is built on top of the brand new Bootstrap 4 <a href="https://github.com/RinteRface/tablerDash">tablerDash</a> template. Furthermore, it includes the new pushbar.js library implementation by <a href="https://github.com/JohnCoene/pushbar">John Coene</a>. Combined together, this allows to develop clean templates, especially for mobile devices.</p>
+</div>
+<div id="screenshots" class="section level2">
+<h2 class="hasAnchor">
+<a href="#screenshots" class="anchor"></a>Screenshots</h2>
+<div id="main-panel-informations-about-a-given-pokemon" class="section level3">
+<h3 class="hasAnchor">
+<a href="#main-panel-informations-about-a-given-pokemon" class="anchor"></a>Main Panel: informations about a given pokemon</h3>
+<p><br><img src="reference/figures/shinyMons_1.png"><br><br></p>
+</div>
+<div id="gallery-panel-display-all-151-pokemons" class="section level3">
+<h3 class="hasAnchor">
+<a href="#gallery-panel-display-all-151-pokemons" class="anchor"></a>Gallery Panel: Display all 151 pokemons</h3>
+<p><br><img src="reference/figures/shinyMons_2.png"><br><br></p>
+</div>
+<div id="attacks-panel-informations-about-attacks" class="section level3">
+<h3 class="hasAnchor">
+<a href="#attacks-panel-informations-about-attacks" class="anchor"></a>Attacks Panel: informations about attacks</h3>
+<p><br><img src="reference/figures/shinyMons_3.png"><br><br></p>
+</div>
+<div id="network-panel-visualize-evolutions-and-more" class="section level3">
+<h3 class="hasAnchor">
+<a href="#network-panel-visualize-evolutions-and-more" class="anchor"></a>Network Panel: visualize evolutions and more</h3>
+<p><br><img src="reference/figures/shinyMons_4.png"><br><br></p>
+</div>
+<div id="others-panel-other-stats" class="section level3">
+<h3 class="hasAnchor">
+<a href="#others-panel-other-stats" class="anchor"></a>Others Panel: other stats</h3>
+<p><br><img src="reference/figures/shinyMons_5.png"><br><br></p>
+</div>
+</div>
 </div>
   </div>
 
@@ -105,7 +165,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/DivadNojnarg/shinyMons"><img src="https://travis-ci.org/DivadNojnarg/shinyMons.svg?branch=master" alt="Travis build status"></a></li>
+<li><a href="https://travis-ci.com/DivadNojnarg/shinyMons"><img src="https://travis-ci.com/DivadNojnarg/shinyMons.svg?branch=master" alt="Travis build status"></a></li>
 <li><a href="https://cran.r-project.org/package=shinyMons"><img src="https://www.r-pkg.org/badges/version/shinyMons" alt="CRAN status"></a></li>
 </ul>
 </div>
