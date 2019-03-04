@@ -132,10 +132,8 @@ shiny::shinyApp(
             column(
               width = 8,
               pokeStatsUi(id = "stats"),
-              fluidRow(
-                pokeMoveUi(id = "moves"),
-                pokeLocationUi(id = "location")
-              )
+              pokeMoveUi(id = "moves"),
+              pokeLocationUi(id = "location")
             )
           )
         ),

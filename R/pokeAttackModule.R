@@ -86,7 +86,7 @@ pokeAttack <- function(input, output, session, attacks) {
       group_by(grp) %>%
       e_charts() %>%
       e_boxplot(x) %>%
-      e_title("Stats Means")
+      e_title("Global Stats Means")
 
   })
 
@@ -175,7 +175,7 @@ pokeAttack <- function(input, output, session, attacks) {
           align = "center",
           tablerTable(
             title = "Main Stats",
-            width = 4,
+            width = 12,
             tablerTableItem(
               left = tablerTag(name = "Power", rounded = TRUE, color = "pink"),
               right = h3(attacks[[selected]]$power)
@@ -191,17 +191,6 @@ pokeAttack <- function(input, output, session, attacks) {
             tablerTableItem(
               left = tablerTag(name = "Priority", rounded = TRUE, color = "blue"),
               right = h3(attacks[[selected]]$priority)
-            )
-          ),
-          fluidRow(
-            # index 44 corresponds to English
-            paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]), br(),
-            tablerTag(
-              name = "Type of damages",
-              rounded = FALSE,
-              color = "default",
-              addon = attacks[[selected]]$damage_class$name,
-              addonColor = "red"
             )
           )
         ),
@@ -225,6 +214,17 @@ pokeAttack <- function(input, output, session, attacks) {
           } else {
             echarts4rOutput(outputId = ns("attackStats"))
           }
+        )
+      ),
+      fluidRow(
+        # index 44 corresponds to English
+        paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]), br(),
+        tablerTag(
+          name = "Type of damages",
+          rounded = FALSE,
+          color = "default",
+          addon = attacks[[selected]]$damage_class$name,
+          addonColor = "red"
         )
       )
     )

@@ -6,7 +6,7 @@
 #' @export
 pokeLocationUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_locations"), class = "col-sm-4")
+  uiOutput(ns("poke_locations"), class = "col-sm-12")
 }
 
 
