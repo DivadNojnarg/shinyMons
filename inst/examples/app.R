@@ -1,16 +1,9 @@
-library(jsonlite)
 library(shiny)
 library(tablerDash)
 library(shinyWidgets)
 library(shinyEffects)
-library(echarts4r)
-library(parallel)
-library(stringr)
-library(dplyr)
 library(pushbar)
-library(visNetwork)
 library(shinyMons)
-library(curl)
 
 source("pokeNames.R")
 

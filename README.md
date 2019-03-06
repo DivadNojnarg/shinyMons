@@ -66,3 +66,6 @@ especially for mobile devices.
 <br>
 <br>
 
+## Further projects
+- Build a clean database for the first generation of pokemons
+- Develop a fight system based on pokemon's stats
