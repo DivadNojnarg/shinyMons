@@ -232,7 +232,7 @@ pokeAttack <- function(input, output, session, attacks) {
 
 
   # treemap of attack types
-  attackTypes <- sort(sapply(seq_along(attacks), function(i) attacks[[i]]$type$name))
+  attackTypes <- sapply(seq_along(attacks), function(i) attacks[[i]]$type$name)
 
   df <- data.frame(
     parent = attackTypes,
