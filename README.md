@@ -4,6 +4,8 @@
 
 > shiny app for pokemons
 
+![](man/figures/shinyMons.gif)
+
 ## Purpose of this App:
 This app was designed for two reasons:
 
