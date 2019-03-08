@@ -4,6 +4,7 @@ library(shinyWidgets)
 library(shinyEffects)
 library(pushbar)
 library(shinyMons)
+library(waiter)
 
 source("pokeNames.R")
 
@@ -91,6 +92,8 @@ shiny::shinyApp(
 
       # load pushbar dependencies
       pushbar_deps(),
+      # laad the waiter dependencies
+      use_waiter(),
 
       # custom jquery to hide some inputs based on the selected tag
       # actually tablerDash would need a custom input/output binding
@@ -231,7 +234,8 @@ shiny::shinyApp(
       id = "fights",
       mainData = pokeMain,
       sprites = pokeSprites,
-      attacks = pokeAttacks
+      attacks = pokeAttacks,
+      types = pokeTypes
     )
 
     # location

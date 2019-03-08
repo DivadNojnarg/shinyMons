@@ -143,19 +143,26 @@ select_attacks <- function(mainData, attacks, current_pokemon_id) {
 
   # remove all moves not in the first gen (165 first attacks)
   moves_urls <- temp_moves$move$url
-  bad_moves <- unlist(
+  good_moves <- unlist(
     lapply(seq_along(moves_urls), function(i) {
       url <- moves_urls[[i]]
       url_split <- str_split(url, "/")[[1]]
-      if (as.numeric(url_split[7]) > 165) i
+      if (as.numeric(url_split[7]) <= 165) {
+        accuracy <- attacks[[temp_moves$move$name[[i]]]]
+        if (!is.null(accuracy)) i
+      }
     })
   )
 
   # moves name that can be learn by bulbasaur
-  temp_moves<- temp_moves$move[-c(bad_moves), ]
+  temp_moves<- temp_moves$move[c(good_moves), ]
 
   # randomly select 4 moves
-  temp_moves_id <- round(runif(4, min = 1, max = length(temp_moves$name)))
+  # use unique to make sure that a move is unique
+  temp_moves_id <- unique(round(runif(4, min = 1, max = length(temp_moves$name))))
+  while(length(temp_moves_id) != 4) {
+    temp_moves_id <- unique(round(runif(4, min = 1, max = length(temp_moves$name))))
+  }
 
   # select the corresponding 4 attacks in the attacks data object
   # to access all stats ...
@@ -179,9 +186,15 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   attack_target <- current_attack$target$name
   attack_type <- current_attack$type$name
+  opponent_types <- types[[str_to_title(opponent$name)]]
+
+  opponent_types_names <- unlist(
+    lapply(seq_along(opponent_types), function(i) {
+      opponent_types[[i]]$name
+    })
+  )
 
   random <- runif(n = 1, min = 0.85, max = 1)
-
 
   targets <- if (attack_target == "all-opponents") {
     0.75
@@ -189,7 +202,7 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
     1
   }
 
-  stab <- if (attack_type %in% opponent_types) {
+  stab <- if (attack_type %in% opponent_types_names) {
     1.5
     # adaptability is missing from raw data
   } else {
@@ -200,7 +213,6 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   # Below we determine if the current attack is effecient
   # against the opponent. For that, we extract the opponent resistances
   # and weaknesses and see if the attack type is in one of these data.
-  opponent_types <- types[[str_to_title(opponent$name)]]
   double_damage_from <- unlist(
     lapply(seq_along(opponent_types), function(i) {
       opponent_types[[i]]$double_damage_from
@@ -224,6 +236,8 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
     0.5
   } else if (attack_type %in% no_damage_from) {
     0
+  } else {
+    1
   }
 
   # modifyer coefficient (pretty simple in the first gen)
@@ -246,7 +260,7 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   hit_prop <- c(rep(1, accuracy), rep(0, 100 - accuracy))
   prob_to_hit <- sample(hit_prop, 1)
 
-  damages <- damages * prob_to_hit
+  damages <- round(damages * prob_to_hit)
 
   return(damages)
 }
@@ -263,12 +277,13 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 #' @param mainData Object containing the main pokemon data.
 #' @param sprites Object containing pokemon images.
 #' @param attacks Object containing pokemon attacks.
+#' @param types Object containing all pokemon types.
 #'
-#' @import tablerDash echarts4r
+#' @import tablerDash echarts4r waiter
 #' @importFrom stats rnorm
 #'
 #' @export
-pokeFight <- function(input, output, session, mainData, sprites, attacks) {
+pokeFight <- function(input, output, session, mainData, sprites, attacks, types) {
 
   ns <- session$ns
 
@@ -284,28 +299,58 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
     )
   })
 
-  observe({
-    #print(pokemons()[[1]]$attack)
-    #print(pokemons()[[1]]$defense)
-    #print(pokemons()[[1]]$hp)
+  # handle damages ... work in progress
+  lapply(seq_along(attacks), function(i) {
+
+   current_attack  <- names(attacks)[[i]]
+    # need to determin on which pokemon it was
+    # clicked!
+
+    observeEvent(input[[current_attack]], {
+
+      print(current_attack)
+
+      test <- calculate_damages(
+        current_attack = attacks[[current_attack]],
+        current_pokemon = pokemons()[[1]],
+        opponent = pokemons()[[2]],
+        types = types
+      )
+      print(test)
+    })
   })
 
 
-  # when HP is 0, the game is lost
+
+  # when the user click on go, show a loading screen
+  observeEvent(input$go, {
+    show_waiter(
+      color = "#1e90ff",
+      tagList(
+        spin_folding_cube(),
+        "Loading your fight..."
+      )
+    )
+    Sys.sleep(2)
+    hide_waiter()
+  })
+
+
+  # when HP is 0, the game is lost or won depending on the pokemon
   observe({
     pokemons <- pokemons()
     if (pokemons[[1]]$hp <= 0 | pokemons[[2]]$hp <= 0) {
       if (pokemons[[1]]$hp <= 0) {
         tablerAlert(
           title = "Wasted",
-          "You lost!",
+          paste0(pokemons[[1]], " lost!"),
           icon = "alert-triangle",
           status = "danger"
         )
       } else {
         tablerAlert(
           title = "Congrats",
-          "You won!",
+          paste0(pokemons[[1]], " won!"),
           icon = "alert-triangle",
           status = "success"
         )

@@ -16,8 +16,9 @@ Imports: shiny,
     visNetwork, 
     shinyjs, 
     stringr,
-    jsonlite
-Remotes: RinteRface/tablerDash, JohnCoene/pushbar
+    jsonlite,
+    waiter
+Remotes: RinteRface/tablerDash, JohnCoene/pushbar, JohnCoene/waiter
 URL: https://github.com/DivadNojnarg/shinyMons
 BugReports: https://github.com/DivadNojnarg/shinyMons/issues
 License: GPL-2
