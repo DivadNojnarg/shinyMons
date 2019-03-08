@@ -350,6 +350,23 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
 
       attacks <- sapply(seq_along(attacks), function(i) attacks[[i]]$name)
 
+      # generate the 4 attacks buttons
+      attackBttns <- lapply(seq_along(attacks), function(i) {
+        fluidRow(
+          tagAppendAttributes(
+            actionBttn(
+              inputId = ns(attacks[[i]]),
+              label = attacks[[i]],
+              color = "warning",
+              style = "simple",
+              block = TRUE
+            ),
+            class = "my-2"
+          )
+        )
+      })
+
+      # pokemon fight card
       tablerCard(
         title = NULL,
         options = NULL,
@@ -374,7 +391,8 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
           ),
           column(
             width = 6,
-            uiOutput(ns(paste0("pokeHP_", i)))
+            uiOutput(ns(paste0("pokeHP_", i))),
+            attackBttns
           )
         )
       )
