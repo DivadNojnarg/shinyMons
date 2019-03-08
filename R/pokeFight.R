@@ -41,6 +41,7 @@ compute_stat <- function(level, base_stat) {
   # there are 2 different pokemons,
   # they do not have the same stats
   # It is of course rounded...
+  # Formula taken from https://bulbapedia.bulbagarden.net/wiki/Statistic
   stat_var <- round(runif(1, 0, 20))
   stat <- round(( (base_stat + stat_var) * 2 * level ) / 100 + 10 + level)
   return(stat)
@@ -95,7 +96,9 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
     lvl = poke_lvls[[1]],
     defense = defense_1,
     attack = attack_1,
-    hp = hp_1
+    hp = hp_1,
+    # hp_0 is the basal HP, do not update. Update hp instead
+    hp_0 = hp_1
   )
 
   # pokemon 2
@@ -117,7 +120,9 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
     lvl = poke_lvls[[2]],
     defense = defense_2,
     attack = attack_2,
-    hp = hp_2
+    hp = hp_2,
+    # hp_0 is the basal HP, do not update. Update hp instead
+    hp_0 = hp_2
   )
 
   return(list(pokemon1, pokemon2))
@@ -227,6 +232,7 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   # the main formula
   # I think some attacks use special-stats instead of classic stats (psychic)
   # Here it is not the case.
+  # Taken from https://pokemon.fandom.com/wiki/Damage_Calculation
   level <- current_pokemon$lvl
   power <- current_attack$power
   attack <- current_pokemon$attack
@@ -279,10 +285,9 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
   })
 
   observe({
-    #print(pokemons()[[1]]$attacks)
-    print(pokemons()[[1]]$attack)
-    print(pokemons()[[1]]$defense)
-    print(pokemons()[[1]]$hp)
+    #print(pokemons()[[1]]$attack)
+    #print(pokemons()[[1]]$defense)
+    #print(pokemons()[[1]]$hp)
   })
 
 
@@ -310,21 +315,27 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
 
   # progress bar for HP
   # dynamically updated
-  output$pokeHP <- renderUI({
-    tablerProgress(
-      value = hp,
-      status = if (75 < hp & hp <= 100) {
-        "green"
-      } else if (50 < hp & hp <= 75) {
-        "yellow"
-      } else if (25 < hp & hp <= 50) {
-        "orange"
-      } else if (0 < hp & hp <= 25) {
-        "red"
-      },
-      size = "sm"
-    )
+  lapply(1:2, function(i) {
+    output[[paste0("pokeHP_", i)]] <- renderUI({
+
+      hp <- round(pokemons()[[i]]$hp / pokemons()[[i]]$hp_0 * 100)
+
+      tablerProgress(
+        value = hp,
+        status = if (75 < hp & hp <= 100) {
+          "green"
+        } else if (50 < hp & hp <= 75) {
+          "yellow"
+        } else if (25 < hp & hp <= 50) {
+          "orange"
+        } else if (0 < hp & hp <= 25) {
+          "red"
+        },
+        size = "md"
+      )
+    })
   })
+
 
   # render the first pokemon box
   lapply(1:2, function(i) {
@@ -335,6 +346,9 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
       name <- pokemons[[i]]$name
       lvl <- pokemons[[i]]$lvl
       hp <- pokemons[[i]]$hp
+      attacks <- pokemons()[[i]]$attacks
+
+      attacks <- sapply(seq_along(attacks), function(i) attacks[[i]]$name)
 
       tablerCard(
         title = NULL,
@@ -360,7 +374,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks) {
           ),
           column(
             width = 6,
-            uiOutput(ns("pokeHp"))
+            uiOutput(ns(paste0("pokeHP_", i)))
           )
         )
       )
