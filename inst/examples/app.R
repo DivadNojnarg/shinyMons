@@ -20,6 +20,15 @@ pokeAttacks <- readRDS("pokeAttacks")
 pokeEdges <- readRDS("pokeEdges")
 pokeGroups <- readRDS("pokeGroups")
 
+# pokemon sprites
+pokeSprites <- vapply(
+  seq_along(pokeNames),
+  FUN = function(i) {
+    pokeMain[[i]]$sprites$front_default
+  },
+  FUN.VALUE = character(1)
+)
+
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
@@ -48,6 +57,11 @@ shiny::shinyApp(
           tabName = "PokeNetwork",
           icon = "box",
           "PokeNetwork"
+        ),
+        tablerNavMenuItem(
+          tabName = "PokeFight",
+          icon = "box",
+          "PokeFight"
         ),
         tablerNavMenuItem(
           tabName = "PokeOther",
@@ -143,6 +157,10 @@ shiny::shinyApp(
           pokeNetworkUi(id = "network")
         ),
         tablerTabItem(
+          tabName = "PokeFight",
+          pokeFightUi(id = "fights")
+        ),
+        tablerTabItem(
           tabName = "PokeOther",
           pokeOtherUi(id = "other")
         )
@@ -170,7 +188,14 @@ shiny::shinyApp(
     )
 
     # main module (data)
-    main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails, selected = network$selected)
+    main <- callModule(
+      module = pokeInput,
+      id = "input",
+      mainData = pokeMain,
+      sprites = pokeSprites,
+      details = pokeDetails,
+      selected = network$selected
+    )
 
     # infos module
     callModule(
@@ -198,6 +223,15 @@ shiny::shinyApp(
       selected = main$pokeSelect,
       shiny = main$pokeShiny,
       evolutions = pokeEvolutions
+    )
+
+    # fights module
+    callModule(
+      module = pokeFight,
+      id = "fights",
+      mainData = pokeMain,
+      sprites = pokeSprites,
+      attacks = pokeAttacks
     )
 
     # location

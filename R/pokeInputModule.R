@@ -18,18 +18,18 @@ pokeInputUi <- function(id) {
 #' @param output Shiny outputs.
 #' @param session Shiny session.
 #' @param mainData Object containing the main pokemon data.
+#' @param sprites Object containing pokemon images.
 #' @param details Object containing extra pokemon details.
 #' @param selected Object containing the selected pokemon in the network, if not NULL.
 #'
 #' @import shinyWidgets
 #'
 #' @export
-pokeInput <- function(input, output, session, mainData, details, selected) {
+pokeInput <- function(input, output, session, mainData, sprites, details, selected) {
 
   ns <- session$ns
 
   pokeNames <- names(mainData)
-  sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
 
   # pokemon selector
   output$pokeChoice <- renderUI({

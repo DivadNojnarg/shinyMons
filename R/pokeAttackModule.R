@@ -269,3 +269,4 @@ pokeAttack <- function(input, output, session, attacks) {
 globalVariables("parent")
 globalVariables("child")
 globalVariables("value")
+globalVariables("grp")

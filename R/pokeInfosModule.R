@@ -41,16 +41,17 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
     req(!is.null(selected()))
 
     habitats <- unique(unlist(lapply(1:151, function(i) details[[i]]$habitat$name)))
-    habitatColor <- switch (details[[selected()]]$habitat$name,
-                            "grassland" = "lime",
-                            "mountain" = "orange",
-                            "waters-edge" = "azure",
-                            "forest" = "green",
-                            "rough-terrain" = "yellow",
-                            "cave" = "gray-dark",
-                            "urban" = "gray",
-                            "sea" = "blue",
-                            "rare" = "purple"
+    habitatColor <- switch (
+      details[[selected()]]$habitat$name,
+      "grassland" = "lime",
+      "mountain" = "orange",
+      "waters-edge" = "azure",
+      "forest" = "green",
+      "rough-terrain" = "yellow",
+      "cave" = "gray-dark",
+      "urban" = "gray",
+      "sea" = "blue",
+      "rare" = "purple"
     )
 
     tagList(
