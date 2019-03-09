@@ -80,6 +80,11 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
   # pokemon 1
   id_1 <- poke_ids[[1]]
 
+  defense_spe_1_base <- mainData[[id_1]]$stats$base_stat[2]
+  defense_spe_1 <- compute_stat(poke_lvl1, defense_spe_1_base)
+  attack_spe_1_base <- mainData[[id_1]]$stats$base_stat[3]
+  attack_spe_1 <- compute_stat(poke_lvl1, attack_spe_1_base)
+
   defense_1_base <- mainData[[id_1]]$stats$base_stat[5]
   defense_1 <- compute_stat(poke_lvl1, defense_1_base)
   attack_1_base <- mainData[[id_1]]$stats$base_stat[4]
@@ -95,7 +100,9 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
     sprite = sprites[[id_1]],
     lvl = poke_lvls[[1]],
     defense = defense_1,
+    defense_spe = defense_spe_1,
     attack = attack_1,
+    attack_spe = attack_spe_1,
     hp = hp_1,
     # hp_0 is the basal HP, do not update. Update hp instead
     hp_0 = hp_1
@@ -103,6 +110,11 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
 
   # pokemon 2
   id_2 <- poke_ids[[2]]
+
+  defense_spe_2_base <- mainData[[id_2]]$stats$base_stat[2]
+  defense_spe_2 <- compute_stat(poke_lvl2, defense_spe_2_base)
+  attack_spe_2_base <- mainData[[id_2]]$stats$base_stat[3]
+  attack_spe_2 <- compute_stat(poke_lvl2, attack_spe_2_base)
 
   defense_2_base <- mainData[[id_2]]$stats$base_stat[5]
   defense_2 <- compute_stat(poke_lvl2, defense_2_base)
@@ -119,7 +131,9 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
     sprite = sprites[[id_2]],
     lvl = poke_lvls[[2]],
     defense = defense_2,
+    defense_spe = defense_spe_2,
     attack = attack_2,
+    attack_spe = attack_spe_2,
     hp = hp_2,
     # hp_0 is the basal HP, do not update. Update hp instead
     hp_0 = hp_2
@@ -147,22 +161,27 @@ select_attacks <- function(mainData, attacks, current_pokemon_id) {
     lapply(seq_along(moves_urls), function(i) {
       url <- moves_urls[[i]]
       url_split <- str_split(url, "/")[[1]]
-      if (as.numeric(url_split[7]) <= 165) {
-        accuracy <- attacks[[temp_moves$move$name[[i]]]]
-        if (!is.null(accuracy)) i
+      move_id <- as.numeric(url_split[7])
+      if (move_id <= 165) {
+        move_name <- temp_moves$move$name[[i]]
+        # counter attack need previous damages to work
+        # this is not supported right now
+        if (move_name != "counter") {
+          accuracy <- attacks[[move_name]]$accuracy
+          if (!is.null(accuracy)) {
+            # for the moment we do not select attack altering the status
+            # this is not supported right now.
+            damage_class <- attacks[[move_name]]$damage_class$name
+            if (damage_class != "status") move_id
+            # TO DO: need to handle attacks like flying or dig which take 2 turns to launch
+          }
+        }
       }
     })
   )
 
-  # moves name that can be learn by bulbasaur
-  temp_moves<- temp_moves$move[c(good_moves), ]
-
   # randomly select 4 moves
-  # use unique to make sure that a move is unique
-  temp_moves_id <- unique(round(runif(4, min = 1, max = length(temp_moves$name))))
-  while(length(temp_moves_id) != 4) {
-    temp_moves_id <- unique(round(runif(4, min = 1, max = length(temp_moves$name))))
-  }
+  temp_moves_id <- sample(good_moves, 4)
 
   # select the corresponding 4 attacks in the attacks data object
   # to access all stats ...
@@ -186,6 +205,8 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   attack_target <- current_attack$target$name
   attack_type <- current_attack$type$name
+  damage_class <- current_attack$damage_class$name
+
   opponent_types <- types[[str_to_title(opponent$name)]]
 
   opponent_types_names <- unlist(
@@ -198,7 +219,7 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   targets <- if (attack_target == "all-opponents") {
     0.75
-  } else if (attack_target == "selected-pokemon") {
+  } else if (attack_target == "selected-pokemon" | attack_target == "random-opponent") {
     1
   }
 
@@ -229,7 +250,8 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
     })
   )
 
-
+  # TO DO: return a text saying: "it was super efficient",
+  # "it was not efficient" to know what happend...
   type <- if (attack_type %in% double_damage_from) {
     2
   } else if (attack_type %in% half_damage_from) {
@@ -243,16 +265,33 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   # modifyer coefficient (pretty simple in the first gen)
   modifiyer <- targets * random * stab * type
 
-  # the main formula
-  # I think some attacks use special-stats instead of classic stats (psychic)
-  # Here it is not the case.
-  # Taken from https://pokemon.fandom.com/wiki/Damage_Calculation
+  # the main formula taken from https://pokemon.fandom.com/wiki/Damage_Calculation
   level <- current_pokemon$lvl
-  power <- current_attack$power
+  power <- if (!is.null(current_attack$power)) {
+    current_attack$power
+  } else {
+    # handle variable power attacks
+    # The bad new is that it depends on the current attack
+    # There is not predifined rule
+    if (current_attack$name == "super-fang") {
+      opponent$hp / 2
+    } else if (current_attack$name == "seismic-toss") {
+      opponent$lvl
+    } else if (current_attack$name == "low-kick") {
+      50
+    }
+  }
   attack <- current_pokemon$attack
   defense <- opponent$defense
 
-  damages <- ( ( ( (2 * level) / 5 + 2 ) * power * attack / defense ) / 50 + 2 ) * modifiyer
+  # handle the case where the attack involves special stats like psychic
+  damages <- if (damage_class == "special") {
+    attack_spe <- current_pokemon$attack_spe
+    defense_spe <- opponent$defense_spe
+    ( ( ( (2 * level) / 5 + 2 ) * power * attack_spe / defense_spe ) / 50 + 2 ) * modifiyer
+  } else {
+    ( ( ( (2 * level) / 5 + 2 ) * power * attack / defense ) / 50 + 2 ) * modifiyer
+  }
 
   # Below I decided to integrate the accuracy stat since it is crucial
   # An attack with 50% accuracy will not hit its target in 50% of times...
@@ -260,7 +299,24 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   hit_prop <- c(rep(1, accuracy), rep(0, 100 - accuracy))
   prob_to_hit <- sample(hit_prop, 1)
 
-  damages <- round(damages * prob_to_hit)
+  # handle attacks that one shot
+  ko <- current_attack$meta$category$name
+  is_ko <- (ko == "ohko")
+
+  damages <- if (is_ko) {
+    opponent$hp
+  } else {
+    # handle multiple shot attacks such as fury attack
+    max_hits <- current_attack$meta$max_hits
+    if (!is.null(max_hits)) {
+      min_hits <- current_attack$meta$min_hits
+      n_hits <- round(runif(n = 1, min = min_hits, max = max_hits))
+      damages <- rep(round(damages * prob_to_hit), n_hits)
+      sum(damages)
+    } else {
+      round(damages * prob_to_hit)
+    }
+  }
 
   return(damages)
 }
@@ -306,7 +362,8 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     # need to determin on which pokemon it was
     # clicked!
 
-    observeEvent(input[[current_attack]], {
+   # event for the first pokemon
+    observeEvent(input[[paste0("poke1_", current_attack)]], {
 
       print(current_attack)
 
@@ -318,6 +375,22 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       )
       print(test)
     })
+
+    # event for the second pokemon. Current and opponent are
+    # reversed.
+    observeEvent(input[[paste0("poke2_", current_attack)]], {
+
+      print(current_attack)
+
+      test <- calculate_damages(
+        current_attack = attacks[[current_attack]],
+        current_pokemon = pokemons()[[2]],
+        opponent = pokemons()[[1]],
+        types = types
+      )
+      print(test)
+    })
+
   })
 
 
@@ -390,26 +463,57 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       sprite <- pokemons[[i]]$sprite
       name <- pokemons[[i]]$name
       lvl <- pokemons[[i]]$lvl
+      hp_0 <- pokemons[[i]]$hp_0
       hp <- pokemons[[i]]$hp
-      attacks <- pokemons()[[i]]$attacks
+      attacks <- pokemons[[i]]$attacks
 
       attacks <- sapply(seq_along(attacks), function(i) attacks[[i]]$name)
 
       # generate the 4 attacks buttons
-      attackBttns <- lapply(seq_along(attacks), function(i) {
+      # We consider unlimited number of attacks right now.
+      # This make sense since a single fight does not last enough
+      # to lose all pp. However, if later we decide to
+      # chain fights with the same pokemon, it will be relevant.
+      attackBttns <- lapply(seq_along(attacks), function(j) {
         fluidRow(
           tagAppendAttributes(
             actionBttn(
-              inputId = ns(attacks[[i]]),
-              label = attacks[[i]],
-              color = "warning",
+              # for the id we need to separate pokemon 1 and pokemon 2.
+              # Indeed, if for any reason both pokemon have the same attack,
+              # we need to distinguish from which button it was triggered...
+              inputId = if(i == 1) {
+                ns(paste0("poke1_", attacks[[j]]))
+              } else {
+                ns(paste0("poke2_", attacks[[j]]))
+              },
+              label = attacks[[j]],
               style = "simple",
-              block = TRUE
+              block = TRUE,
+              color = "warning"
             ),
-            class = "my-2"
+            # we add a different class for each pokemon
+            # used later by jQuery to identify on which side
+            # a given button was clicked.
+            class = if (i == 1) {
+              "poke1 m-2 btn-outline-warning"
+            } else {
+              "poke2 m-2 btn-outline-warning"
+            }
           )
         )
       })
+
+      # better layout
+      attackBttns <- tagList(
+        fluidRow(
+          column(width = 6, attackBttns[[1]]),
+          column(width = 6, attackBttns[[2]])
+        ),
+        fluidRow(
+          column(width = 6, attackBttns[[3]]),
+          column(width = 6, attackBttns[[4]])
+        )
+      )
 
       # pokemon fight card
       tablerCard(
@@ -426,17 +530,19 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
         overflow = FALSE,
         fluidRow(
           column(
-            width = 6,
+            width = 4,
             align = "center",
             tablerAvatar(
               url = sprite,
               size = "xxl"
             ),
+            br(),
             paste(name, "lvl:", lvl)
           ),
           column(
-            width = 6,
+            width = 8,
             uiOutput(ns(paste0("pokeHP_", i))),
+            div(align = "center", paste0(hp, "/", hp_0)),
             attackBttns
           )
         )
