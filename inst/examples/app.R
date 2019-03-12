@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyjs)
 library(tablerDash)
 library(shinyWidgets)
 library(shinyEffects)
@@ -94,6 +95,8 @@ shiny::shinyApp(
       pushbar_deps(),
       # laad the waiter dependencies
       use_waiter(),
+      # load shinyjs
+      useShinyjs(),
 
       # custom jquery to hide some inputs based on the selected tag
       # actually tablerDash would need a custom input/output binding

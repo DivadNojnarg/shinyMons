@@ -343,10 +343,12 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
   ns <- session$ns
 
-  start_fight <- FALSE
 
   # create the pokemons when click on go
   pokemons <- eventReactive(input$go, {
+
+    start$fight <- TRUE
+
     generate_pokemons(
       mainData,
       sprites,
@@ -355,90 +357,154 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     )
   })
 
-  # handle damages ... work in progress
-  lapply(seq_along(attacks), function(i) {
 
-   current_attack  <- names(attacks)[[i]]
-    # need to determin on which pokemon it was
-    # clicked!
+  # Initialization of the fight variable
+  # start_fight will be TRUE as soon as the go button is pressed.
+  # Randomly selects who starts the fight and init variables
+  # This booleans will be update all along the current fight
+  # to create a turn by turn system...
+  who_starts <- sample(1:2, 1)
+  poke1_starts <- if (who_starts == 1) TRUE else FALSE
+  poke2_starts <- !poke1_starts
+  start <- reactiveValues(fight = FALSE, poke1 = poke1_starts, poke2 = poke2_starts)
 
-   # event for the first pokemon
-    observeEvent(input[[paste0("poke1_", current_attack)]], {
-
-      print(current_attack)
-
-      damages1 <- calculate_damages(
-        current_attack = attacks[[current_attack]],
-        current_pokemon = pokemons()[[1]],
-        opponent = pokemons()[[2]],
-        types = types
-      )
-
-      # insert alert to send user feedback on the current attack results
-      pokeName1 <- pokemons()[[1]]$name
-      pokeName2 <- pokemons()[[2]]$name
-
-      insertUI(
-        selector = "#pokeFightCard_1",
-        where = "afterBegin",
-        ui = if (damages1 > 0) {
-          status <- "success"
-          tablerTimelineItem(
-            title = "Event",
-            date = Sys.time(),
-            status = status,
-            tablerAlert(
-              paste(pokeName1, "dealt", damages1, "damages to", pokeName2),
-              icon = "alert-triangle",
-              status = status
-            )
-          )
-        } else if (damages1 == pokemons()[[2]]$hp) {
-          status <- "purple"
-          tablerTimelineItem(
-            title = "Event",
-            date = Sys.time(),
-            status = status,
-            tablerAlert(
-              paste(pokeName2, "has been one shot by", pokeName1),
-              icon = "alert-triangle",
-              status = status
-            )
+  # Explicitly says who starts: delayed by the time of loader
+  observe({
+    #shinyjs::delay(3000, {
+      sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = if (start$poke1) {
+          fluidRow(
+            img(src = pokemons()[[1]]$sprite),
+            paste("It's", pokemons()[[1]]$name, "turn!")
           )
         } else {
-          status <- "danger"
-          tablerTimelineItem(
-            title = "Event",
-            date = Sys.time(),
-            status = status,
-            tablerAlert(
-              paste(pokeName1, "missed its target"),
-              icon = "alert-triangle",
-              status = status
-            )
+          fluidRow(
+            img(src = pokemons()[[2]]$sprite),
+            paste("It's", pokemons()[[2]]$name, "turn!")
           )
-        }
+        },
+        html = TRUE
       )
-
-    })
-
-    # event for the second pokemon. Current and opponent are
-    # reversed.
-    observeEvent(input[[paste0("poke2_", current_attack)]], {
-
-      print(current_attack)
-
-      test <- calculate_damages(
-        current_attack = attacks[[current_attack]],
-        current_pokemon = pokemons()[[2]],
-        opponent = pokemons()[[1]],
-        types = types
-      )
-      print(test)
-    })
-
+    #})
   })
 
+
+  # Fighting engine for pokemon 1
+  lapply(seq_along(attacks), function(i) {
+
+    current_attack  <- names(attacks)[[i]]
+
+    # depending on which pokemon starts...
+
+    # event for the first pokemon
+    observeEvent(input[[paste0("poke1_", current_attack)]], {
+
+      if (start$poke1) {
+        print(current_attack)
+
+        # calculate damages
+        damages1 <- calculate_damages(
+          current_attack = attacks[[current_attack]],
+          current_pokemon = pokemons()[[1]],
+          opponent = pokemons()[[2]],
+          types = types
+        )
+
+        # insert alert to send user feedback on the current attack results
+        pokeName1 <- pokemons()[[1]]$name
+        pokeName2 <- pokemons()[[2]]$name
+
+        insertUI(
+          selector = "#pokeFightCard_1",
+          where = "afterBegin",
+          ui = if (damages1 > 0) {
+            status <- "success"
+            tablerTimelineItem(
+              title = "Event",
+              date = Sys.time(),
+              status = status,
+              tablerAlert(
+                paste(pokeName1, "dealt", damages1, "damages to", pokeName2),
+                icon = "alert-triangle",
+                status = status
+              )
+            )
+          } else if (damages1 == pokemons()[[2]]$hp) {
+            status <- "purple"
+            tablerTimelineItem(
+              title = "Event",
+              date = Sys.time(),
+              status = status,
+              tablerAlert(
+                paste(pokeName2, "has been one shot by", pokeName1),
+                icon = "alert-triangle",
+                status = status
+              )
+            )
+          } else {
+            status <- "danger"
+            tablerTimelineItem(
+              title = "Event",
+              date = Sys.time(),
+              status = status,
+              tablerAlert(
+                paste(pokeName1, "missed its target"),
+                icon = "alert-triangle",
+                status = status
+              )
+            )
+          }
+        )
+
+        # we say that pokemon 1 cannot do an extra turn
+        start$poke1 <- FALSE
+        start$poke2 <- !start$poke1
+
+        print(start$poke1)
+
+      }
+    }, priority = 1000)
+  })
+
+
+
+  # Fighting engine for pokemon 2
+  observe({
+    if (start$fight) {
+      if (start$poke2) {
+        # disable pokemon 1 attacks
+        lapply(seq_along(pokemons()[[1]]$attacks), function(i) {
+          selected <- paste0("poke1_", pokemons()[[1]]$attacks[[i]]$name)
+          print(selected)
+          shinyjs::disable(selected)
+          #shinyjs::runjs(code = paste0('$("#', selected,'").hide();'))
+        })
+
+        # randomly select an attack
+        rand_id <- sample(seq_along(pokemons()[[2]]$attacks), 1)
+        current_attack <- pokemons()[[2]]$attacks[[rand_id]]$name
+        print(current_attack)
+
+        # calculate damages
+        damages2 <- calculate_damages(
+          current_attack = attacks[[current_attack]],
+          current_pokemon = pokemons()[[2]],
+          opponent = pokemons()[[1]],
+          types = types
+        )
+        print(damages2)
+
+        # similarly pokemon 2 cannot attack twice...
+        start$poke2<- FALSE
+        start$poke1 <- !start$poke2
+
+        print(start$poke2)
+
+      }
+    }
+  }, priority = 1000)
 
 
   # when the user click on go, show a loading screen
@@ -520,34 +586,27 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       # This make sense since a single fight does not last enough
       # to lose all pp. However, if later we decide to
       # chain fights with the same pokemon, it will be relevant.
-      attackBttns <- lapply(seq_along(attacks), function(j) {
-        fluidRow(
-          tagAppendAttributes(
-            actionBttn(
-              # for the id we need to separate pokemon 1 and pokemon 2.
-              # Indeed, if for any reason both pokemon have the same attack,
-              # we need to distinguish from which button it was triggered...
-              inputId = if(i == 1) {
-                ns(paste0("poke1_", attacks[[j]]))
-              } else {
-                ns(paste0("poke2_", attacks[[j]]))
-              },
-              label = attacks[[j]],
-              style = "simple",
-              block = TRUE,
-              color = "warning"
-            ),
-            # we add a different class for each pokemon
-            # used later by jQuery to identify on which side
-            # a given button was clicked.
-            class = if (i == 1) {
-              "poke1 m-2 btn-outline-warning"
-            } else {
-              "poke2 m-2 btn-outline-warning"
-            }
+      # Do not create any buttons for the second pokemon since all attacks
+      # will be randomly selected... Surprise...
+      attackBttns <- if(i == 1) {
+        lapply(seq_along(attacks), function(j) {
+          fluidRow(
+            tagAppendAttributes(
+              actionBttn(
+                inputId = ns(paste0("poke1_", attacks[[j]])),
+                label = attacks[[j]],
+                style = "simple",
+                block = TRUE,
+                color = "warning"
+              ),
+              # we add a different class for each pokemon
+              # used later by jQuery to identify on which side
+              # a given button was clicked.
+              class = "m-2 btn-outline-warning"
+            )
           )
-        )
-      })
+        })
+      }
 
       # better layout
       attackBttns <- tagList(
@@ -589,7 +648,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
             width = 8,
             uiOutput(ns(paste0("pokeHP_", i))),
             div(align = "center", paste0(hp, "/", hp_0)),
-            attackBttns
+            if (i == 1) attackBttns
           )
         ),
         tablerTimeline(id = paste0("pokeFightCard_", i), style = "max-height: 400px; overflow-y: auto;")
