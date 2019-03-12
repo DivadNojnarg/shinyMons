@@ -367,13 +367,59 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
       print(current_attack)
 
-      test <- calculate_damages(
+      damages1 <- calculate_damages(
         current_attack = attacks[[current_attack]],
         current_pokemon = pokemons()[[1]],
         opponent = pokemons()[[2]],
         types = types
       )
-      print(test)
+
+      # insert alert to send user feedback on the current attack results
+      pokeName1 <- pokemons()[[1]]$name
+      pokeName2 <- pokemons()[[2]]$name
+
+      insertUI(
+        selector = "#pokeFightCard_1",
+        where = "afterBegin",
+        ui = if (damages1 > 0) {
+          status <- "success"
+          tablerTimelineItem(
+            title = "Event",
+            date = Sys.time(),
+            status = status,
+            tablerAlert(
+              paste(pokeName1, "dealt", damages1, "damages to", pokeName2),
+              icon = "alert-triangle",
+              status = status
+            )
+          )
+        } else if (damages1 == pokemons()[[2]]$hp) {
+          status <- "purple"
+          tablerTimelineItem(
+            title = "Event",
+            date = Sys.time(),
+            status = status,
+            tablerAlert(
+              paste(pokeName2, "has been one shot by", pokeName1),
+              icon = "alert-triangle",
+              status = status
+            )
+          )
+        } else {
+          status <- "danger"
+          tablerTimelineItem(
+            title = "Event",
+            date = Sys.time(),
+            status = status,
+            tablerAlert(
+              paste(pokeName1, "missed its target"),
+              icon = "alert-triangle",
+              status = status
+            )
+          )
+        }
+      )
+
     })
 
     # event for the second pokemon. Current and opponent are
@@ -545,9 +591,11 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
             div(align = "center", paste0(hp, "/", hp_0)),
             attackBttns
           )
-        )
+        ),
+        tablerTimeline(id = paste0("pokeFightCard_", i), style = "max-height: 400px; overflow-y: auto;")
       )
     })
+
   })
 
 }
