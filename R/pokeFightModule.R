@@ -324,6 +324,72 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
 
 
+#' Function that generates a timelineItem for each attack the pokemon does.
+#'
+#' @param attacking Id of the randomly generated pokemon who is attacking.
+#' @param opponent Opponent type. Useful for effectiveness calculations.
+#' @param attacks Object containing all pokemon attacks data.
+#' @param current_attack The currently selected attack.
+#' @param types Object containing all pokemons types strenght and weaknesses.
+#' TRUE in this case.
+fight_History <- function(attacking, opponent, attacks, current_attack, types) {
+
+  # calculate damages
+  damages <- calculate_damages(
+    current_attack = attacks[[current_attack]],
+    current_pokemon = attacking,
+    opponent = opponent,
+    types = types
+  )
+
+  # insert alert to send user feedback on the current attack results
+  pokeName1 <- attacking$name
+  pokeName2 <- opponent$name
+
+  insertUI(
+    selector = paste0("#", pokeName1, "_fightCard"),
+    where = "afterBegin",
+    ui = if (damages > 0) {
+      status <- "success"
+      tablerTimelineItem(
+        title = "Event",
+        date = Sys.time(),
+        status = status,
+        tablerAlert(
+          paste(current_attack, "dealt", damages, "damages to", pokeName2),
+          icon = "alert-triangle",
+          status = status
+        )
+      )
+    } else if (damages == opponent$hp) {
+      status <- "purple"
+      tablerTimelineItem(
+        title = "Event",
+        date = Sys.time(),
+        status = status,
+        tablerAlert(
+          paste(pokeName2, "has been one shot by", current_attack),
+          icon = "alert-triangle",
+          status = status
+        )
+      )
+    } else {
+      status <- "danger"
+      tablerTimelineItem(
+        title = "Event",
+        date = Sys.time(),
+        status = status,
+        tablerAlert(
+          paste(current_attack, "missed its target"),
+          icon = "alert-triangle",
+          status = status
+        )
+      )
+    }
+  )
+}
+
+
 
 #' Server module for generating the pokeFight section
 #'
@@ -397,63 +463,14 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
     # event for the first pokemon
     observeEvent(input[[paste0("poke1_", current_attack)]], {
-      print("poke 1 observeEvent")
-      print(rv$turn)
       if (rv$turn == 1) {
-        #print(current_attack)
 
-        # calculate damages
-        damages1 <- calculate_damages(
-          current_attack = attacks[[current_attack]],
-          current_pokemon = pokemons()[[1]],
+        fight_History(
+          attacking = pokemons()[[1]],
           opponent = pokemons()[[2]],
+          attacks = attacks,
+          current_attack = current_attack,
           types = types
-        )
-
-        # insert alert to send user feedback on the current attack results
-        pokeName1 <- pokemons()[[1]]$name
-        pokeName2 <- pokemons()[[2]]$name
-
-        insertUI(
-          selector = "#pokeFightCard_1",
-          where = "afterBegin",
-          ui = if (damages1 > 0) {
-            status <- "success"
-            tablerTimelineItem(
-              title = "Event",
-              date = Sys.time(),
-              status = status,
-              tablerAlert(
-                paste(pokeName1, "dealt", damages1, "damages to", pokeName2),
-                icon = "alert-triangle",
-                status = status
-              )
-            )
-          } else if (damages1 == pokemons()[[2]]$hp) {
-            status <- "purple"
-            tablerTimelineItem(
-              title = "Event",
-              date = Sys.time(),
-              status = status,
-              tablerAlert(
-                paste(pokeName2, "has been one shot by", pokeName1),
-                icon = "alert-triangle",
-                status = status
-              )
-            )
-          } else {
-            status <- "danger"
-            tablerTimelineItem(
-              title = "Event",
-              date = Sys.time(),
-              status = status,
-              tablerAlert(
-                paste(pokeName1, "missed its target"),
-                icon = "alert-triangle",
-                status = status
-              )
-            )
-          }
         )
 
         # disable pokemon 1 attacks
@@ -481,26 +498,22 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     if (input$poke2Confirm) rv$turn <- 2
   })
 
-  observe(print(c(input$startFight, input$poke1Confirm, input$poke2Confirm)))
 
   # Fighting engine for pokemon 2
   observeEvent(c(input$startFight, input$poke2Confirm), {
-    print("poke 2 observeEvent")
-    print(rv$turn)
     if (rv$turn == 2) {
-      # randomly select an attack
+
+      # handle the case the attacking pokemon is controlled by the computer
       rand_id <- sample(seq_along(pokemons()[[2]]$attacks), 1)
       current_attack <- pokemons()[[2]]$attacks[[rand_id]]$name
-      #print(current_attack)
 
-      # calculate damages
-      damages2 <- calculate_damages(
-        current_attack = attacks[[current_attack]],
-        current_pokemon = pokemons()[[2]],
+      fight_History(
+        attacking = pokemons()[[2]],
         opponent = pokemons()[[1]],
+        attacks = attacks,
+        current_attack = current_attack,
         types = types
       )
-      #print(damages2)
 
       # enable pokemon 1 attacks
       lapply(seq_along(pokemons()[[1]]$attacks), function(i) {
@@ -675,7 +688,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
             if (i == 1) attackBttns
           )
         ),
-        tablerTimeline(id = paste0("pokeFightCard_", i), style = "max-height: 400px; overflow-y: auto;")
+        tablerTimeline(id = paste0(name, "_fightCard"), style = "max-height: 400px; overflow-y: auto;")
       )
     })
 
