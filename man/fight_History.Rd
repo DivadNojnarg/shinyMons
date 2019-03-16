@@ -4,18 +4,16 @@
 \alias{fight_History}
 \title{Function that generates a timelineItem for each attack the pokemon does.}
 \usage{
-fight_History(attacking, opponent, attacks, current_attack, types)
+fight_History(attacking, opponent, current_attack, damages)
 }
 \arguments{
 \item{attacking}{Id of the randomly generated pokemon who is attacking.}
 
 \item{opponent}{Opponent type. Useful for effectiveness calculations.}
 
-\item{attacks}{Object containing all pokemon attacks data.}
-
 \item{current_attack}{The currently selected attack.}
 
-\item{types}{Object containing all pokemons types strenght and weaknesses.
+\item{damages}{Result of \link{calculate_damages} witht the current_attack.
 TRUE in this case.}
 }
 \description{

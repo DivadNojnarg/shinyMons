@@ -217,7 +217,7 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   random <- runif(n = 1, min = 0.85, max = 1)
 
-  targets <- if (attack_target == "all-opponents") {
+  targets <- if (attack_target == "all-opponents" | attack_target == "all-other-pokemon") {
     0.75
   } else if (attack_target == "selected-pokemon" | attack_target == "random-opponent") {
     1
@@ -279,6 +279,8 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
       opponent$lvl
     } else if (current_attack$name == "low-kick") {
       50
+    } else if (current_attack$name == "psywave") {
+      level * round(runif(1, min = 1, max = 1.5), 1)
     }
   }
   attack <- current_pokemon$attack
@@ -328,19 +330,11 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 #'
 #' @param attacking Id of the randomly generated pokemon who is attacking.
 #' @param opponent Opponent type. Useful for effectiveness calculations.
-#' @param attacks Object containing all pokemon attacks data.
 #' @param current_attack The currently selected attack.
-#' @param types Object containing all pokemons types strenght and weaknesses.
+#' @param damages Result of \link{calculate_damages} witht the current_attack.
 #' TRUE in this case.
-fight_History <- function(attacking, opponent, attacks, current_attack, types) {
+fight_History <- function(attacking, opponent, current_attack, damages) {
 
-  # calculate damages
-  damages <- calculate_damages(
-    current_attack = attacks[[current_attack]],
-    current_pokemon = attacking,
-    opponent = opponent,
-    types = types
-  )
 
   # insert alert to send user feedback on the current attack results
   pokeName1 <- attacking$name
@@ -409,49 +403,62 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
   ns <- session$ns
 
+  # Randomly selects who starts the fight and init variables
+  # This booleans will be update all along the current fight
+  # to create a turn by turn system...
+  who_starts <- sample(1:2, 1)
+  rv <- reactiveValues(turn = who_starts, poke1 = NULL, poke2 = NULL, endGame = FALSE)
+
 
   # create the pokemons when click on go
-  pokemons <- eventReactive(input$go, {
+  observeEvent(input$go,{
 
-    rv$fight <- TRUE
-
-    generate_pokemons(
+    # generate pokemons
+    pokemons <- generate_pokemons(
       mainData,
       sprites,
       difficulty = input$pokeDifficulty,
       attacks = attacks
     )
-  })
+
+    rv$poke1 <- pokemons[[1]]
+    rv$poke2 <- pokemons[[2]]
 
 
-  # Initialization of the fight variable
-  # start_fight will be TRUE as soon as the go button is pressed.
-  # Randomly selects who starts the fight and init variables
-  # This booleans will be update all along the current fight
-  # to create a turn by turn system...
-  who_starts <- sample(1:2, 1)
-  rv <- reactiveValues(turn = who_starts)
-
-  # Explicitly says who starts: delayed by the time of loader
-  observeEvent(input$go,{
+    # Explicitly says who starts: delayed by the time of loader
     confirmSweetAlert(
       session = session,
       inputId = ns("startFight"),
+      btn_labels = "Confirm",
       title = NULL,
       text = if (rv$turn == 1) {
         fluidRow(
-          img(src = pokemons()[[1]]$sprite),
-          paste(pokemons()[[1]]$name, "starts!")
+          img(src = rv$poke1$sprite),
+          paste(rv$poke1$name, "starts!")
         )
       } else {
         fluidRow(
-          img(src = pokemons()[[2]]$sprite),
-          paste(pokemons()[[2]]$name, "starts!")
+          img(src = rv$poke2$sprite),
+          paste(rv$poke2$name, "starts!")
         )
       },
       html = TRUE
     )
-  })
+
+
+    # show a spinner
+    show_waiter(
+      color = "#1e90ff",
+      tagList(
+        spin_folding_cube(),
+        "Loading your fight..."
+      )
+    )
+    Sys.sleep(2)
+    hide_waiter()
+
+
+  }, priority = 100000, ignoreInit = TRUE)
 
 
   # Fighting engine for pokemon 1
@@ -463,32 +470,49 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
     # event for the first pokemon
     observeEvent(input[[paste0("poke1_", current_attack)]], {
-      if (rv$turn == 1) {
+      if (!rv$endGame) {
+        if (rv$turn == 1) {
 
-        fight_History(
-          attacking = pokemons()[[1]],
-          opponent = pokemons()[[2]],
-          attacks = attacks,
-          current_attack = current_attack,
-          types = types
-        )
+          # calculate damages
+          damages <- calculate_damages(
+            current_attack = attacks[[current_attack]],
+            current_pokemon = rv$poke1,
+            opponent = rv$poke2,
+            types = types
+          )
 
-        # disable pokemon 1 attacks
-        lapply(seq_along(pokemons()[[1]]$attacks), function(i) {
-          selected <- paste0("poke1_", pokemons()[[1]]$attacks[[i]]$name)
-          shinyjs::disable(selected)
-        })
+          print(damages)
+          print(current_attack)
 
-        confirmSweetAlert(
-          session = session,
-          inputId = ns("poke2Confirm"),
-          type = "warning",
-          text = fluidRow(
-            img(src = pokemons()[[2]]$sprite),
-            paste("It's", pokemons()[[2]]$name, "turn!")
-          ),
-          danger_mode = TRUE
-        )
+          # put items in the timeline
+          fight_History(
+            attacking = rv$poke1,
+            opponent = rv$poke2,
+            current_attack = current_attack,
+            damages = damages
+          )
+
+          # disable pokemon 1 attacks
+          lapply(seq_along(rv$poke1$attacks), function(i) {
+            selected <- paste0("poke1_", rv$poke1$attacks[[i]]$name)
+            shinyjs::disable(selected)
+          })
+
+          # update pokemon 2 life accordingly
+          rv$poke2$hp <- rv$poke2$hp - damages
+
+          confirmSweetAlert(
+            session = session,
+            btn_labels = "Confirm",
+            inputId = ns("poke2Confirm"),
+            type = "warning",
+            text = fluidRow(
+              img(src = rv$poke2$sprite),
+              paste("It's", rv$poke2$name, "turn!")
+            ),
+            danger_mode = TRUE
+          )
+        }
       }
     })
   })
@@ -501,39 +525,56 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
   # Fighting engine for pokemon 2
   observeEvent(c(input$startFight, input$poke2Confirm), {
-    if (rv$turn == 2) {
+    if (!rv$endGame) {
+      if (rv$turn == 2) {
 
-      # handle the case the attacking pokemon is controlled by the computer
-      rand_id <- sample(seq_along(pokemons()[[2]]$attacks), 1)
-      current_attack <- pokemons()[[2]]$attacks[[rand_id]]$name
+        # handle the case the attacking pokemon is controlled by the computer
+        rand_id <- sample(seq_along(rv$poke2$attacks), 1)
+        current_attack <- rv$poke2$attacks[[rand_id]]$name
 
-      fight_History(
-        attacking = pokemons()[[2]],
-        opponent = pokemons()[[1]],
-        attacks = attacks,
-        current_attack = current_attack,
-        types = types
-      )
-
-      # enable pokemon 1 attacks
-      lapply(seq_along(pokemons()[[1]]$attacks), function(i) {
-        selected <- paste0("poke1_", pokemons()[[1]]$attacks[[i]]$name)
-        shinyjs::enable(selected)
-      })
-
-      # delay a little bit since the calculation is instantaneou
-      shinyjs::delay(2000, {
-        confirmSweetAlert(
-          session = session,
-          inputId = ns("poke1Confirm"),
-          type = "warning",
-          text = fluidRow(
-            img(src = pokemons()[[1]]$sprite),
-            paste("It's", pokemons()[[1]]$name, "turn!")
-          ),
-          danger_mode = TRUE
+        # calculate damages
+        damages <- calculate_damages(
+          current_attack = attacks[[current_attack]],
+          current_pokemon = rv$poke2,
+          opponent = rv$poke1,
+          types = types
         )
-      })
+
+        print(damages)
+        print(current_attack)
+
+        # put items in the timeline
+        fight_History(
+          attacking = rv$poke2,
+          opponent = rv$poke1,
+          current_attack = current_attack,
+          damages = damages
+        )
+
+        # update pokemon 1 life accordingly
+        rv$poke1$hp <- rv$poke1$hp - damages
+
+        # enable pokemon 1 attacks
+        lapply(seq_along(rv$poke1$attacks), function(i) {
+          selected <- paste0("poke1_", rv$poke1$attacks[[i]]$name)
+          shinyjs::enable(selected)
+        })
+
+        # delay a little bit since the calculation is instantaneou
+        shinyjs::delay(2000, {
+          confirmSweetAlert(
+            session = session,
+            inputId = ns("poke1Confirm"),
+            btn_labels = "Confirm",
+            type = "warning",
+            text = fluidRow(
+              img(src = rv$poke1$sprite),
+              paste("It's", rv$poke1$name, "turn!")
+            ),
+            danger_mode = TRUE
+          )
+        })
+      }
     }
   })
 
@@ -544,39 +585,38 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   })
 
 
-  # when the user click on go, show a loading screen
-  observeEvent(input$go, {
-    show_waiter(
-      color = "#1e90ff",
-      tagList(
-        spin_folding_cube(),
-        "Loading your fight..."
-      )
-    )
-    Sys.sleep(2)
-    hide_waiter()
-  })
-
 
   # when HP is 0, the game is lost or won depending on the pokemon
   observe({
-    pokemons <- pokemons()
-    if (pokemons[[1]]$hp <= 0 | pokemons[[2]]$hp <= 0) {
-      if (pokemons[[1]]$hp <= 0) {
-        tablerAlert(
+    req(input$go > 0)
+    if (rv$poke1$hp <= 0 | rv$poke2$hp <= 0) {
+      if (rv$poke1$hp <= 0) {
+        confirmSweetAlert(
+          session = session,
+          inputId = ns("restart"),
+          btn_labels = "Reset",
           title = "Wasted",
-          paste0(pokemons[[1]], " lost!"),
-          icon = "alert-triangle",
-          status = "danger"
+          text = fluidRow(
+            img(src = rv$poke2$sprite),
+            paste(rv$poke2$name, "won")
+          ),
+          html = TRUE
         )
       } else {
-        tablerAlert(
+        sendSweetAlert(
+          session = session,
+          btn_labels = "Reset",
           title = "Congrats",
-          paste0(pokemons[[1]], " won!"),
-          icon = "alert-triangle",
-          status = "success"
+          text = fluidRow(
+            img(src = rv$poke1$sprite),
+            paste(rv$poke1$name, "won")
+          ),
+          html = TRUE
         )
       }
+      shinyjs::delay(2000, {
+        shinyjs::click(id = "go")
+      })
     }
   })
 
@@ -585,7 +625,9 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   lapply(1:2, function(i) {
     output[[paste0("pokeHP_", i)]] <- renderUI({
 
-      hp <- round(pokemons()[[i]]$hp / pokemons()[[i]]$hp_0 * 100)
+      req(input$go > 0)
+
+      hp <- round(rv[[paste0("poke", i)]]$hp / rv[[paste0("poke", i)]]$hp_0 * 100)
 
       tablerProgress(
         value = hp,
@@ -608,13 +650,14 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   lapply(1:2, function(i) {
     output[[paste0("poke_", i)]] <- renderUI({
 
-      pokemons <- pokemons()
-      sprite <- pokemons[[i]]$sprite
-      name <- pokemons[[i]]$name
-      lvl <- pokemons[[i]]$lvl
-      hp_0 <- pokemons[[i]]$hp_0
-      hp <- pokemons[[i]]$hp
-      attacks <- pokemons[[i]]$attacks
+      req(input$go > 0)
+
+      sprite <- rv[[paste0("poke", i)]]$sprite
+      name <- rv[[paste0("poke", i)]]$name
+      lvl <- rv[[paste0("poke", i)]]$lvl
+      hp_0 <- rv[[paste0("poke", i)]]$hp_0
+      hp <- rv[[paste0("poke", i)]]$hp
+      attacks <- rv[[paste0("poke", i)]]$attacks
 
       attacks <- sapply(seq_along(attacks), function(i) attacks[[i]]$name)
 
@@ -691,7 +734,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
         tablerTimeline(id = paste0(name, "_fightCard"), style = "max-height: 400px; overflow-y: auto;")
       )
     })
-
   })
 
 }
