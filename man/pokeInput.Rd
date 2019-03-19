@@ -4,7 +4,7 @@
 \alias{pokeInput}
 \title{Server module generating the pokemon interface}
 \usage{
-pokeInput(input, output, session, mainData, details, selected)
+pokeInput(input, output, session, mainData, sprites, details, selected)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -14,6 +14,8 @@ pokeInput(input, output, session, mainData, details, selected)
 \item{session}{Shiny session.}
 
 \item{mainData}{Object containing the main pokemon data.}
+
+\item{sprites}{Object containing pokemon images.}
 
 \item{details}{Object containing extra pokemon details.}
 

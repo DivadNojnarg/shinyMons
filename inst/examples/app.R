@@ -1,9 +1,11 @@
 library(shiny)
+library(shinyjs)
 library(tablerDash)
 library(shinyWidgets)
 library(shinyEffects)
 library(pushbar)
 library(shinyMons)
+library(waiter)
 
 source("pokeNames.R")
 
@@ -19,6 +21,15 @@ pokeEvolutions <- readRDS("pokeEvolutions")
 pokeAttacks <- readRDS("pokeAttacks")
 pokeEdges <- readRDS("pokeEdges")
 pokeGroups <- readRDS("pokeGroups")
+
+# pokemon sprites
+pokeSprites <- vapply(
+  seq_along(pokeNames),
+  FUN = function(i) {
+    pokeMain[[i]]$sprites$front_default
+  },
+  FUN.VALUE = character(1)
+)
 
 # shiny app code
 shiny::shinyApp(
@@ -50,6 +61,11 @@ shiny::shinyApp(
           "PokeNetwork"
         ),
         tablerNavMenuItem(
+          tabName = "PokeFight",
+          icon = "box",
+          "PokeFight"
+        ),
+        tablerNavMenuItem(
           tabName = "PokeOther",
           icon = "box",
           "PokeOther"
@@ -77,6 +93,10 @@ shiny::shinyApp(
 
       # load pushbar dependencies
       pushbar_deps(),
+      # laad the waiter dependencies
+      use_waiter(),
+      # load shinyjs
+      useShinyjs(),
 
       # custom jquery to hide some inputs based on the selected tag
       # actually tablerDash would need a custom input/output binding
@@ -143,6 +163,10 @@ shiny::shinyApp(
           pokeNetworkUi(id = "network")
         ),
         tablerTabItem(
+          tabName = "PokeFight",
+          pokeFightUi(id = "fights")
+        ),
+        tablerTabItem(
           tabName = "PokeOther",
           pokeOtherUi(id = "other")
         )
@@ -170,7 +194,14 @@ shiny::shinyApp(
     )
 
     # main module (data)
-    main <- callModule(module = pokeInput, id = "input", mainData = pokeMain, details = pokeDetails, selected = network$selected)
+    main <- callModule(
+      module = pokeInput,
+      id = "input",
+      mainData = pokeMain,
+      sprites = pokeSprites,
+      details = pokeDetails,
+      selected = network$selected
+    )
 
     # infos module
     callModule(
@@ -198,6 +229,16 @@ shiny::shinyApp(
       selected = main$pokeSelect,
       shiny = main$pokeShiny,
       evolutions = pokeEvolutions
+    )
+
+    # fights module
+    callModule(
+      module = pokeFight,
+      id = "fights",
+      mainData = pokeMain,
+      sprites = pokeSprites,
+      attacks = pokeAttacks,
+      types = pokeTypes
     )
 
     # location
