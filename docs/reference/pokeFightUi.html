@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Server module generating the pokemon interface — pokeInput • shinyMons</title>
+<title>UI module for generating the pokeFight section — pokeFightUi • shinyMons</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Server module generating the pokemon interface — pokeInput" />
+<meta property="og:title" content="UI module for generating the pokeFight section — pokeFightUi" />
 
-<meta property="og:description" content="Server module generating the pokemon interface" />
+<meta property="og:description" content="UI module for generating the pokeFight section" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,51 +102,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Server module generating the pokemon interface</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeInputModule.R'><code>R/pokeInputModule.R</code></a></small>
-    <div class="hidden name"><code>pokeInput.Rd</code></div>
+    <h1>UI module for generating the pokeFight section</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeFightModule.R'><code>R/pokeFightModule.R</code></a></small>
+    <div class="hidden name"><code>pokeFightUi.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Server module generating the pokemon interface</p>
+    <p>UI module for generating the pokeFight section</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>pokeInput</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>sprites</span>, <span class='no'>details</span>, <span class='no'>selected</span>)</pre>
+    <pre class="usage"><span class='fu'>pokeFightUi</span>(<span class='no'>id</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>input</th>
-      <td><p>Shiny inputs.</p></td>
-    </tr>
-    <tr>
-      <th>output</th>
-      <td><p>Shiny outputs.</p></td>
-    </tr>
-    <tr>
-      <th>session</th>
-      <td><p>Shiny session.</p></td>
-    </tr>
-    <tr>
-      <th>mainData</th>
-      <td><p>Object containing the main pokemon data.</p></td>
-    </tr>
-    <tr>
-      <th>sprites</th>
-      <td><p>Object containing pokemon images.</p></td>
-    </tr>
-    <tr>
-      <th>details</th>
-      <td><p>Object containing extra pokemon details.</p></td>
-    </tr>
-    <tr>
-      <th>selected</th>
-      <td><p>Object containing the selected pokemon in the network, if not NULL.</p></td>
+      <th>id, </th>
+      <td><p>character used to specify namespace, see <code>shiny::<a href='https://www.rdocumentation.org/packages/shiny/topics/NS'>NS</a></code></p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a <code>shiny::<a href='https://www.rdocumentation.org/packages/shiny/topics/tag'>tagList</a></code> containing UI elements</p>
     
 
   </div>
@@ -154,7 +134,9 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
 
   </div>
 </div>

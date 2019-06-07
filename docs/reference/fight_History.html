@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Server module generating the pokemon interface — pokeInput • shinyMons</title>
+<title>Function that generates a timelineItem for each attack the pokemon does. — fight_History • shinyMons</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Server module generating the pokemon interface — pokeInput" />
+<meta property="og:title" content="Function that generates a timelineItem for each attack the pokemon does. — fight_History" />
 
-<meta property="og:description" content="Server module generating the pokemon interface" />
+<meta property="og:description" content="Function that generates a timelineItem for each attack the pokemon does." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,49 +102,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Server module generating the pokemon interface</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeInputModule.R'><code>R/pokeInputModule.R</code></a></small>
-    <div class="hidden name"><code>pokeInput.Rd</code></div>
+    <h1>Function that generates a timelineItem for each attack the pokemon does.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeFightModule.R'><code>R/pokeFightModule.R</code></a></small>
+    <div class="hidden name"><code>fight_History.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Server module generating the pokemon interface</p>
+    <p>Function that generates a timelineItem for each attack the pokemon does.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>pokeInput</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>sprites</span>, <span class='no'>details</span>, <span class='no'>selected</span>)</pre>
+    <pre class="usage"><span class='fu'>fight_History</span>(<span class='no'>attacking</span>, <span class='no'>opponent</span>, <span class='no'>current_attack</span>, <span class='no'>damages</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>input</th>
-      <td><p>Shiny inputs.</p></td>
+      <th>attacking</th>
+      <td><p>Id of the randomly generated pokemon who is attacking.</p></td>
     </tr>
     <tr>
-      <th>output</th>
-      <td><p>Shiny outputs.</p></td>
+      <th>opponent</th>
+      <td><p>Opponent type. Useful for effectiveness calculations.</p></td>
     </tr>
     <tr>
-      <th>session</th>
-      <td><p>Shiny session.</p></td>
+      <th>current_attack</th>
+      <td><p>The currently selected attack.</p></td>
     </tr>
     <tr>
-      <th>mainData</th>
-      <td><p>Object containing the main pokemon data.</p></td>
-    </tr>
-    <tr>
-      <th>sprites</th>
-      <td><p>Object containing pokemon images.</p></td>
-    </tr>
-    <tr>
-      <th>details</th>
-      <td><p>Object containing extra pokemon details.</p></td>
-    </tr>
-    <tr>
-      <th>selected</th>
-      <td><p>Object containing the selected pokemon in the network, if not NULL.</p></td>
+      <th>damages</th>
+      <td><p>Result of <a href='calculate_damages.html'>calculate_damages</a> witht the current_attack.
+TRUE in this case.</p></td>
     </tr>
     </table>
     
