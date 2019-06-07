@@ -1,4 +1,4 @@
-# shinyMons
+# shinyMons <img src="man/figures/shinymons_hex.svg" width=200 align="right" />
 [![Travis build status](https://travis-ci.com/DivadNojnarg/shinyMons.svg?branch=master)](https://travis-ci.com/DivadNojnarg/shinyMons)
 [![CRAN status](https://www.r-pkg.org/badges/version/shinyMons)](https://cran.r-project.org/package=shinyMons)
 
