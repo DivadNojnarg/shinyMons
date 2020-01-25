@@ -33,165 +33,66 @@ pokeSprites <- vapply(
 
 # shiny app code
 shiny::shinyApp(
-  ui = tablerDashPage(
-    enable_preloader = TRUE,
-    loading_duration = 4,
-    navbar = tablerDashNav(
-      id = "mymenu",
-      src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",
-      navMenu = tablerNavMenu(
-        tablerNavMenuItem(
-          tabName = "PokeInfo",
-          icon = "home",
-          "PokeInfo"
+  ui = f7Page(
+    init = f7Init(
+      skin = "ios",
+      theme = "dark",
+      color = "orange",
+      filled = FALSE,
+      hideNavOnPageScroll = FALSE,
+      hideTabsOnPageScroll = FALSE,
+      serviceWorker = "service-worker.js",
+      iosTranslucentBars = TRUE
+    ),
+    f7TabLayout(
+      panels = tagList(
+        f7Panel(
+          inputId = "panelLeft",
+          title = "Left Panel",
+          side = "left",
+          theme = "light",
+          "Blabla",
+          effect = "reveal"
         ),
-        tablerNavMenuItem(
-          tabName = "PokeList",
-          icon = "box",
-          "PokeList"
-        ),
-        tablerNavMenuItem(
-          tabName = "PokeAttacks",
-          icon = "box",
-          "PokeAttacks"
-        ),
-        tablerNavMenuItem(
-          tabName = "PokeNetwork",
-          icon = "box",
-          "PokeNetwork"
-        ),
-        tablerNavMenuItem(
-          tabName = "PokeFight",
-          icon = "box",
-          "PokeFight"
-        ),
-        tablerNavMenuItem(
-          tabName = "PokeOther",
-          icon = "box",
-          "PokeOther"
+        f7Panel(
+          title = "Right Panel",
+          side = "right",
+          theme = "dark",
+          "Blabla",
+          effect = "cover"
         )
       ),
-
-      pokeInputUi(id = "input"),
-
-      tablerDropdown(
-        tablerDropdownItem(
-          title = NULL,
-          href = "https://pokeapi.co",
-          url = "https://pokeapi.co/static/logo-6221638601ef7fa7c835eae08ef67a16.png",
-          status = "success",
-          date = NULL,
-          "This app use pokeApi by Paul Hallet and PokéAPI contributors."
-        )
-      )
-    ),
-    footer = tablerDashFooter(
-      copyrights = "Disclaimer: this app is purely intended for learning purpose. @David Granjon, 2019"
-    ),
-    title = "Gotta Catch'Em (Almost) All",
-    body = tablerDashBody(
-
-      # load pushbar dependencies
-      pushbar_deps(),
-      # laad the waiter dependencies
-      use_waiter(),
-      # load shinyjs
-      useShinyjs(),
-
-      # custom jquery to hide some inputs based on the selected tag
-      # actually tablerDash would need a custom input/output binding
-      # to solve this issue once for all
-      tags$head(
-        tags$script(
-          "$(function () {
-            $('#mymenu .nav-item a').click(function(){
-              var tab = $(this).attr('id');
-              if (tab == 'tab-PokeInfo' || tab == 'tab-PokeList') {
-                $('#input-pokeChoice').show();
-              } else {
-                $('#input-pokeChoice').hide();
-              }
-            });
-           });"
-        ),
-
-        # test whether mobile or not
-        tags$script(
-          "$(document).on('shiny:connected', function(event) {
-            var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            Shiny.onInputChange('isMobile', isMobile);
-          });
-          "
-        )
+      navbar = f7Navbar(
+        title = "shinyMons",
+        subtitle = "for Shiny",
+        hairline = TRUE,
+        shadow = TRUE,
+        left_panel = TRUE,
+        right_panel = TRUE,
+        bigger = TRUE,
+        transparent = TRUE
       ),
-
-      # custom shinyWidgets skins
-      chooseSliderSkin("Round"),
-
-      # use shinyEffects
-      setShadow(class = "galleryCard"),
-      setZoom(class = "galleryCard"),
-
-      tablerTabItems(
-        tablerTabItem(
-          tabName = "PokeInfo",
-          fluidRow(
-            column(
-              width = 4,
-              pokeInfosUi(id = "infos"),
-              pokeTypeUi(id = "types"),
-              pokeEvolveUi(id = "evol")
-            ),
-            column(
-              width = 8,
-              pokeStatsUi(id = "stats"),
-              pokeMoveUi(id = "moves"),
-              pokeLocationUi(id = "location")
-            )
-          )
-        ),
-        tablerTabItem(
-          tabName = "PokeList",
-          pokeGalleryUi(id = "gallery")
-        ),
-        tablerTabItem(
-          tabName = "PokeAttacks",
-          pokeAttackUi(id = "attacks")
-        ),
-        tablerTabItem(
-          tabName = "PokeNetwork",
-          pokeNetworkUi(id = "network")
-        ),
-        tablerTabItem(
-          tabName = "PokeFight",
-          pokeFightUi(id = "fights")
-        ),
-        tablerTabItem(
-          tabName = "PokeOther",
-          pokeOtherUi(id = "other")
-        )
+      f7Tabs(
+        id = "tabset",
+        animated = FALSE,
+        swipeable = TRUE,
+        pokeInfosUi(id = "infos")
       )
     )
   ),
   server = function(input, output, session) {
-
-    # determine whether we are on mobile or not
-    # relies on a simple Shiny.onInputChange
-    isMobile <- reactive(input$isMobile)
-
-
     # Network module: network stores a potential selected node in the
     # network and pass it to the pickerInput function in the main
     # module to update its value
-    network <- callModule(
-      module = pokeNetwork,
-      id = "network",
-      mainData = pokeMain,
-      details = pokeDetails,
-      families = pokeEdges,
-      groups = pokeGroups,
-      mobile = isMobile
-    )
+    #network <- callModule(
+    #  module = pokeNetwork,
+    #  id = "network",
+    #  mainData = pokeMain,
+    #  details = pokeDetails,
+    #  families = pokeEdges,
+    #  groups = pokeGroups,
+    #  mobile = isMobile
+    #)
 
     # main module (data)
     main <- callModule(
@@ -200,7 +101,7 @@ shiny::shinyApp(
       mainData = pokeMain,
       sprites = pokeSprites,
       details = pokeDetails,
-      selected = network$selected
+      selected = NULL #network$selected
     )
 
     # infos module
@@ -214,41 +115,41 @@ shiny::shinyApp(
     )
 
     # stats module
-    callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
+    #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
-    callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
+    #callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
     # moves module
-    callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
+    #callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 
     # evolutions module
-    callModule(
-      module = pokeEvolve,
-      id = "evol",
-      mainData = pokeMain,
-      details = pokeDetails,
-      selected = main$pokeSelect,
-      shiny = main$pokeShiny,
-      evolutions = pokeEvolutions
-    )
+    #callModule(
+    #  module = pokeEvolve,
+    #  id = "evol",
+    #  mainData = pokeMain,
+    #  details = pokeDetails,
+    #  selected = main$pokeSelect,
+    #  shiny = main$pokeShiny,
+    #  evolutions = pokeEvolutions
+    #)
 
     # fights module
-    callModule(
-      module = pokeFight,
-      id = "fights",
-      mainData = pokeMain,
-      sprites = pokeSprites,
-      attacks = pokeAttacks,
-      types = pokeTypes
-    )
+    #callModule(
+    #  module = pokeFight,
+    #  id = "fights",
+    #  mainData = pokeMain,
+    #  sprites = pokeSprites,
+    #  attacks = pokeAttacks,
+    #  types = pokeTypes
+    #)
 
     # location
-    callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
+    #callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
     # gallery module
-    callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
+    #callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
-    callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
+    #callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # other elements
-    callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
+    #callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
   }
 )
