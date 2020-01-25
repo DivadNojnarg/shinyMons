@@ -7,18 +7,12 @@
 pokeGalleryUi <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    fluidRow(
-      column(
-        width = 12,
-        align = "center",
-        sliderInput(
-          inputId = ns("pokeRange"),
-          label = h3("Selected Pokemons"),
-          min = 1,
-          max = 151,
-          value = c(1, 151)
-        )
-      )
+    f7Slider(
+      inputId = ns("pokeRange"),
+      label = h3("Selected Pokemons"),
+      min = 1,
+      max = 151,
+      value = c(1, 151)
     ),
     uiOutput(ns("poke_gallery"))
   )
@@ -40,31 +34,25 @@ pokeGalleryUi <- function(id) {
 #' @export
 pokeGallery <- function(input, output, session, mainData, details, shiny) {
 
+  ns <- session$ns
   range <- reactive(mainData[input$pokeRange[1]:input$pokeRange[2]])
 
   output$poke_gallery <- renderUI({
-    fluidRow(
-      lapply(seq_along(range()), FUN = function(i) {
-        cardTag <- tablerMediaCard(
-          title = range()[[i]]$name,
-          date = NULL,
-          href = NULL,
-          src = if (!shiny()) {
-            range()[[i]]$sprites$front_default
-          } else {
-            range()[[i]]$sprites$front_shiny
-          },
-          avatarUrl = if (!shiny()) {
-            range()[[i]]$sprites$back_default
-          } else {
-            range()[[i]]$sprites$back_shiny
-          },
-          width = 4,
-          paste0("Pokemon: ", range()[[i]]$id)
-        )
-        cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
-        cardTag
-      })
-    )
+    req(!is.null(shiny()))
+    lapply(seq_along(range()), FUN = function(i) {
+      cardTag <- f7ExpandableCard(
+        id = ns(paste0("pokegallery_", i)),
+        title = range()[[i]]$name,
+        fullBackground = TRUE,
+        img = if (!shiny()) {
+          range()[[i]]$sprites$front_default
+        } else {
+          range()[[i]]$sprites$front_shiny
+        },
+        subtitle = paste0("Pokemon: ", range()[[i]]$id)
+      )
+      #cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
+      cardTag
+    })
   })
 }
