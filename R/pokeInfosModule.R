@@ -54,40 +54,25 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
       "rare" = "purple"
     )
 
-    tagList(
-      fluidRow(
-        tablerProfileCard(
-          title = selected(),
-          subtitle = tagList(
-            details[[selected()]]$flavor_text_entries$flavor_text[54],
-            tablerTagList(
-              align = "center",
-              tablerTag(name = details[[selected()]]$shape$name, rounded = TRUE, color = "default"),
-              tablerTag(name = details[[selected()]]$habitat$name, rounded = TRUE, color = habitatColor)
-            )
-          ),
-          background = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png",
-          src = if (!shiny()) {
-            sprites[[selected()]]
-          } else {
-            mainData[[selected()]]$sprites$front_shiny
-          },
-          socials = tablerSocialLinks(
-            tablerSocialLink(
-              name = "pokeApi",
-              href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())),
-              icon = "at"
-            ),
-            tablerSocialLink(
-              name = "Bulbapedia",
-              href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"),
-              icon = "address-card"
-            )
-          ),
-          width = 12
-        )
-      ),
-      br()
+    f7SocialCard(
+      author_img = if (!shiny()) {
+        sprites[[selected()]]
+      } else {
+        mainData[[selected()]]$sprites$front_shiny
+      },
+      author = selected(),
+      # background image
+      img(src = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png"),
+      # text content
+      details[[selected()]]$flavor_text_entries$flavor_text[54],
+      # habitat details
+      f7Chip(details[[selected()]]$shape$name, color = NULL),
+      f7Chip(details[[selected()]]$habitat$name, color = habitatColor),
+      # other ressources
+      footer = tagList(
+        f7Badge(a(href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())), "pokeApi")),
+        f7Badge(a(href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"), "Bulbapedia")),
+      )
     )
   })
 }
