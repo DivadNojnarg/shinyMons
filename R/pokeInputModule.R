@@ -33,7 +33,7 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
 
   # pokemon selector
   output$pokeChoice <- renderUI({
-    fluidRow(
+    f7Flex(
       align = "center",
       f7SmartSelect(
         inputId = ns("pokeSelect"),

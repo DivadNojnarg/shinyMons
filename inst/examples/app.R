@@ -70,7 +70,8 @@ shiny::shinyApp(
         left_panel = TRUE,
         right_panel = TRUE,
         bigger = TRUE,
-        transparent = TRUE
+        transparent = TRUE,
+        subNavbar = f7SubNavbar(pokeInputUi(id = "input"))
       ),
       f7Tabs(
         id = "tabset",
