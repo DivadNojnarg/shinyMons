@@ -6,31 +6,8 @@
 #' @export
 pokeNetworkUi <- function(id) {
   ns <- shiny::NS(id)
-  tagList(
-    fluidRow(
-      column(
-        width = 1,
-        align = "left",
-        tagAppendAttributes(actionButton(ns("open"), "Network Options"), class = "btn-outline-primary")
-      ),
-      column(
-        width = 11,
-        align = "center",
-        visNetworkOutput(ns("pokeNet"), height = "900px")
-      )
-    ),
-    pushbar(
-      from = "right",
-      id = ns("myPushbar"),
-      # content
-      uiOutput(ns("pushbarContent"))
-    )
-  )
+  visNetworkOutput(ns("pokeNet"), height = "900px")
 }
-
-
-
-pushBarContent <- NULL
 
 
 #' Server module for generating the pokeNetwork section
@@ -43,175 +20,45 @@ pushBarContent <- NULL
 #' @param families List containg all pokemon connections.
 #' @param groups List containing data for grouping pokemons by evolution family.
 #' @param mobile Shiny input checking if the app is running on a cellphone/tablet.
+#' @param networkOptions Slot for the pokeNetworkInputModule inputs.
 #'
-#' @import shinyWidgets visNetwork pushbar tablerDash
+#' @import visNetwork
 #'
 #' @export
-pokeNetwork <- function(input, output, session, mainData, details, families, groups, mobile) {
+pokeNetwork <- function(input, output, session, mainData, details, families, groups, mobile, networkOptions) {
 
   ns <- session$ns
-
-  #-------------------------------------------------------------------------
-  # Pushbar setup, events, ...
-  #-------------------------------------------------------------------------
-  setup_pushbar(blur = TRUE, overlay = TRUE) # setup
-
-  # the pushbar
-  output$pushbarContent <- renderUI({
-
-    tagList(
-
-      h2("Nodes"),
-      # nodes shape
-      shinyWidgets::prettyRadioButtons(
-        inputId = ns("pokeNodesShape"),
-        label = "Nodes shape:",
-        thick = TRUE,
-        inline = TRUE,
-        selected = "image",
-        choices = c("Circles" = "circle", "Sprites" = "image"),
-        animation = "pulse",
-        status = "info"
-      ),
-      # can we drag nodes?
-      shinyWidgets::prettySwitch(
-        inputId = ns("pokeNodesDrag"),
-        label = "Drag nodes?",
-        value = TRUE,
-        status = "default",
-        slim = TRUE,
-        fill = FALSE,
-        bigger = TRUE,
-        inline = FALSE
-      ),
-      # nodes size
-      shiny::numericInput(
-        inputId = ns("pokeNodesSize"),
-        label = "Size of nodes:",
-        value = 200,
-        min = 100,
-        max = NA,
-        step = 10,
-        width = NULL
-      ),
-      shinyWidgets::prettySwitch(
-        inputId = ns("nodesInterp"),
-        label = "Nodes interpolation?",
-        value = FALSE,
-        status = "primary",
-        slim = TRUE,
-        fill = FALSE,
-        bigger = TRUE,
-        inline = FALSE
-      ),
-      sliderInput(
-        inputId = ns("nodeDistance"),
-        label = "Distance between nodes:",
-        min = 50,
-        value = 500,
-        max = 500
-      ),
-
-      hr(),
-      h2("Edges"),
-      # edges width
-      shiny::numericInput(
-        inputId = ns("pokeEdgesWidth"),
-        label = "Width of edges:",
-        value = 10,
-        min = 5,
-        max = NA,
-        step = 1,
-        width = NULL
-      ),
-      shinyWidgets::prettySwitch(
-        inputId = ns("displayEdges"),
-        label = "Display edges?",
-        value = TRUE,
-        status = "primary",
-        slim = TRUE,
-        fill = FALSE,
-        bigger = TRUE,
-        inline = FALSE
-      ),
-      sliderInput(
-        inputId = ns("springLength"),
-        label = "Spring lenght:",
-        min = 50,
-        value = 200,
-        max = 600
-      ),
-
-      hr(),
-      h2("Others"),
-      prettyToggle(
-        inputId = ns("dragView"),
-        label_on = "DragView on",
-        label_off = "DragView off",
-        value = TRUE,
-        status_on = "success",
-        status_off = "danger",
-        shape = "curve",
-        outline = TRUE,
-        animation = "pulse"
-      ),
-      prettyToggle(
-        inputId = ns("zoomView"),
-        label_on = "ZoomView on",
-        label_off = "ZoomView off",
-        value = TRUE,
-        status_on = "success",
-        status_off = "danger",
-        shape = "curve",
-        outline = TRUE,
-        animation = "pulse"
-      ),
-      sliderInput(
-        inputId = ns("centralGravity"),
-        label = "Central gravity:",
-        min = 0,
-        value = 0,
-        max = 1
-      )
-    )
-  })
-
-  observeEvent(input$open, {
-    pushbar_open(id = ns("myPushbar"))
-  })
-
   #-------------------------------------------------------------------------
   # Network: nodes, edges, events, ...
   #-------------------------------------------------------------------------
-
   nodes <- reactive({
 
-    req(!is.null(input$pokeNodesShape), !is.null(input$pokeNodesSize))
+    req(!is.null(networkOptions$pokeNodesShape()), !is.null(networkOptions$pokeNodesSize()))
 
     df <- data.frame(
       id = 1:length(mainData),
       group = groups,
-      shape = input$pokeNodesShape,
+      shape = networkOptions$pokeNodesShape(),
       label = pokeNames,
       #fixed = list("x" = FALSE, "y" = FALSE),
-      size = input$pokeNodesSize,
+      size = networkOptions$pokeNodesSize(),
       physics = TRUE,
       hidden = rep(FALSE, length(mainData)),
       stringsAsFactors = FALSE
     )
 
-    if (input$pokeNodesShape == "image") df$image <-  sprites
+    if (networkOptions$pokeNodesShape() == "image") df$image <-  sprites
 
     return(df)
   })
 
   edges <- reactive({
 
-    req(!is.null(input$pokeEdgesWidth), !is.null(input$displayEdges))
+    req(!is.null(networkOptions$pokeEdgesWidth()), !is.null(networkOptions$displayEdges()))
 
-    if (input$displayEdges) {
+    if (networkOptions$displayEdges()) {
       data.frame(
-        width = input$pokeEdgesWidth,
+        width = networkOptions$pokeEdgesWidth(),
         color = list(color = c(rep("black", length(families$from))), highlight = "blue"),
         dashes = TRUE,
         smooth = FALSE,
@@ -234,13 +81,13 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
 
   output$pokeNet <- renderVisNetwork({
 
-    req(!is.null(input$nodesInterp),
-        !is.null(input$pokeNodesDrag),
-        !is.null(input$dragView),
-        !is.null(input$zoomView),
-        !is.null(input$nodeDistance),
-        !is.null(input$centralGravity),
-        !is.null(input$springLength)
+    req(!is.null(networkOptions$nodesInterp()),
+        !is.null(networkOptions$pokeNodesDrag()),
+        !is.null(networkOptions$dragView()),
+        !is.null(networkOptions$zoomView()),
+        !is.null(networkOptions$nodeDistance()),
+        !is.null(networkOptions$centralGravity()),
+        !is.null(networkOptions$springLength())
     )
 
     visNetwork(nodes(), edges(), width = "100%") %>%
@@ -259,7 +106,7 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         shapeProperties =
           list(
             useBorderWithImage = FALSE,
-            interpolation = input$nodesInterp # time consumming
+            interpolation = networkOptions$nodesInterp() # time consumming
           )
       ) %>%
       visEdges(arrows = "to") %>%
@@ -277,9 +124,9 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         hoverConnectedEdges = FALSE,
         selectConnectedEdges = FALSE,
         multiselect = FALSE,
-        dragNodes = input$pokeNodesDrag,
-        dragView = input$dragView,
-        zoomView = input$zoomView,
+        dragNodes = networkOptions$pokeNodesDrag(),
+        dragView = networkOptions$dragView(),
+        zoomView = networkOptions$zoomView(),
         navigationButtons = FALSE,
         selectable = TRUE
       ) %>%
@@ -287,9 +134,9 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         stabilization = TRUE,
         solver = "repulsion",
         repulsion = list(
-          nodeDistance = input$nodeDistance,
-          centralGravity = input$centralGravity,
-          springLength = input$springLength
+          nodeDistance = networkOptions$nodeDistance(),
+          centralGravity = networkOptions$centralGravity(),
+          springLength = networkOptions$springLength()
         ),
         enabled = TRUE
       )
@@ -309,7 +156,7 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
         visUpdateNodes(nodes = nodes)
     } else {
-      nodes$size <- input$pokeNodesSize
+      nodes$size <- networkOptions$pokeNodesSize()
       #nodes$hidden <- rep(FALSE, length(nodes$hidden))
       visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
         visUpdateNodes(nodes = nodes)
@@ -328,38 +175,38 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
       name = details[[selected]]$names$name
     )
 
-    showModal(
-      modalDialog(
-        title = fluidRow(
-          column(
-            width = 2,
-            align = "left",
-            tablerAvatar(url = sprites[[selected]])
-          ),
-          column(
-            width = 8,
-            align = "center",
-            paste0(names(mainData)[[selected]], " 's names")
-          ),
-          column(
-            width = 2,
-            align = "right",
-            HTML('<a href="#" data-dismiss="modal" class="btn btn-outline-primary">Close</a>')
-          )
-        ),
-        tablerTable(
-          lapply(seq_along(names$languages), function(i) {
-            tablerTableItem(
-              left = names$languages[[i]],
-              right = names$name[[i]]
-            )
-          }),
-          stacked = FALSE
-        ),
-        easyClose = TRUE,
-        footer = NULL
-      )
-    )
+    #showModal(
+    #  modalDialog(
+    #    title = fluidRow(
+    #      column(
+    #        width = 2,
+    #        align = "left",
+    #        tablerAvatar(url = sprites[[selected]])
+    #      ),
+    #      column(
+    #        width = 8,
+    #        align = "center",
+    #        paste0(names(mainData)[[selected]], " 's names")
+    #      ),
+    #      column(
+    #        width = 2,
+    #        align = "right",
+    #        HTML('<a href="#" data-dismiss="modal" class="btn btn-outline-primary">Close</a>')
+    #      )
+    #    ),
+    #    tablerTable(
+    #      lapply(seq_along(names$languages), function(i) {
+    #        tablerTableItem(
+    #          left = names$languages[[i]],
+    #          right = names$name[[i]]
+    #        )
+    #      }),
+    #      stacked = FALSE
+    #    ),
+    #    easyClose = TRUE,
+    #    footer = NULL
+    #  )
+    #)
   })
 
   return(list(selected = reactive(input$current_node_id_zoom)))

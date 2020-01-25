@@ -6,10 +6,10 @@
 #' @export
 pokeOtherUi <- function(id) {
   ns <- shiny::NS(id)
-  fluidRow(
-    uiOutput(ns("poke_distrib"), class = "col-sm-6"),
-    uiOutput(ns("poke_types_distrib"), class = "col-sm-6")
-  )
+    tagList(
+      uiOutput(ns("poke_distrib")),
+      uiOutput(ns("poke_types_distrib"))
+    )
 }
 
 
@@ -73,26 +73,17 @@ pokeOther <- function(input, output, session, mainData, details) {
 
 
   output$poke_distrib <- renderUI({
-    tablerCard(
-      title = paste("All Pokemons Distribution"),
-      options = tagList(
-        prettyRadioButtons(
+    f7Card(
+      title = tagList(
+        paste("All Pokemons Distribution"),
+        f7Radio(
           inputId = ns("distribChoice"),
           label = "Choose a distribution:",
           choices = c("Height (cm)" = "Height", "Weight (kg)" = "Weight"),
-          selected = "Height",
-          animation = "pulse",
-          inline = TRUE
+          selected = "Height"
         )
       ),
       footer = NULL,
-      status = "info",
-      statusSide = "left",
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      width = 12,
-      overflow = FALSE,
       echarts4rOutput(outputId = ns("distribPlot"))
     )
   })
@@ -117,17 +108,8 @@ pokeOther <- function(input, output, session, mainData, details) {
 
 
   output$poke_types_distrib <- renderUI({
-    tablerCard(
+    f7Card(
       title = paste("All Pokemons Types"),
-      options = NULL,
-      footer = NULL,
-      status = "info",
-      statusSide = "left",
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      width = 12,
-      overflow = FALSE,
       echarts4rOutput(outputId = ns("typesDistrib"))
     )
   })

@@ -43,14 +43,11 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
         type = "popup"
       ),
       # because it's a shiny app ;)
-      tagAppendAttributes(
-        f7Toggle(
-          inputId = ns("pokeShiny"),
-          label = "Shiny?",
-          checked = FALSE,
-          color = "blue"
-        ),
-        class = "m-2"
+      f7Toggle(
+        inputId = ns("pokeShiny"),
+        label = "Shiny?",
+        checked = FALSE,
+        color = "blue"
       )
     )
   })

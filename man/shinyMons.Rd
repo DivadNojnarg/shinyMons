@@ -3,7 +3,6 @@
 \docType{package}
 \name{shinyMons}
 \alias{shinyMons}
-\alias{shinyMons-package}
 \title{shinyMons}
 \description{
 shinyMons

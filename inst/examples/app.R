@@ -2,9 +2,7 @@ library(shiny)
 library(shinyMobile)
 library(shinyjs)
 library(shinyEffects)
-library(pushbar)
 library(shinyMons)
-library(waiter)
 
 source("pokeNames.R")
 
@@ -57,7 +55,7 @@ shiny::shinyApp(
           title = "Right Panel",
           side = "right",
           theme = "dark",
-          "Blabla",
+          pokeNetworkInputUi(id = "networkInput"),
           effect = "cover"
         )
       ),
@@ -74,8 +72,8 @@ shiny::shinyApp(
       ),
       f7Tabs(
         id = "tabset",
-        animated = FALSE,
-        swipeable = TRUE,
+        animated = TRUE,
+        swipeable = FALSE,
         f7Tab(
           tabName = "infos",
           active = TRUE,
@@ -96,23 +94,42 @@ shiny::shinyApp(
           tabName = "attacks",
           icon = f7Icon("bolt_fill"),
           pokeAttackUi(id = "attacks")
+        ),
+        f7Tab(
+          tabName = "network",
+          icon = f7Icon("circle_grid_hex_fill"),
+          pokeNetworkUi(id = "network")
+        ),
+        f7Tab(
+          tabName = "other",
+          icon = f7Icon("chart_pie_fill"),
+          pokeOtherUi(id = "other")
         )
       )
     )
   ),
   server = function(input, output, session) {
+
+    observe(print(input$tabset))
+    # inputs in the right panel. Only display if the selected tab is network
+    networkOpts <- callModule(
+      module = pokeNetworkInput,
+      id = "networkInput",
+      currentTab = input$tabset
+    )
     # Network module: network stores a potential selected node in the
     # network and pass it to the pickerInput function in the main
     # module to update its value
-    #network <- callModule(
-    #  module = pokeNetwork,
-    #  id = "network",
-    #  mainData = pokeMain,
-    #  details = pokeDetails,
-    #  families = pokeEdges,
-    #  groups = pokeGroups,
-    #  mobile = isMobile
-    #)
+    network <- callModule(
+      module = pokeNetwork,
+      id = "network",
+      mainData = pokeMain,
+      details = pokeDetails,
+      families = pokeEdges,
+      groups = pokeGroups,
+      mobile = isMobile,
+      networkOptions = networkOpts
+    )
 
     # main module (data)
     main <- callModule(
@@ -121,7 +138,7 @@ shiny::shinyApp(
       mainData = pokeMain,
       sprites = pokeSprites,
       details = pokeDetails,
-      selected = NULL #network$selected
+      selected = network$selected
     )
 
     # infos module
@@ -169,7 +186,7 @@ shiny::shinyApp(
     # pokemon attacks
     callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # other elements
-    #callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
+    callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
   }
 )
