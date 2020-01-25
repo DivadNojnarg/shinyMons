@@ -36,7 +36,7 @@ shiny::shinyApp(
     init = f7Init(
       skin = "ios",
       theme = "dark",
-      color = "orange",
+      color = NULL,
       filled = FALSE,
       hideNavOnPageScroll = FALSE,
       hideTabsOnPageScroll = FALSE,
