@@ -44,27 +44,25 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
       ),
       # because it's a shiny app ;)
       tagAppendAttributes(
-        prettySwitch(
+        f7Toggle(
           inputId = ns("pokeShiny"),
           label = "Shiny?",
-          value = FALSE,
-          status = "primary",
-          slim = TRUE,
-          width = NULL
+          checked = FALSE,
+          color = "blue"
         ),
         class = "m-2"
       )
     )
   })
 
-  observe({
-    req(!is.null(selected()))
-    updatePickerInput(
-      session,
-      inputId = "pokeSelect",
-      selected = pokeNames[selected()]
-    )
-  })
+  #observe({
+  #  req(!is.null(selected()))
+  #  updatePickerInput(
+  #    session,
+  #    inputId = "pokeSelect",
+  #    selected = pokeNames[selected()]
+  #  )
+  #})
 
   return(
     list(
