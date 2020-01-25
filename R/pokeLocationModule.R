@@ -34,15 +34,10 @@ pokeLocation <- function(input, output, session, selected, locations) {
 
     req(!is.null(selected()))
 
-    tablerCard(
+    f7Card(
       title = paste0("Where to find ",  selected(), " ?"),
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      statusSide = "top",
-      width = 12,
       if (!is.null(pokeLocations())) {
-        lapply(seq_along(pokeLocations()), function(i) fluidRow(paste(i, ":", pokeLocations()[[i]])))
+        lapply(seq_along(pokeLocations()), function(i) f7Flex(paste(i, ":", pokeLocations()[[i]])))
       } else {
         "This pokemon cannot be find in the wild."
       }

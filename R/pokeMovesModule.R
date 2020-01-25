@@ -34,14 +34,8 @@ pokeMove <- function(input, output, session, selected, moves) {
   # generate the card
   output$poke_moves <- renderPrint({
 
-    tablerCard(
+    f7Card(
       title = paste0(selected(), " Moves"),
-      statusSide = "top",
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      width = 12,
-
       # card content
       lapply(seq_along(pokeMoves()), FUN = function(i) {
         moveName <- pokeMoves()[[i]]$name
@@ -49,13 +43,11 @@ pokeMove <- function(input, output, session, selected, moves) {
         moveEffect <- pokeMoves()[[i]]$moveEffect
         moveId <- pokeMoves()[[i]]$id
 
-        fluidRow(
+        f7Flex(
           paste("Slot: ", moveSlot),
           tagAppendAttributes(
-            tablerTag(
+            f7Badge(
               paste(moveId, moveName),
-              href = NULL,
-              rounded = FALSE,
               color = NULL
             ),
             class = "mx-2"
