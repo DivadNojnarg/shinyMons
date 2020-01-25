@@ -17,7 +17,8 @@ Imports: shiny,
     shinyjs, 
     stringr,
     jsonlite,
-    waiter
+    waiter,
+    shinyMobile
 Remotes: RinteRface/tablerDash, JohnCoene/pushbar, JohnCoene/waiter
 URL: https://github.com/DivadNojnarg/shinyMons
 BugReports: https://github.com/DivadNojnarg/shinyMons/issues

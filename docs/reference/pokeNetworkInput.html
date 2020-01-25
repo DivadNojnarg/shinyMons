@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>UI module for generating other stats chart — pokeOtherUi • shinyMons</title>
+<title>Server module for controling the pokeNetwork section — pokeNetworkInput • shinyMons</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="UI module for generating other stats chart — pokeOtherUi" />
-<meta property="og:description" content="UI module for generating other stats chart" />
+<meta property="og:title" content="Server module for controling the pokeNetwork section — pokeNetworkInput" />
+<meta property="og:description" content="Server module for controling the pokeNetwork section" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -108,36 +108,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>UI module for generating other stats chart</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeOthersModule.R'><code>R/pokeOthersModule.R</code></a></small>
-    <div class="hidden name"><code>pokeOtherUi.Rd</code></div>
+    <h1>Server module for controling the pokeNetwork section</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DivadNojnarg/shinyMons/blob/master/R/pokeNetworkInputModule.R'><code>R/pokeNetworkInputModule.R</code></a></small>
+    <div class="hidden name"><code>pokeNetworkInput.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>UI module for generating other stats chart</p>
+    <p>Server module for controling the pokeNetwork section</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pokeOtherUi</span>(<span class='no'>id</span>)</pre>
+    <pre class="usage"><span class='fu'>pokeNetworkInput</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>currentTab</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>id, </th>
-      <td><p>character used to specify namespace, see <code>shiny::<a href='https://rdrr.io/pkg/shiny/man/NS.html'>NS</a></code></p></td>
+      <th>input</th>
+      <td><p>Shiny inputs.</p></td>
+    </tr>
+    <tr>
+      <th>output</th>
+      <td><p>Shiny outputs.</p></td>
+    </tr>
+    <tr>
+      <th>session</th>
+      <td><p>Shiny session.</p></td>
+    </tr>
+    <tr>
+      <th>currentTab</th>
+      <td><p>Currently selected tab (input$tabset).</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>a <code>shiny::<a href='https://rdrr.io/pkg/shiny/man/tag.html'>tagList</a></code> containing UI elements</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
     </ul>
 
   </div>

@@ -4,7 +4,7 @@
 \alias{pokeNetworkInput}
 \title{Server module for controling the pokeNetwork section}
 \usage{
-pokeNetworkInput(input, output, session)
+pokeNetworkInput(input, output, session, currentTab)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -12,6 +12,8 @@ pokeNetworkInput(input, output, session)
 \item{output}{Shiny outputs.}
 
 \item{session}{Shiny session.}
+
+\item{currentTab}{Currently selected tab (input$tabset).}
 }
 \description{
 Server module for controling the pokeNetwork section
