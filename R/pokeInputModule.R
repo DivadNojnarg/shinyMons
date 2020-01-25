@@ -35,16 +35,12 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
   output$pokeChoice <- renderUI({
     fluidRow(
       align = "center",
-      pickerInput(
+      f7SmartSelect(
         inputId = ns("pokeSelect"),
-        width = NULL,
-        options = list(style = "btn-primary"),
-        multiple = FALSE,
-        choices = pokeNames,
-        choicesOpt = list(
-          content = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames)
-        ),
-        selected = pokeNames[[1]]
+        label = "Select a pokemon",
+        choice = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
+        selected = pokeNames[[1]],
+        type = "sheet"
       ),
       # because it's a shiny app ;)
       tagAppendAttributes(
