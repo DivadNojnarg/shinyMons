@@ -40,7 +40,7 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
         label = "Select a pokemon",
         choices = pokeNames, #sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
         selected = pokeNames[[1]],
-        type = "sheet"
+        type = "popup"
       ),
       # because it's a shiny app ;)
       tagAppendAttributes(
