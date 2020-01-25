@@ -55,14 +55,13 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
     )
 
     f7SocialCard(
-      author_img = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png",
-      author = selected(),
-      # background image
-      if (!shiny()) {
-        img(src = sprites[[selected()]])
+      # sprite
+      author_img = if (!shiny()) {
+        sprites[[selected()]]
       } else {
-        img(src = mainData[[selected()]]$sprites$front_shiny)
+        mainData[[selected()]]$sprites$front_shiny
       },
+      author = selected(),
       br(),
       # text content
       details[[selected()]]$flavor_text_entries$flavor_text[54],
@@ -71,11 +70,6 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
       f7Flex(
         f7Chip(label = details[[selected()]]$shape$name, status = NULL),
         f7Chip(label = details[[selected()]]$habitat$name, status = habitatColor)
-      ),
-      # other ressources
-      footer = f7Flex(
-        f7Chip(label = a(href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())), "pokeApi")),
-        f7Chip(label = a(href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"), "Bulbapedia")),
       )
     )
   })
