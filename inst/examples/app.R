@@ -82,7 +82,8 @@ shiny::shinyApp(
           icon = f7Icon("info"),
           pokeInfosUi(id = "infos"),
           pokeTypeUi(id = "types"),
-          pokeEvolveUi(id = "evol")
+          pokeEvolveUi(id = "evol"),
+          pokeStatsUi(id = "stats")
         )
       )
     )
@@ -122,7 +123,7 @@ shiny::shinyApp(
     )
 
     # stats module
-    #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
+    callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
     callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
     # moves module

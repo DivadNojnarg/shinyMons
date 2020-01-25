@@ -72,79 +72,69 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
 
   # basic stats
   outputNames <- c(
-    "pokeGrowth",
-    "pokeCapture",
-    "pokeHappy",
-    "pokeHeight",
-    "pokeWeight",
-    "baseXp"
+    "Growth Rate",
+    "Capture Rate",
+    "Base Happiness",
+    "Height in cm",
+    "Weight in Kg",
+    "Base Xp"
   )
 
-  basicStats <- reactive({
-
-    req(!is.null(selected()))
-
-    list(
-      values = tagList(
-        switch(
-          details[[selected()]]$growth_rate$name,
-          "slow" = tablerProgress(value = 0, size = "xs", status = "danger"),
-          "medium-slow" = tablerProgress(value = 25, size = "xs", status = "warning"),
-          "medium" = tablerProgress(value = 60, size = "xs", status = "yellow"),
-          "fast" = tablerProgress(value = 90, size = "xs", status = "success")
-        ),
-        details[[selected()]]$capture_rate,
-        details[[selected()]]$base_happiness,
-        mainData[[selected()]]$height * 10,
-        mainData[[selected()]]$weight / 10,
-        mainData[[selected()]]$base_experience
-      ),
-      titles = c(
-        "Growth Rate",
-        "Capture Rate",
-        "Base Happiness",
-        "Height in cm",
-        "Weight in Kg",
-        "Base Xp"
-      )
+  progressValue <- reactive({
+    req(selected())
+    switch(
+      details[[selected()]]$growth_rate$name,
+      "slow" = f7Progress(id = ns("slow_pg"), value = 0, color = "red"),
+      "medium-slow" = f7Progress(id = ns("slow_pg"), value = 25, color = "orange"),
+      "medium" = f7Progress(id = ns("slow_pg"), value = 60, color = "yellow"),
+      "fast" = f7Progress(id = ns("slow_pg"), value = 90, color = "green")
     )
   })
 
-  lapply(seq_along(outputNames), FUN = function(i) {
-
-    output[[outputNames[[i]]]] <- renderUI({
-
-      # calculate trends in %
-      trend <- if (i == 1) NA else round(100 * (basicStats()$values[[i]] - means[[i]]) / means[[i]])
-
-      tablerStatCard(
-        value = basicStats()$values[[i]],
-        title = basicStats()$titles[[i]],
-        width = 12,
-        trend = if (!is.na(trend)) trend else NULL
-      )
-    })
+  basicStats <- reactive({
+    req(!is.null(selected()))
+    c(
+      NA,
+      details[[selected()]]$capture_rate,
+      details[[selected()]]$base_happiness,
+      mainData[[selected()]]$height * 10,
+      mainData[[selected()]]$weight / 10,
+      mainData[[selected()]]$base_experience
+    )
   })
 
 
-  output$basic_stats <- renderUI({
-    req(!is.null(input$pokeBasicStats))
-    if (input$pokeBasicStats) {
-      tagList(
-        fluidRow(
-          column(width = 4, uiOutput(ns("pokeHappy"))),
-          column(width = 4, uiOutput(ns("pokeHeight"))),
-          column(width = 4, uiOutput(ns("pokeWeight")))
-        ),
-        fluidRow(
-          column(width = 4, uiOutput(ns("baseXp"))),
-          column(width = 4, uiOutput(ns("pokeGrowth"))),
-          column(width = 4, uiOutput(ns("pokeCapture")))
+
+    output$basic_stats <- renderUI({
+      req(input$pokeBasicStats)
+      listItems <- lapply(seq_along(outputNames), FUN = function(i) {
+
+        # calculate trends in %
+        trend <- if (i == 1) {
+          NA
+          } else {
+            res <- round(100 * (basicStats()[i] - means[[i]]) / means[[i]])
+            if (res < 0){
+              HTML(paste0(res, "%", f7Icon("arrow_down_right")))
+            } else {
+              HTML(paste0(res, "%", f7Icon("arrow_up_right")))
+            }
+          }
+
+
+        f7ListItem(
+          media = f7Icon("info"),
+          if (i == 1) progressValue() else basicStats()[i],
+          header = outputNames[i],
+          right = if (!is.na(trend)) trend else NULL
         )
-      )
-    }
-  })
+      })
 
+      f7List(
+        inset = TRUE,
+        listItems
+      )
+  })
 
   # ################################################################
   # Skills
@@ -178,29 +168,18 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
 
     req(!is.null(selected()))
 
-    tablerCard(
-      title = paste0(selected(), " Stats"),
-      options = tagList(
-        shinyWidgets::prettySwitch(
+    f7Card(
+      title = tagList(
+        paste0(selected(), " Stats"),
+        f7Toggle(
           inputId = ns("pokeBasicStats"),
-          label = "Display Basic Stats?",
-          value = TRUE,
-          status = "default",
-          slim = TRUE,
-          fill = FALSE,
-          bigger = TRUE,
-          inline = FALSE
+          label = NULL,
+          checked = TRUE,
+          color = "default"
         )
       ),
-      footer = NULL,
-      status = "info",
-      statusSide = "left",
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      width = 12,
-      overflow = FALSE,
-      echarts4rOutput(outputId = ns("pokeStats"))
+      echarts4rOutput(outputId = ns("pokeStats")),
+      footer = NULL
     )
   })
 
