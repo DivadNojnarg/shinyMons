@@ -48,7 +48,7 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
       "waters-edge" = "azure",
       "forest" = "green",
       "rough-terrain" = "yellow",
-      "cave" = "gray-dark",
+      "cave" = "black",
       "urban" = "gray",
       "sea" = "blue",
       "rare" = "purple"

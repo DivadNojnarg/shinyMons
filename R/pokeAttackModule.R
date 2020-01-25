@@ -8,8 +8,8 @@ pokeAttackUi <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     uiOutput(ns("poke_attack_select")),
-    uiOutput(ns("poke_attack"), class = "col-sm-12"),
-    uiOutput(ns("poke_attacks_types"), class = "col-sm-12")
+    uiOutput(ns("poke_attack")),
+    uiOutput(ns("poke_attacks_types"))
   )
 }
 
@@ -29,20 +29,12 @@ pokeAttack <- function(input, output, session, attacks) {
 
   ns <- session$ns
 
-
   output$poke_attack_select <- renderUI({
-    fluidRow(
-      column(
-        width = 12,
-        align = "center",
-        selectInput(
-          inputId = ns("pokeAttackSelect"),
-          label = "Select an attack:",
-          choices = names(attacks),
-          selected = names(attacks)[1],
-          width = "350px"
-        )
-      )
+    f7Select(
+      inputId = ns("pokeAttackSelect"),
+      label = "Select an attack:",
+      choices = names(attacks),
+      selected = names(attacks)[1]
     )
   })
 
@@ -131,102 +123,71 @@ pokeAttack <- function(input, output, session, attacks) {
     # here some colors are not supported by tags. Need to fix it
     typeColor <- switch(
       attacks[[selected]]$type$name,
-      "normal" = "gray-lightest",
+      "normal" = "white",
       "fighting" = "red",
-      "flying" = "indigo",
-      "poison" = "purple-light",
-      "ground" = "yellow-lighter",
-      "rock" = "yellow-darker",
-      "bug" = "green-lighter",
-      "ghost" = "purple-dark",
-      "fire" = "orange",
-      "water" = "azure",
+      "flying" = "blue",
+      "poison" = "purple",
+      "ground" = "gray",
+      "rock" = "orange",
+      "bug" = "teal",
+      "ghost" = "deeppurple",
+      "fire" = "deeporange",
+      "water" = "default",
       "grass" = "green",
       "electric" = "yellow",
       "psychic" = "pink",
-      "ice" = "azure-lighter",
-      "dragon" = "purple-darker"
+      "ice" = "lightblue",
+      "dragon" = "black"
     )
 
-    tablerBlogCard(
-      title = attacks[[selected]]$name,
-      author = tablerTag(
-        name = "Type",
-        rounded = FALSE,
-        color = "default",
-        addon = attacks[[selected]]$type$name,
-        addonColor = typeColor
-      ),
-      date = tablerTag(
-        name = "Target",
-        rounded = FALSE,
-        color = "default",
-        addon = attacks[[selected]]$target$name,
-        addonColor = NULL
-      ),
-      href = NULL,
-      src = NULL,
-      avatarUrl = NULL,
-      width = 12,
-      fluidRow(
-        # basic box
-        column(
-          width = 4,
-          align = "center",
-          tablerTable(
-            title = "Main Stats",
-            width = 12,
-            tablerTableItem(
-              left = tablerTag(name = "Power", rounded = TRUE, color = "pink"),
-              right = h3(attacks[[selected]]$power)
-            ),
-            tablerTableItem(
-              left = tablerTag(name = "PP", rounded = TRUE, color = "yellow"),
-              right = h3(attacks[[selected]]$pp)
-            ),
-            tablerTableItem(
-              left = tablerTag(name = "Accuracy", rounded = TRUE, color = "orange"),
-              right = h3(attacks[[selected]]$accuracy)
-            ),
-            tablerTableItem(
-              left = tablerTag(name = "Priority", rounded = TRUE, color = "blue"),
-              right = h3(attacks[[selected]]$priority)
-            )
+    tagList(
+      f7Card(
+        title = tagList(
+          attacks[[selected]]$name,
+          f7Chip(
+            label = paste0("Type: ", attacks[[selected]]$type$name),
+            status = typeColor
+          ),
+          f7Chip(label = paste0("Target: ", attacks[[selected]]$target$name))
+        ),
+        f7List(
+          f7ListItem(
+            title = tablerTag(name = "Power", rounded = TRUE, color = "pink"),
+            right = h3(attacks[[selected]]$power)
+          ),
+          f7ListItem(
+            title = tablerTag(name = "PP", rounded = TRUE, color = "yellow"),
+            right = h3(attacks[[selected]]$pp)
+          ),
+          f7ListItem(
+            title = tablerTag(name = "Accuracy", rounded = TRUE, color = "orange"),
+            right = h3(attacks[[selected]]$accuracy)
+          ),
+          f7ListItem(
+            title = tablerTag(name = "Priority", rounded = TRUE, color = "blue"),
+            right = h3(attacks[[selected]]$priority)
           )
         ),
-        # boxplot
-        column(
-          width = 4,
-          align = "center",
-          echarts4rOutput(ns("attackMeans"))
-        ),
-        # radar chart
-        column(
-          width = 4,
-          align = "center",
-          if (is.null(power)) {
-            tablerAlert(
-              title = "Alert",
-              "This attack has undetermind power.",
-              icon = "alert-triangle",
-              status = "warning"
-            )
-          } else {
-            echarts4rOutput(outputId = ns("attackStats"))
-          }
+        footer = tagList(
+          paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]),
+          f7Chip(
+            label = paste0("Type: ", attacks[[selected]]$damage_class$name),
+            status = typeColor
+          )
         )
       ),
-      fluidRow(
-        # index 44 corresponds to English
-        paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]), br(),
-        tablerTag(
-          name = "Type of damages",
-          rounded = FALSE,
-          color = "default",
-          addon = attacks[[selected]]$damage_class$name,
-          addonColor = "red"
+
+
+      f7Card(
+        title = "Global Stats",
+        echarts4rOutput(ns("attackMeans"))
+      ),
+
+      if (!is.null(power)) {
+        f7Card(
+          echarts4rOutput(outputId = ns("attackStats"))
         )
-      )
+      }
     )
   })
 
@@ -248,17 +209,8 @@ pokeAttack <- function(input, output, session, attacks) {
 
 
   output$poke_attacks_types <- renderUI({
-    tablerCard(
+    f7Card(
       title = paste("Attack Types"),
-      options = NULL,
-      footer = NULL,
-      status = "info",
-      statusSide = "left",
-      collapsible = FALSE,
-      closable = FALSE,
-      zoomable = FALSE,
-      width = 12,
-      overflow = FALSE,
       echarts4rOutput(outputId = ns("attackTypes"))
     )
   })

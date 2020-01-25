@@ -89,8 +89,13 @@ shiny::shinyApp(
         ),
         f7Tab(
           tabName = "gallery",
-          icon = f7Icon(""),
+          icon = f7Icon("list_number"),
           pokeGalleryUi(id = "gallery")
+        ),
+        f7Tab(
+          tabName = "attacks",
+          icon = f7Icon("bolt_fill"),
+          pokeAttackUi(id = "attacks")
         )
       )
     )
@@ -162,7 +167,7 @@ shiny::shinyApp(
     # gallery module
     callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
-    #callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
+    callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # other elements
     #callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
