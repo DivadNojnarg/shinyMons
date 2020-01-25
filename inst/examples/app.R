@@ -76,7 +76,13 @@ shiny::shinyApp(
         id = "tabset",
         animated = FALSE,
         swipeable = TRUE,
-        pokeInfosUi(id = "infos")
+        f7Tab(
+          tabName = "infos",
+          active = TRUE,
+          icon = f7Icon("info"),
+          pokeInfosUi(id = "infos"),
+          pokeTypeUi(id = "types")
+        )
       )
     )
   ),
@@ -117,7 +123,7 @@ shiny::shinyApp(
     # stats module
     #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
-    #callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
+    callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
     # moves module
     #callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 

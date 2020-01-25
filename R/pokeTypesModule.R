@@ -50,56 +50,92 @@ pokeType <- function(input, output, session, types, selected) {
       # fortunataley tabler dash has tons of colors available
       pokeColor <- switch(
         typeName,
-        "normal" = "gray-lightest",
+        "normal" = "white",
         "fighting" = "red",
-        "flying" = "indigo",
-        "poison" = "purple-light",
-        "ground" = "yellow-lighter",
-        "rock" = "yellow-darker",
-        "bug" = "green-lighter",
-        "ghost" = "purple-dark",
-        "fire" = "orange",
-        "water" = "azure",
+        "flying" = "blue",
+        "poison" = "purple",
+        "ground" = "gray",
+        "rock" = "orange",
+        "bug" = "teal",
+        "ghost" = "deeppurple",
+        "fire" = "deeporange",
+        "water" = "default",
         "grass" = "green",
         "electric" = "yellow",
         "psychic" = "pink",
-        "ice" = "azure-lighter",
-        "dragon" = "purple-darker"
+        "ice" = "lightblue",
+        "dragon" = "black"
       )
 
-      tagList(
-        tablerInfoCard(
-          value = paste(typeSlot, typeName),
-          status = pokeColor,
-          icon = NULL,
-          description = NULL,
-          width = 12
+      f7Card(
+        title = tagList(
+          paste(typeSlot, typeName),
+          f7Badge(color = pokeColor)
         ),
-        fluidRow(
-          column(
-            width = 6,
-            align = "left",
-            h5("Damages from:"), br(),
-            HTML(paste0(tablerTag(name = "2X", rounded = FALSE, color = "red"), " ")),
-            lapply(seq_along(double_damage_from), FUN = function(j) double_damage_from[[j]]), br(),
-            HTML(paste0(tablerTag(name = "0.5X", rounded = FALSE, color = "green"), " ")),
-            lapply(seq_along(half_damage_from), FUN = function(j) half_damage_from[[j]]), br(),
-            HTML(paste0(tablerTag(name = "0", rounded = FALSE, color = "default"), " ")),
-            lapply(seq_along(no_damage_from), FUN = function(j) no_damage_from[[j]])
-          ),
-          column(
-            width = 6,
-            align = "left",
-            h5("Damages to:"), br(),
-            HTML(paste0(tablerTag(name = "2X", rounded = FALSE, color = "green"), " ")),
-            lapply(seq_along(double_damage_to), FUN = function(j) double_damage_to[[j]]), br(),
-            HTML(paste0(tablerTag(name = "0.5X", rounded = FALSE, color = "red"), " ")),
-            lapply(seq_along(half_damage_to), FUN = function(j) half_damage_to[[j]]), br(),
-            HTML(paste0(tablerTag(name = "0", rounded = FALSE, color = "default"), " ")),
-            lapply(seq_along(no_damage_to), FUN = function(j) no_damage_to[[j]])
+        h5("Damages from:"), br(),
+        # double
+        if (!is.null(double_damage_from)) {
+          f7Chip(
+            label = lapply(
+              seq_along(double_damage_from),
+              FUN = function(j) double_damage_from[[j]]
+            ),
+            status = "red"
           )
-        ),
-        br()
+        },
+        # half
+        if (!is.null(half_damage_from)) {
+          f7Chip(
+            label = lapply(
+              seq_along(half_damage_from),
+              FUN = function(j) half_damage_from[[j]]
+            ),
+            status = "green"
+          )
+        },
+        # none
+        if (!is.null(no_damage_from)) {
+          f7Chip(
+            label = lapply(
+              seq_along(no_damage_from),
+              FUN = function(j) no_damage_from[[j]]
+            ),
+            status = "gray"
+          )
+        },
+        br(), br(),
+
+        h5("Damages to:"), br(),
+        # double
+        if (!is.null(double_damage_to)) {
+          f7Chip(
+            label = lapply(
+              seq_along(double_damage_to),
+              FUN = function(j) double_damage_to[[j]]
+            ),
+            status = "green"
+          )
+        },
+        # half
+        if (!is.null(half_damage_to)) {
+          f7Chip(
+            label = lapply(
+              seq_along(half_damage_to),
+              FUN = function(j) half_damage_to[[j]]
+            ),
+            status = "red"
+          )
+        },
+        # none
+        if (!is.null(no_damage_to)) {
+          f7Chip(
+            label = lapply(
+              seq_along(no_damage_to),
+              FUN = function(j) no_damage_to[[j]]
+            ),
+            status = "gray"
+          )
+        }
       )
     })
   })

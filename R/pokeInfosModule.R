@@ -6,12 +6,7 @@
 #' @export
 pokeInfosUi <- function(id) {
   ns <- shiny::NS(id)
-  f7Tab(
-    tabName = "infos",
-    active = TRUE,
-    icon = f7Icon("info"),
-    uiOutput(ns("poke_infos"))
-  )
+  uiOutput(ns("poke_infos"))
 }
 
 
