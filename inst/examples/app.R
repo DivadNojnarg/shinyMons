@@ -1,7 +1,6 @@
 library(shiny)
+library(shinyMobile)
 library(shinyjs)
-library(tablerDash)
-library(shinyWidgets)
 library(shinyEffects)
 library(pushbar)
 library(shinyMons)

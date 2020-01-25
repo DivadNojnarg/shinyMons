@@ -38,7 +38,7 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
       f7SmartSelect(
         inputId = ns("pokeSelect"),
         label = "Select a pokemon",
-        choice = sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
+        choices = pokeNames, #sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
         selected = pokeNames[[1]],
         type = "sheet"
       ),

@@ -6,7 +6,12 @@
 #' @export
 pokeInfosUi <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_infos"))
+  f7Tab(
+    tabName = "infos",
+    active = TRUE,
+    icon = f7Icon("info"),
+    uiOutput(ns("poke_infos"))
+  )
 }
 
 
@@ -55,23 +60,27 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
     )
 
     f7SocialCard(
-      author_img = if (!shiny()) {
-        sprites[[selected()]]
-      } else {
-        mainData[[selected()]]$sprites$front_shiny
-      },
+      author_img = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png",
       author = selected(),
       # background image
-      img(src = "https://pngimage.net/wp-content/uploads/2018/06/pokemon-background-png.png"),
+      if (!shiny()) {
+        img(src = sprites[[selected()]])
+      } else {
+        img(src = mainData[[selected()]]$sprites$front_shiny)
+      },
+      br(),
       # text content
       details[[selected()]]$flavor_text_entries$flavor_text[54],
+      br(),
       # habitat details
-      f7Chip(details[[selected()]]$shape$name, color = NULL),
-      f7Chip(details[[selected()]]$habitat$name, color = habitatColor),
+      f7Flex(
+        f7Chip(label = details[[selected()]]$shape$name, status = NULL),
+        f7Chip(label = details[[selected()]]$habitat$name, status = habitatColor)
+      ),
       # other ressources
-      footer = tagList(
-        f7Badge(a(href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())), "pokeApi")),
-        f7Badge(a(href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"), "Bulbapedia")),
+      footer = f7Flex(
+        f7Chip(label = a(href = paste0("https://pokeapi.co/api/v2/pokemon/", tolower(selected())), "pokeApi")),
+        f7Chip(label = a(href = paste0("https://bulbapedia.bulbagarden.net/wiki/", selected(), "_(Pok\u00e9mon)"), "Bulbapedia")),
       )
     )
   })
