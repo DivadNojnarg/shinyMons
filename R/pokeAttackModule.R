@@ -39,6 +39,18 @@ pokeAttack <- function(input, output, session, attacks) {
   })
 
 
+  observeEvent(input$pokeAttackSelect, {
+    selected <- input$pokeAttackSelect
+    if (is.null(attacks[[selected]]$power)) {
+      f7Dialog(
+        session = session,
+        type = "alert",
+        text = "This attack has undetermind power!"
+      )
+    }
+  })
+
+
   # below we calculate the mean values for each stat
   # mean values
   names_stats <- c(
@@ -123,7 +135,7 @@ pokeAttack <- function(input, output, session, attacks) {
     # here some colors are not supported by tags. Need to fix it
     typeColor <- switch(
       attacks[[selected]]$type$name,
-      "normal" = "white",
+      "normal" = "gray",
       "fighting" = "red",
       "flying" = "blue",
       "poison" = "purple",
@@ -144,37 +156,35 @@ pokeAttack <- function(input, output, session, attacks) {
       f7Card(
         title = tagList(
           attacks[[selected]]$name,
-          f7Chip(
-            label = paste0("Type: ", attacks[[selected]]$type$name),
-            status = typeColor
+          f7Badge(
+            paste0("Type: ", attacks[[selected]]$type$name),
+            color = typeColor
           ),
-          f7Chip(label = paste0("Target: ", attacks[[selected]]$target$name))
+          f7Badge(
+            paste0("Damage Type: ", attacks[[selected]]$damage_class$name),
+            color = typeColor
+          ),
+          f7Badge(paste0("Target: ", attacks[[selected]]$target$name))
         ),
         f7List(
           f7ListItem(
-            title = tablerTag(name = "Power", rounded = TRUE, color = "pink"),
+            title = f7Badge("Power", color = "pink"),
             right = h3(attacks[[selected]]$power)
           ),
           f7ListItem(
-            title = tablerTag(name = "PP", rounded = TRUE, color = "yellow"),
+            title = f7Badge("PP", color = "yellow"),
             right = h3(attacks[[selected]]$pp)
           ),
           f7ListItem(
-            title = tablerTag(name = "Accuracy", rounded = TRUE, color = "orange"),
+            title = f7Badge("Accuracy", color = "orange"),
             right = h3(attacks[[selected]]$accuracy)
           ),
           f7ListItem(
-            title = tablerTag(name = "Priority", rounded = TRUE, color = "blue"),
+            title = f7Badge("Priority", color = "blue"),
             right = h3(attacks[[selected]]$priority)
           )
         ),
-        footer = tagList(
-          paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]),
-          f7Chip(
-            label = paste0("Type: ", attacks[[selected]]$damage_class$name),
-            status = typeColor
-          )
-        )
+        footer = paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44])
       ),
 
 
