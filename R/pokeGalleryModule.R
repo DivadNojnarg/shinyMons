@@ -51,7 +51,6 @@ pokeGallery <- function(input, output, session, mainData, details, shiny) {
         },
         subtitle = paste0("Pokemon: ", range()[[i]]$id)
       )
-      #cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
       cardTag
     })
   })
