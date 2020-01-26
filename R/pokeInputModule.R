@@ -35,12 +35,11 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
   output$pokeChoice <- renderUI({
     f7Flex(
       align = "center",
-      f7SmartSelect(
+      f7AutoComplete(
         inputId = ns("pokeSelect"),
         label = "Select a pokemon",
-        choices = pokeNames, #sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
-        selected = pokeNames[[1]],
-        type = "popup"
+        choices = pokeNames,#sprintf("<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s", sprites, pokeNames),
+        openIn = "dropdown"
       ),
       # because it's a shiny app ;)
       f7Toggle(
@@ -52,17 +51,18 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
     )
   })
 
-  #observe({
-  #  req(!is.null(selected()))
-  #  updatePickerInput(
-  #    session,
-  #    inputId = "pokeSelect",
-  #    selected = pokeNames[selected()]
-  #  )
-  #})
+  observe({
+    req(!is.null(selected()))
+    updateF7AutoComplete(
+      session,
+      inputId = "pokeSelect",
+      value = pokeNames[selected()]
+    )
+  })
 
   return(
     list(
+      # tranform selected since it contains an image tag
       pokeSelect = reactive(input$pokeSelect),
       pokeShiny = reactive(input$pokeShiny)
     )
