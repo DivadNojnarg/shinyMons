@@ -21,11 +21,10 @@ pokeInputUi <- function(id) {
 #' @param sprites Object containing pokemon images.
 #' @param details Object containing extra pokemon details.
 #' @param selected Object containing the selected pokemon in the network, if not NULL.
-#'
-#' @import shinyWidgets
+#' @param currentTab Currently selected tab (input$tabset).
 #'
 #' @export
-pokeInput <- function(input, output, session, mainData, sprites, details, selected) {
+pokeInput <- function(input, output, session, mainData, sprites, details, selected, currentTab) {
 
   ns <- session$ns
 
@@ -49,6 +48,12 @@ pokeInput <- function(input, output, session, mainData, sprites, details, select
         color = "blue"
       )
     )
+  })
+
+  observeEvent(currentTab(), {
+    if (currentTab() != "infos") {
+      hide(id = "subnavbar")
+    }
   })
 
   observe({

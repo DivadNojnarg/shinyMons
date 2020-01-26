@@ -117,7 +117,16 @@
     <p>Server module generating the pokemon interface</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pokeInput</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>sprites</span>, <span class='no'>details</span>, <span class='no'>selected</span>)</pre>
+    <pre class="usage"><span class='fu'>pokeInput</span>(
+  <span class='no'>input</span>,
+  <span class='no'>output</span>,
+  <span class='no'>session</span>,
+  <span class='no'>mainData</span>,
+  <span class='no'>sprites</span>,
+  <span class='no'>details</span>,
+  <span class='no'>selected</span>,
+  <span class='no'>currentTab</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,6 +158,10 @@
     <tr>
       <th>selected</th>
       <td><p>Object containing the selected pokemon in the network, if not NULL.</p></td>
+    </tr>
+    <tr>
+      <th>currentTab</th>
+      <td><p>Currently selected tab (input$tabset).</p></td>
     </tr>
     </table>
 

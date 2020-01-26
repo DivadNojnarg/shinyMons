@@ -68,7 +68,10 @@ shiny::shinyApp(
         right_panel = TRUE,
         bigger = TRUE,
         transparent = TRUE,
-        subNavbar = f7SubNavbar(pokeInputUi(id = "input"))
+        subNavbar = tagAppendAttributes(
+          f7SubNavbar(pokeInputUi(id = "input")),
+          id = "subnavbar"
+        )
       ),
       f7Tabs(
         id = "tabset",
@@ -78,9 +81,9 @@ shiny::shinyApp(
           tabName = "infos",
           active = TRUE,
           icon = f7Icon("info"),
+          useShinyjs(),
           pokeInfosUi(id = "infos"),
           pokeTypeUi(id = "types"),
-          pokeEvolveUi(id = "evol"),
           pokeStatsUi(id = "stats"),
           pokeMoveUi(id = "moves"),
           pokeLocationUi(id = "location")
@@ -115,7 +118,7 @@ shiny::shinyApp(
     networkOpts <- callModule(
       module = pokeNetworkInput,
       id = "networkInput",
-      currentTab = input$tabset
+      currentTab = reactive(input$tabset)
     )
     # Network module: network stores a potential selected node in the
     # network and pass it to the pickerInput function in the main
@@ -138,7 +141,8 @@ shiny::shinyApp(
       mainData = pokeMain,
       sprites = pokeSprites,
       details = pokeDetails,
-      selected = network$selected
+      selected = network$selected,
+      currentTab = reactive(input$tabset)
     )
 
     # infos module
@@ -148,7 +152,8 @@ shiny::shinyApp(
       mainData = pokeMain,
       details = pokeDetails,
       selected = main$pokeSelect,
-      shiny = main$pokeShiny
+      shiny = main$pokeShiny,
+      evolutions = pokeEvolutions
     )
 
     # stats module
@@ -158,16 +163,6 @@ shiny::shinyApp(
     # moves module
     callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 
-    # evolutions module
-    callModule(
-      module = pokeEvolve,
-      id = "evol",
-      mainData = pokeMain,
-      details = pokeDetails,
-      selected = main$pokeSelect,
-      shiny = main$pokeShiny,
-      evolutions = pokeEvolutions
-    )
 
     # fights module
     #callModule(

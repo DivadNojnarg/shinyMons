@@ -117,7 +117,16 @@
     <p>Server module generating the pokemon info cards</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pokeInfos</span>(<span class='no'>input</span>, <span class='no'>output</span>, <span class='no'>session</span>, <span class='no'>mainData</span>, <span class='no'>details</span>, <span class='no'>selected</span>, <span class='no'>shiny</span>)</pre>
+    <pre class="usage"><span class='fu'>pokeInfos</span>(
+  <span class='no'>input</span>,
+  <span class='no'>output</span>,
+  <span class='no'>session</span>,
+  <span class='no'>mainData</span>,
+  <span class='no'>details</span>,
+  <span class='no'>selected</span>,
+  <span class='no'>shiny</span>,
+  <span class='no'>evolutions</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,6 +158,10 @@
     <tr>
       <th>shiny</th>
       <td><p>Whether to display a shiny version. FALSE by default.</p></td>
+    </tr>
+    <tr>
+      <th>evolutions</th>
+      <td><p>Evolution data.</p></td>
     </tr>
     </table>
 

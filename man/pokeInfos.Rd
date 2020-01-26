@@ -4,7 +4,16 @@
 \alias{pokeInfos}
 \title{Server module generating the pokemon info cards}
 \usage{
-pokeInfos(input, output, session, mainData, details, selected, shiny)
+pokeInfos(
+  input,
+  output,
+  session,
+  mainData,
+  details,
+  selected,
+  shiny,
+  evolutions
+)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -20,6 +29,8 @@ pokeInfos(input, output, session, mainData, details, selected, shiny)
 \item{selected}{Input containing the selected pokemon index.}
 
 \item{shiny}{Whether to display a shiny version. FALSE by default.}
+
+\item{evolutions}{Evolution data.}
 }
 \description{
 Server module generating the pokemon info cards

@@ -4,7 +4,16 @@
 \alias{pokeInput}
 \title{Server module generating the pokemon interface}
 \usage{
-pokeInput(input, output, session, mainData, sprites, details, selected)
+pokeInput(
+  input,
+  output,
+  session,
+  mainData,
+  sprites,
+  details,
+  selected,
+  currentTab
+)
 }
 \arguments{
 \item{input}{Shiny inputs.}
@@ -20,6 +29,8 @@ pokeInput(input, output, session, mainData, sprites, details, selected)
 \item{details}{Object containing extra pokemon details.}
 
 \item{selected}{Object containing the selected pokemon in the network, if not NULL.}
+
+\item{currentTab}{Currently selected tab (input$tabset).}
 }
 \description{
 Server module generating the pokemon interface

@@ -20,11 +20,26 @@ pokeInfosUi <- function(id) {
 #' @param details Object containing extra pokemon details.
 #' @param selected Input containing the selected pokemon index.
 #' @param shiny Whether to display a shiny version. FALSE by default.
+#' @param evolutions Evolution data.
 #'
 #' @import tablerDash
 #'
 #' @export
-pokeInfos <- function(input, output, session, mainData, details, selected, shiny) {
+pokeInfos <- function(input, output, session, mainData, details, selected, shiny,
+                      evolutions) {
+
+  ns <- session$ns
+
+  # evolutions module
+  callModule(
+    module = pokeEvolve,
+    id = "evol",
+    mainData = mainData,
+    details = details,
+    selected = selected,
+    shiny = shiny,
+    evolutions = evolutions
+  )
 
   #generate the profile cards (as many as the number of selected pokemons)
   output$poke_infos <- renderUI({
@@ -62,6 +77,8 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
         mainData[[selected()]]$sprites$front_shiny
       },
       author = selected(),
+      br(),
+      pokeEvolveUi(id = ns("evol")),
       br(),
       # text content
       details[[selected()]]$flavor_text_entries$flavor_text[54],
