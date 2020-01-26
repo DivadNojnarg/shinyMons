@@ -96,7 +96,8 @@ pokeNetworkInputUi <- function(id) {
       label = "Central gravity:",
       min = 0,
       value = 0,
-      max = 1
+      max = 1,
+      scale = TRUE
     )
   )
   #uiOutput(ns("networkInputs"))

@@ -42,14 +42,13 @@ pokeGallery <- function(input, output, session, mainData, details, shiny) {
     lapply(seq_along(range()), FUN = function(i) {
       cardTag <- f7ExpandableCard(
         id = ns(paste0("pokegallery_", i)),
-        title = range()[[i]]$name,
+        title = paste(i, range()[[i]]$name),
         fullBackground = TRUE,
         img = if (!shiny()) {
           range()[[i]]$sprites$front_default
         } else {
           range()[[i]]$sprites$front_shiny
-        },
-        subtitle = paste0("Pokemon: ", range()[[i]]$id)
+        }
       )
       cardTag
     })
