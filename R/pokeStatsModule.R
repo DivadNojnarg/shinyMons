@@ -6,11 +6,7 @@
 #' @export
 pokeStatsUi <- function(id) {
   ns <- shiny::NS(id)
-
-  tagList(
-    uiOutput(ns("basic_stats")),
-    uiOutput(ns("pokeStatsCard"))
-  )
+  uiOutput(ns("pokeStatsCard"))
 }
 
 # make R CMD check happy
@@ -105,35 +101,37 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
 
 
 
-    output$basic_stats <- renderUI({
-      req(input$pokeBasicStats)
-      listItems <- lapply(seq_along(outputNames), FUN = function(i) {
+  output$basic_stats <- renderUI({
+    req(input$pokeBasicStats)
+    listItems <- lapply(seq_along(outputNames), FUN = function(i) {
 
-        # calculate trends in %
-        trend <- if (i == 1) {
-          NA
-          } else {
-            res <- round(100 * (basicStats()[i] - means[[i]]) / means[[i]])
-            if (res < 0){
-              HTML(paste0(res, "%", f7Icon("arrow_down_right")))
-            } else {
-              HTML(paste0(res, "%", f7Icon("arrow_up_right")))
-            }
-          }
+      # calculate trends in %
+      trend <- if (i == 1) {
+        NA
+      } else {
+        res <- round(100 * (basicStats()[i] - means[[i]]) / means[[i]])
+        if (res < 0){
+          HTML(paste0(res, "%", f7Icon("arrow_down_right")))
+        } else {
+          HTML(paste0(res, "%", f7Icon("arrow_up_right")))
+        }
+      }
 
 
-        f7ListItem(
-          media = f7Icon("info"),
-          if (i == 1) progressValue() else basicStats()[i],
-          header = outputNames[i],
-          right = if (!is.na(trend)) trend else NULL
-        )
-      })
+      f7ListItem(
+        if (i == 1) progressValue() else basicStats()[i],
+        header = outputNames[i],
+        right = if (!is.na(trend)) trend else NULL
+      )
+    })
 
+    tagList(
+      f7BlockTitle(title = "Basic Stats"),
       f7List(
         inset = TRUE,
         listItems
       )
+    )
   })
 
   # ################################################################
@@ -179,6 +177,7 @@ pokeStats <- function(input, output, session, mainData, details, selected) {
         )
       ),
       echarts4rOutput(outputId = ns("pokeStats")),
+      uiOutput(ns("basic_stats")),
       footer = NULL
     )
   })
