@@ -34,7 +34,7 @@ pokeType <- function(input, output, session, types, selected) {
   # render infoBoxes
   output$poke_types <- renderUI({
 
-    lapply(seq_along(pokeTypes()), FUN = function(i) {
+    items <- lapply(seq_along(pokeTypes()), FUN = function(i) {
 
       typeName <- pokeTypes()[[i]]$name
       typeSlot <- pokeTypes()[[i]]$slot
@@ -67,76 +67,81 @@ pokeType <- function(input, output, session, types, selected) {
         "dragon" = "black"
       )
 
-      f7Card(
-        title = tagList(
+      # title
+      tagList(
+        tagList(
           paste(typeSlot, typeName),
           f7Badge(color = pokeColor)
         ),
-        h5("Damages from:"), br(),
-        # double
-        if (!is.null(double_damage_from)) {
-          f7Chip(
-            label = lapply(
-              seq_along(double_damage_from),
-              FUN = function(j) double_damage_from[[j]]
-            ),
-            status = "red"
+        f7Accordion(
+          multiCollapse = TRUE,
+          # double
+          f7AccordionItem(
+            title = "Damages from:",
+            open = TRUE,
+            if (!is.null(double_damage_from)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(double_damage_from),
+                  FUN = function(j) paste("X2:", double_damage_from[[j]])
+                ),
+                status = "red"
+              )
+            },
+            if (!is.null(half_damage_from)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(half_damage_from),
+                  FUN = function(j) paste("X0.5:", half_damage_from[[j]])
+                ),
+                status = "green"
+              )
+            },
+            if (!is.null(no_damage_from)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(no_damage_from),
+                  FUN = function(j) paste("X0:", no_damage_from[[j]])
+                ),
+                status = "gray"
+              )
+            }
+          ),
+          f7AccordionItem(
+            title = "Damages to:",
+            open = TRUE,
+            if (!is.null(double_damage_to)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(double_damage_to),
+                  FUN = function(j) paste("X2:", double_damage_to[[j]])
+                ),
+                status = "green"
+              )
+            },
+            if (!is.null(half_damage_to)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(half_damage_to),
+                  FUN = function(j) paste("X0.5:", half_damage_to[[j]])
+                ),
+                status = "red"
+              )
+            },
+            if (!is.null(no_damage_to)) {
+              f7Chip(
+                label = lapply(
+                  seq_along(no_damage_to),
+                  FUN = function(j) paste("X0:", no_damage_to[[j]])
+                ),
+                status = "gray"
+              )
+            }
           )
-        },
-        # half
-        if (!is.null(half_damage_from)) {
-          f7Chip(
-            label = lapply(
-              seq_along(half_damage_from),
-              FUN = function(j) half_damage_from[[j]]
-            ),
-            status = "green"
-          )
-        },
-        # none
-        if (!is.null(no_damage_from)) {
-          f7Chip(
-            label = lapply(
-              seq_along(no_damage_from),
-              FUN = function(j) no_damage_from[[j]]
-            ),
-            status = "gray"
-          )
-        },
-        br(), br(),
-
-        h5("Damages to:"), br(),
-        # double
-        if (!is.null(double_damage_to)) {
-          f7Chip(
-            label = lapply(
-              seq_along(double_damage_to),
-              FUN = function(j) double_damage_to[[j]]
-            ),
-            status = "green"
-          )
-        },
-        # half
-        if (!is.null(half_damage_to)) {
-          f7Chip(
-            label = lapply(
-              seq_along(half_damage_to),
-              FUN = function(j) half_damage_to[[j]]
-            ),
-            status = "red"
-          )
-        },
-        # none
-        if (!is.null(no_damage_to)) {
-          f7Chip(
-            label = lapply(
-              seq_along(no_damage_to),
-              FUN = function(j) no_damage_to[[j]]
-            ),
-            status = "gray"
-          )
-        }
+        ),
+        br()
       )
     })
+    rev(items)
   })
 }

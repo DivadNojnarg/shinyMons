@@ -12,7 +12,8 @@ pokeInfos(
   details,
   selected,
   shiny,
-  evolutions
+  evolutions,
+  types
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ pokeInfos(
 
 \item{shiny}{Whether to display a shiny version. FALSE by default.}
 
-\item{evolutions}{Evolution data.}
+\item{evolutions}{Preprocessed evolution data.}
+
+\item{types}{Object containing the preprocessed pokemon types.}
 }
 \description{
 Server module generating the pokemon info cards
