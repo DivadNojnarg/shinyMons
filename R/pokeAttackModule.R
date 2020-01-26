@@ -166,38 +166,34 @@ pokeAttack <- function(input, output, session, attacks) {
           ),
           f7Badge(paste0("Target: ", attacks[[selected]]$target$name))
         ),
+        if (!is.null(power)) {
+          echarts4rOutput(outputId = ns("attackStats"))
+        },
         f7List(
           f7ListItem(
-            title = f7Badge("Power", color = "pink"),
+            header = f7Badge("Power", color = "pink"),
             right = h3(attacks[[selected]]$power)
           ),
           f7ListItem(
-            title = f7Badge("PP", color = "yellow"),
+            header = f7Badge("PP", color = "purple"),
             right = h3(attacks[[selected]]$pp)
           ),
           f7ListItem(
-            title = f7Badge("Accuracy", color = "orange"),
+            header = f7Badge("Accuracy", color = "orange"),
             right = h3(attacks[[selected]]$accuracy)
           ),
           f7ListItem(
-            title = f7Badge("Priority", color = "blue"),
+            header = f7Badge("Priority", color = "blue"),
             right = h3(attacks[[selected]]$priority)
           )
         ),
         footer = paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44])
       ),
 
-
       f7Card(
         title = "Global Stats",
         echarts4rOutput(ns("attackMeans"))
-      ),
-
-      if (!is.null(power)) {
-        f7Card(
-          echarts4rOutput(outputId = ns("attackStats"))
-        )
-      }
+      )
     )
   })
 
