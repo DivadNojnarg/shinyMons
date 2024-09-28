@@ -23,6 +23,8 @@ pokeInputUi <- function(id) {
 #' @param selected Object containing the selected pokemon in the network, if not NULL.
 #' @param currentTab Currently selected tab (input$tabset).
 #'
+#' @importFrom shinyjs hide
+#'
 #' @export
 pokeInput <- function(input, output, session, mainData, sprites, details, selected, currentTab) {
 
