@@ -34,7 +34,7 @@ pokeInfos <- function(input, output, session, mainData, details, selected, shiny
 
     pokeNames <- names(mainData)
     sprites <- vapply(seq_along(pokeNames), FUN = function(i) {
-      paste0("http://www.pokestadium.com/sprites/xy/", mainData[[i]]$name, ".gif")
+      paste0("https://projectpokemon.org/images/normal-sprite/", mainData[[i]]$name, ".gif")
     }, FUN.VALUE = character(1))
     names(sprites) <- pokeNames
 
