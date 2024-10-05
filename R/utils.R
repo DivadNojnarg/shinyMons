@@ -71,6 +71,7 @@ find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object
 #' @return A list.
 #' @keywords internal
 find_evols <- function(l) {
+  # Handle pokemons that just can't evolve at all
   if (!length(l$evolves_to) && length(l$species$name) == 1) return(NULL)
   id <- fromJSON(l$species$url, simplifyVector = FALSE)$id
   # Handle Hitmonchan and cie (that has a lower evolution but not from a baby ...)
@@ -82,18 +83,8 @@ find_evols <- function(l) {
 
   entry_point <- l$species$name
   # Handle evee (3 evolutions of stage 1)
-  if (length(evols) > 1) {
-    res <- dropNulls(lapply(evols, \(tmp) {
-      find_evol(tmp, id, entry_point)
-    }))
-    # In case one of the multiple evolution isn't possible
-    # and there is only one evolution remaining, we can unlist
-    # the result (like for Meowth)
-    if (length(res) == 1) res <- unlist(res, recursive = FALSE)
-    res
-  } else {
-    tmp <- evols[[1]]
-    # remove eggs (pikachu, magmar, ...)
+  dropNulls(lapply(evols, \(tmp) {
+    # Handle babies like for pichu, ...
     if (l$is_baby) {
       entry_point <- tmp$species$name
       id <- fromJSON(tmp$species$url, simplifyVector = FALSE)$id
@@ -104,62 +95,63 @@ find_evols <- function(l) {
       }
     }
     find_evol(tmp, id, entry_point)
-  }
+  }))
 }
 
-build_poke_families <- function() {
-  i <- 1
-  poke_nodes <- list()
-  poke_edges <- list()
-
-  #evols <- dropNulls(lapply(poke_data, `[[`, "evolutions"))
-
-  while (i <= length(poke_data)) {
-    print(i)
-    tmp <- poke_data[[i]]$evolutions
-    if (length(tmp)) {
-      # build nodes
-      if (i == 133) browser()
-      if (length(tmp) > 1) {
-        
-      }
-      poke_nodes$id <- c(poke_nodes$id, tmp$id)
-      poke_nodes$label <- c(poke_nodes$label, tmp$chain)
-      poke_nodes$group <- c(poke_nodes$group, rep(i, length(tmp$id)))
-      poke_nodes$image <- c(
-        poke_nodes$image,
-        vapply(tmp$id, \(el) {
-          poke_data[[el]]$sprites$front_default
-        }, FUN.VALUE = character(1))
-      )
-
-      poke_edges$from <- c(poke_edges$from, tmp$id[1])
-      poke_edges$to <- c(poke_edges$to, tmp$id[2])
-      poke_edges$label <- c(
-        poke_edges$label,
+build_network_props <- function(tmp, poke_nodes, poke_edges, i) {
+  list(
+    nodes = data.frame(
+      id = tmp$id,
+      label = tmp$chain,
+      group = rep(i, length(tmp$id)),
+      image = vapply(tmp$id, \(el) {
+        poke_data[[el]]$sprites$front_default
+      }, FUN.VALUE = character(1))
+    ),
+    edges = data.frame(
+      from = c(tmp$id[1], if (length(tmp$id) > 2) tmp$id[2]),
+      to = c(tmp$id[2], if (length(tmp$id) > 2) tmp$id[3]),
+      label = c(
         sprintf(
           "At level: %s; trigger: %s, object: %s",
           tmp$level[1],
           tmp$trigger[1],
           tmp$object[1]
-        )
-      )
-
-      if (length(tmp$id) > 2) {
-        poke_edges$from <- c(poke_edges$from, tmp$id[2])
-        poke_edges$to <- c(poke_edges$to, tmp$id[3])
-        poke_edges$label <- c(
-          poke_edges$label,
+        ),
+        if (length(tmp$id) > 2) {
           sprintf(
             "At level: %s; trigger: %s, object: %s",
             tmp$level[2],
             tmp$trigger[2],
             tmp$object[2]
           )
-        )
-      }
+        }
+      )
+    )
+  )
+}
 
-      i <- i + length(tmp$id)
+build_poke_families <- function() {
+  i <- 1
+  poke_nodes <- data.frame()
+  poke_edges <- data.frame()
+
+  while (i <= length(poke_data)) {
+    print(i)
+    tmp <- poke_data[[i]]$evolutions
+    if (length(tmp)) {
+      # build nodes
+      for (evol in evols) {
+        #if (i == 133) browser()
+        res <- build_network_props(evol, poke_nodes, poke_edges, i)
+        poke_nodes <- rbind(poke_nodes, res$nodes)
+        poke_edges <- rbind(poke_edges, res$edges)
+      }
+      if (length(evols) > 1) {
+        i <- i + length(evols)
+      } else {
+        i <- i + length(tmp$evolutions$id)
+      }
     } else {
       i <- i + 1
     }

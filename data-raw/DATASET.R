@@ -18,7 +18,7 @@ english_language <- function(l) {
 }
 
 build_poke_data <- function(idx) {
-  lapply(idx, FUN = function(i) {
+  mclapply(idx, FUN = function(i) {
     tmp <- fromJSON(sprintf("%s/%s", poke_api, i), simplifyVector = FALSE)
     print(sprintf("Processing pokemon %s: %s", i, tmp$species$name))
     details <- fromJSON(tmp$species$url, simplifyVector = FALSE)
