@@ -20,7 +20,7 @@ english_language <- function(l) {
 build_poke_data <- function(idx) {
   mclapply(idx, FUN = function(i) {
     tmp <- fromJSON(sprintf("%s/%s", poke_api, i), simplifyVector = FALSE)
-    print(sprintf("Processing pokemon %s: %s", i, tmp$species$name))
+    #print(sprintf("Processing pokemon %s: %s", i, tmp$species$name))
     details <- fromJSON(tmp$species$url, simplifyVector = FALSE)
     evol_chain <- fromJSON(details$evolution_chain$url, simplifyVector = FALSE)$chain
   
@@ -120,25 +120,11 @@ build_poke_data <- function(idx) {
       is_lengendary = details$is_legendary, # Mewtho, Artikodin, ...
       is_mythical = details$is_mythical # Mew
     )
-  })
+  }, mc.cores = detectCores() -1 )
 }
 
 # NOTE: the api crashes if we run the 151 calls in a row ...
-#poke_data <- build_poke_data(1:10)
-#poke_data <- c(poke_data, build_poke_data(11:20))
-#poke_data <- c(poke_data, build_poke_data(21:30))
-#poke_data <- c(poke_data, build_poke_data(31:40))
-#poke_data <- c(poke_data, build_poke_data(41:50))
-#poke_data <- c(poke_data, build_poke_data(51:60))
-#poke_data <- c(poke_data, build_poke_data(61:70))
-#poke_data <- c(poke_data, build_poke_data(71:80))
-#poke_data <- c(poke_data, build_poke_data(81:90))
-#poke_data <- c(poke_data, build_poke_data(91:100))
-#poke_data <- c(poke_data, build_poke_data(101:110))
-#poke_data <- c(poke_data, build_poke_data(111:120))
-#poke_data <- c(poke_data, build_poke_data(121:130))
-#poke_data <- c(poke_data, build_poke_data(131:140))
-#poke_data <- c(poke_data, build_poke_data(141:151))
+poke_data <- build_poke_data(poke_ids)
   
 poke_names <- vapply(poke_data, `[[`, "name", FUN.VALUE = character(1))
 names(poke_data) <- poke_names
@@ -155,3 +141,7 @@ poke_attacks <- mclapply(seq_along(first_gen$moves$url), function(i) {
 })
 names(poke_attacks) <- first_gen$moves$name
 usethis::use_data(poke_attacks, overwrite = TRUE)
+
+# Prepare newtork data for visNetwork widget
+poke_network <- build_poke_families()
+usethis::use_data(poke_network, overwrite = TRUE)

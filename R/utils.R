@@ -111,7 +111,7 @@ build_network_props <- function(tmp, poke_nodes, poke_edges, i) {
     edges = data.frame(
       from = c(tmp$id[1], if (length(tmp$id) > 2) tmp$id[2]),
       to = c(tmp$id[2], if (length(tmp$id) > 2) tmp$id[3]),
-      label = c(
+      title = c(
         sprintf(
           "At level: %s; trigger: %s, object: %s",
           tmp$level[1],
@@ -137,29 +137,38 @@ build_poke_families <- function() {
   poke_edges <- data.frame()
 
   while (i <= length(poke_data)) {
-    print(i)
     tmp <- poke_data[[i]]$evolutions
     if (length(tmp)) {
       # build nodes
-      for (evol in evols) {
-        #if (i == 133) browser()
-        res <- build_network_props(evol, poke_nodes, poke_edges, i)
-        poke_nodes <- rbind(poke_nodes, res$nodes)
-        poke_edges <- rbind(poke_edges, res$edges)
+      for (evol in tmp) {
+        if (length(poke_nodes$id) == 0 || !all((evol$id %in% poke_nodes$id))) {
+          res <- build_network_props(evol, poke_nodes, poke_edges, i)
+          poke_nodes <- rbind(poke_nodes, res$nodes)
+          poke_edges <- rbind(poke_edges, res$edges)
+        }
       }
-      if (length(evols) > 1) {
-        i <- i + length(evols)
+      if (length(tmp) > 1) {
+        i <- i + length(tmp)
       } else {
-        i <- i + length(tmp$evolutions$id)
+        i <- i + length(tmp[[1]]$id)
       }
     } else {
       i <- i + 1
     }
   }
+
+  # In case of multiple evolutions like for evee
+  # we must remove the dupliacted evee that will
+  # appear for each evolution.
+  to_remove <- which(duplicated(poke_nodes$id) == TRUE)
+  poke_nodes <- poke_nodes[-to_remove, ]
+
+  poke_nodes$shape = rep("image", length(poke_nodes$id))
+  poke_nodes$value = rep(10, length(poke_nodes$id))
+  poke_edges$arrows = rep("to", length(poke_edges$title))
+
   list(
-    poke_nodes = as.data.frame(poke_nodes),
-    poke_edges = as.data.frame(poke_edges)
-  )
-  # TO DO: handle shape
-  #  shape = rep("image", length(poke_data))
+    poke_nodes = poke_nodes,
+    poke_edges = poke_edges
+  ) 
 }
