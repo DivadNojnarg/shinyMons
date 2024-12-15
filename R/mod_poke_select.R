@@ -43,29 +43,29 @@ poke_select_server <- function(id, selected) {
     function(input, output, session) {
       ns <- session$ns
 
-      pokeNames <- names(poke_data)
+      poke_names <- names(poke_data)
 
       # Update choices
       observeEvent(c(input$is_shiny, selected()), {
         updatePickerInput(
           session,
           inputId = "poke_select",
-          choices = pokeNames,
+          choices = poke_names,
           choicesOpt = list(
             content = sprintf(
               "<img src=\'%s\' width=20 style=\'vertical-align:top;\'></img> %s",
               get_front_sprites(input$is_shiny),
-              pokeNames
+              poke_names
             )
           ),
-          selected = if (!is.null(selected())) pokeNames[selected()] else pokeNames[[1]]
+          selected = if (!is.null(selected())) poke_names[selected()] else poke_names[[1]]
         )
       })
 
       return(
         list(
-          pokeSelect = reactive(input$poke_select),
-          pokeShiny = reactive(input$is_shiny)
+          poke_select = reactive(input$poke_select),
+          is_shiny = reactive(input$is_shiny)
         )
       )
     } 

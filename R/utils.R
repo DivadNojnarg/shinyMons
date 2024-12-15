@@ -194,8 +194,36 @@ build_poke_families <- function(poke_data) {
 #' @param type Shiny or not Shiny. Boolean, default FALSE.
 #' @keywords internal
 get_front_sprites <- function(shiny = FALSE) {
-  lapply(names(poke_data), \(name) {
+  setNames(lapply(names(poke_data), \(name) {
     type <- if (shiny) "shiny" else "default"
     poke_data[[name]]$sprites[[paste("front", type, sep = "_")]]
-  })
+  }), names(poke_data))
+}
+
+get_habitat_landscape <- function(name) {
+  switch(
+    name,
+    "grassland" = "https://pics.craiyon.com/2023-12-05/jeR-wXkaTWeDD1kiUkFtMA.webp",
+    "mountain" = "https://pics.craiyon.com/2023-10-15/26fda473f71a422eb9542cff7e30f8a6.webp",
+    "waters-edge" = "https://pics.craiyon.com/2024-09-21/qIO3hs14Q2e68jb7wSoIkQ.webp",
+    "forest" = "https://pics.craiyon.com/2023-06-16/ccf8420dc1084a22b7577c09af5807ba.webp",
+    "rough-terrain" = "https://pics.craiyon.com/2023-07-17/18156c6a010c4f76b85cc4dba70cb1d1.webp",
+    "cave" = "https://pics.craiyon.com/2023-06-16/29bd08a3eee24727ae4716ce7fe5aa10.webp",
+    "urban" = "https://pics.craiyon.com/2023-12-21/LGprBS6URHuUCb0fyGkhSA.webp",
+    "sea" = "https://pics.craiyon.com/2023-06-17/79c221caaa244bf8b11aa7bc2ac94724.webp"
+  )
+}
+
+get_habitat_color <- function(name) {
+  switch(name,
+    "grassland" = "lime",
+    "mountain" = "orange",
+    "waters-edge" = "azure",
+    "forest" = "green",
+    "rough-terrain" = "yellow",
+    "cave" = "gray-dark",
+    "urban" = "gray",
+    "sea" = "blue",
+    "rare" = "purple"
+  )
 }

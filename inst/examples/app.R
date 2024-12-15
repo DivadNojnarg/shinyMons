@@ -138,7 +138,7 @@ shiny::shinyApp(
           fluidRow(
             column(
               width = 4,
-              pokeInfosUi(id = "infos"),
+              poke_infos_ui("infos"),
               pokeTypeUi(id = "types"),
               pokeEvolveUi(id = "evol")
             ),
@@ -196,14 +196,7 @@ shiny::shinyApp(
     main <- poke_select_server("select", selected = reactive(NULL)) #network$selected
 
     # infos module
-    #callModule(
-    #  module = pokeInfos,
-    #  id = "infos",
-    #  mainData = pokeMain,
-    #  details = pokeDetails,
-    #  selected = main$pokeSelect,
-    #  shiny = main$pokeShiny
-    #)
+    poke_infos_server("infos", selected = main$poke_select, shiny = main$is_shiny)
 
     # stats module
     #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
