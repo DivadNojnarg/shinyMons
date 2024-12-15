@@ -72,7 +72,7 @@ shiny::shinyApp(
         )
       ),
 
-      pokeInputUi(id = "input"),
+      poke_select_ui("select"),
 
       tablerDropdown(
         tablerDropdownItem(
@@ -179,76 +179,68 @@ shiny::shinyApp(
     # relies on a simple Shiny.onInputChange
     isMobile <- reactive(input$isMobile)
 
-
     # Network module: network stores a potential selected node in the
     # network and pass it to the pickerInput function in the main
     # module to update its value
-    network <- callModule(
-      module = pokeNetwork,
-      id = "network",
-      mainData = pokeMain,
-      details = pokeDetails,
-      families = pokeEdges,
-      groups = pokeGroups,
-      mobile = isMobile
-    )
+    #network <- callModule(
+    #  module = pokeNetwork,
+    #  id = "network",
+    #  mainData = pokeMain,
+    #  details = pokeDetails,
+    #  families = pokeEdges,
+    #  groups = pokeGroups,
+    #  mobile = isMobile
+    #)
 
     # main module (data)
-    main <- callModule(
-      module = pokeInput,
-      id = "input",
-      mainData = pokeMain,
-      sprites = pokeSprites,
-      details = pokeDetails,
-      selected = network$selected
-    )
+    main <- poke_select_server("select", selected = reactive(NULL)) #network$selected
 
     # infos module
-    callModule(
-      module = pokeInfos,
-      id = "infos",
-      mainData = pokeMain,
-      details = pokeDetails,
-      selected = main$pokeSelect,
-      shiny = main$pokeShiny
-    )
+    #callModule(
+    #  module = pokeInfos,
+    #  id = "infos",
+    #  mainData = pokeMain,
+    #  details = pokeDetails,
+    #  selected = main$pokeSelect,
+    #  shiny = main$pokeShiny
+    #)
 
     # stats module
-    callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
+    #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
-    callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
+    #callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
     # moves module
-    callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
+    #callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 
     # evolutions module
-    callModule(
-      module = pokeEvolve,
-      id = "evol",
-      mainData = pokeMain,
-      details = pokeDetails,
-      selected = main$pokeSelect,
-      shiny = main$pokeShiny,
-      evolutions = pokeEvolutions
-    )
+    #callModule(
+    #  module = pokeEvolve,
+    #  id = "evol",
+    #  mainData = pokeMain,
+    #  details = pokeDetails,
+    #  selected = main$pokeSelect,
+    #  shiny = main$pokeShiny,
+    #  evolutions = pokeEvolutions
+    #)
 
     # fights module
-    callModule(
-      module = pokeFight,
-      id = "fights",
-      mainData = pokeMain,
-      sprites = pokeSprites,
-      attacks = pokeAttacks,
-      types = pokeTypes
-    )
+    #callModule(
+    #  module = pokeFight,
+    #  id = "fights",
+    #  mainData = pokeMain,
+    #  sprites = pokeSprites,
+    #  attacks = pokeAttacks,
+    #  types = pokeTypes
+    #)
 
     # location
-    callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
+    #callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
     # gallery module
-    callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
+    #callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
-    callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
+    #callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # other elements
-    callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
+    #callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
 
   }
 )

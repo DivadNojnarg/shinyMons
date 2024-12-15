@@ -98,7 +98,15 @@ find_evols <- function(l) {
   }))
 }
 
-build_network_props <- function(tmp, poke_nodes, poke_edges, i) {
+#' Construct visNetwork ready pokemon data
+#' 
+#' Return a list of 2 dataframes, one for edges another for nodes.
+#'
+#' @param poke_data Pokemon data list.
+#'
+#' @return A list.
+#' @keywords internal
+build_network_props <- function(tmp, poke_data, i) {
   list(
     nodes = data.frame(
       id = tmp$id,
@@ -131,7 +139,15 @@ build_network_props <- function(tmp, poke_nodes, poke_edges, i) {
   )
 }
 
-build_poke_families <- function() {
+#' Construct visNetwork pokemon families
+#' 
+#' Return a list of nodes and edges grouped by evolution.
+#'
+#' @param poke_data Pokemon data list. Passed to \link{build_network_props}.
+#'
+#' @return A list.
+#' @keywords internal
+build_poke_families <- function(poke_data) {
   i <- 1
   poke_nodes <- data.frame()
   poke_edges <- data.frame()
@@ -142,7 +158,7 @@ build_poke_families <- function() {
       # build nodes
       for (evol in tmp) {
         if (length(poke_nodes$id) == 0 || !all((evol$id %in% poke_nodes$id))) {
-          res <- build_network_props(evol, poke_nodes, poke_edges, i)
+          res <- build_network_props(evol, poke_data, i)
           poke_nodes <- rbind(poke_nodes, res$nodes)
           poke_edges <- rbind(poke_edges, res$edges)
         }
@@ -171,4 +187,15 @@ build_poke_families <- function() {
     poke_nodes = poke_nodes,
     poke_edges = poke_edges
   ) 
+}
+
+#' Get pokemon front sprite
+#' 
+#' @param type Shiny or not Shiny. Boolean, default FALSE.
+#' @keywords internal
+get_front_sprites <- function(shiny = FALSE) {
+  lapply(names(poke_data), \(name) {
+    type <- if (shiny) "shiny" else "default"
+    poke_data[[name]]$sprites[[paste("front", type, sep = "_")]]
+  })
 }
