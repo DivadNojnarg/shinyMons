@@ -200,6 +200,7 @@ get_front_sprites <- function(shiny = FALSE) {
   }), names(poke_data))
 }
 
+# TBD -> maybe dowload local copies of images ...
 get_habitat_landscape <- function(name) {
   switch(
     name,

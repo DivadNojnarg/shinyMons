@@ -144,7 +144,7 @@ shiny::shinyApp(
             ),
             column(
               width = 8,
-              pokeStatsUi(id = "stats"),
+              poke_stats_ui("stats"),
               pokeMoveUi(id = "moves"),
               pokeLocationUi(id = "location")
             )
@@ -199,6 +199,7 @@ shiny::shinyApp(
     poke_infos_server("infos", selected = main$poke_select, shiny = main$is_shiny)
 
     # stats module
+    poke_stats_server("stats", selected = main$poke_select)
     #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
     #callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
