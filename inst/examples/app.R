@@ -122,7 +122,7 @@ shiny::shinyApp(
               width = 8,
               poke_stats_ui("stats"),
               poke_moves_ui("moves"),
-              pokeLocationUi(id = "location")
+              poke_locations_ui("location")
             )
           )
         ),
@@ -173,13 +173,14 @@ shiny::shinyApp(
 
     # infos module
     poke_infos_server("infos", selected = main$poke_select, shiny = main$is_shiny)
-
     # stats module
     poke_stats_server("stats", selected = main$poke_select)
     # types modules
     poke_types_server("types", selected = main$poke_select)
     # moves module
     poke_moves_server("moves", selected = main$poke_select)
+    # location
+    poke_locations_server("location", selected = main$poke_select)
 
     # evolutions module
     #callModule(
@@ -202,8 +203,6 @@ shiny::shinyApp(
     #  types = pokeTypes
     #)
 
-    # location
-    #callModule(module = pokeLocation, id = "location", selected = main$pokeSelect, locations = pokeLocations)
     # gallery module
     #callModule(module = pokeGallery, id = "gallery", mainData = pokeMain, details = pokeDetails, shiny = main$pokeShiny)
     # pokemon attacks
