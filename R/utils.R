@@ -22,7 +22,8 @@ extract_from_list <- function(l, key = "name", type = character(1)) {
 #'
 #' @return A list.
 #' @keywords internal
-dropNulls <- function(x) { # nolint
+dropNulls <- function(x) {
+  # nolint
   x[!vapply(x, is.null, FUN.VALUE = logical(1))]
 }
 
@@ -35,13 +36,23 @@ dropNulls <- function(x) { # nolint
 #'
 #' @return A list.
 #' @keywords internal
-find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object = NULL) {
+find_evol <- function(
+  tmp,
+  id,
+  entry_point,
+  trigger = NULL,
+  level = NULL,
+  object = NULL
+) {
   # handle evolution details: levels, trigger, ...
   details <- tmp$evolution_details[[1]]
   entry_point <- c(entry_point, tmp$species$name)
   trigger <- c(trigger, details$trigger$name)
   level <- c(level, if (is.null(details$min_level)) NA else details$min_level)
-  object <- c(object, if (details$trigger$name == "use-item") details$item$name else NA)
+  object <- c(
+    object,
+    if (details$trigger$name == "use-item") details$item$name else NA
+  )
 
   tmp_id <- fromJSON(tmp$species$url, simplifyVector = FALSE)$id
   if (tmp_id > 151) {
@@ -57,7 +68,10 @@ find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object
   )
 
   if (length(tmp$evolves_to)) {
-    evol_id <- fromJSON(tmp$evolves_to[[1]]$species$url, simplifyVector = FALSE)$id
+    evol_id <- fromJSON(
+      tmp$evolves_to[[1]]$species$url,
+      simplifyVector = FALSE
+    )$id
     if (evol_id > 151) {
       return(res)
     }
@@ -93,19 +107,21 @@ find_evols <- function(l) {
 
   entry_point <- l$species$name
   # Handle evee (3 evolutions of stage 1)
-  dropNulls(lapply(evols, \(tmp) {
-    # Handle babies like for pichu, ...
-    if (l$is_baby) {
-      entry_point <- tmp$species$name
-      id <- fromJSON(tmp$species$url, simplifyVector = FALSE)$id
-      if (length(tmp$evolves_to)) {
-        tmp <- tmp$evolves_to[[1]]
-      } else {
-        return(NULL)
+  dropNulls(
+    lapply(evols, \(tmp) {
+      # Handle babies like for pichu, ...
+      if (l$is_baby) {
+        entry_point <- tmp$species$name
+        id <- fromJSON(tmp$species$url, simplifyVector = FALSE)$id
+        if (length(tmp$evolves_to)) {
+          tmp <- tmp$evolves_to[[1]]
+        } else {
+          return(NULL)
+        }
       }
-    }
-    find_evol(tmp, id, entry_point)
-  }))
+      find_evol(tmp, id, entry_point)
+    })
+  )
 }
 
 #' Construct visNetwork ready pokemon data
@@ -122,9 +138,13 @@ build_network_props <- function(tmp, poke_data, i) {
       id = tmp$id,
       label = tmp$chain,
       group = rep(i, length(tmp$id)),
-      image = vapply(tmp$id, \(el) {
-        poke_data[[el]]$sprites$front_default
-      }, FUN.VALUE = character(1))
+      image = vapply(
+        tmp$id,
+        \(el) {
+          poke_data[[el]]$sprites$front_default
+        },
+        FUN.VALUE = character(1)
+      )
     ),
     edges = data.frame(
       from = c(tmp$id[1], if (length(tmp$id) > 2) tmp$id[2]),
@@ -204,15 +224,19 @@ build_poke_families <- function(poke_data) {
 #' @param type Shiny or not Shiny. Boolean, default FALSE.
 #' @keywords internal
 get_front_sprites <- function(shiny = FALSE) {
-  setNames(lapply(names(poke_data), \(name) {
-    type <- if (shiny) "shiny" else "default"
-    poke_data[[name]]$sprites[[paste("front", type, sep = "_")]]
-  }), names(poke_data))
+  setNames(
+    lapply(names(poke_data), \(name) {
+      type <- if (shiny) "shiny" else "default"
+      poke_data[[name]]$sprites[[paste("front", type, sep = "_")]]
+    }),
+    names(poke_data)
+  )
 }
 
 # TBD -> maybe dowload local copies of images ...
 get_habitat_landscape <- function(name) {
-  switch(name,
+  switch(
+    name,
     "grassland" = "https://pics.craiyon.com/2023-12-05/jeR-wXkaTWeDD1kiUkFtMA.webp",
     "mountain" = "https://pics.craiyon.com/2023-10-15/26fda473f71a422eb9542cff7e30f8a6.webp",
     "waters-edge" = "https://pics.craiyon.com/2024-09-21/qIO3hs14Q2e68jb7wSoIkQ.webp",
@@ -225,7 +249,8 @@ get_habitat_landscape <- function(name) {
 }
 
 get_habitat_color <- function(name) {
-  switch(name,
+  switch(
+    name,
     "grassland" = "lime",
     "mountain" = "orange",
     "waters-edge" = "azure",
@@ -239,8 +264,9 @@ get_habitat_color <- function(name) {
 }
 
 get_type_color <- function(type) {
-  pokeColor <- switch(type,
-    "normal" = "white",
+  pokeColor <- switch(
+    type,
+    "normal" = "grey-100",
     "fighting" = "red",
     "flying" = "cyan",
     "poison" = "purple",
@@ -255,5 +281,57 @@ get_type_color <- function(type) {
     "psychic" = "pink",
     "ice" = "azure",
     "dragon" = "indigo"
+  )
+}
+
+customTablerTable <- function(data, title, width = 12) {
+  tableCl <- "table card-table table-striped"
+  if (!inherits(data, "list") && !inherits(data, "data.frame")) {
+    stop("data must be a dataframe, tibble or list")
+  }
+  if (inherits(data, "data.frame")) {
+    tableHead <- shiny::tags$thead(
+      shiny::tags$tr(
+        lapply(
+          seq_along(colnames(data)),
+          function(i) shiny::tags$th(colnames(data)[[i]])
+        )
+      )
+    )
+    table <- lapply(seq_len(nrow(data)), function(i) {
+      shiny::tags$tr(
+        lapply(seq_len(ncol(data)), function(j) {
+          shiny::tags$td(data[i, j])
+        })
+      )
+    })
+  } else if (inherits(data, "list")) {
+    tableHead <- shiny::tags$thead(
+      shiny::tags$tr(
+        lapply(
+          seq_along(names(data[[1]])),
+          function(i) shiny::tags$th(names(data[[1]])[[i]])
+        )
+      )
+    )
+    table <- lapply(seq_along(data), function(i) {
+      shiny::tags$tr(
+        lapply(seq_along(data[[i]]), function(j) {
+          shiny::tags$td(data[[i]][[j]])
+        })
+      )
+    })
+  }
+  tableBody <- shiny::tags$tbody(table)
+  tableTag <- shiny::tags$table(class = tableCl, tableHead, tableBody)
+
+  tablerCard(
+    title = title,
+    width = width,
+    closable = FALSE,
+    collapsible = FALSE,
+    zoomable = FALSE,
+    overflow = TRUE,
+    tableTag
   )
 }

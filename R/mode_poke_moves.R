@@ -26,28 +26,16 @@ poke_moves_server <- function(id, selected) {
       output$poke_moves <- renderUI({
         req(selected())
         poke_moves <- poke_data[[selected()]]$moves
-
-        tablerCard(
+        customTablerTable(
           title = paste0(selected(), " Moves"),
-          statusSide = "top",
-          collapsible = FALSE,
-          closable = FALSE,
-          zoomable = FALSE,
           width = 12,
-
           # card content
-          lapply(poke_moves, FUN = function(move) {
-            fluidRow(
-              tagAppendAttributes(
-                tablerTag(
-                  move$name,
-                  href = NULL,
-                  rounded = FALSE,
-                  color = NULL
-                ),
-                class = "mx-2"
-              ),
-              move$text
+          data = lapply(poke_moves, FUN = function(move) {
+            list(
+              name = move$name,
+              type = tablerTag(move$type, color = get_type_color(move$type)),
+              power = tablerProgress(100 * move$power / max(unlist(dropNulls(lapply(poke_attacks, `[[`, "power"))))),
+              description = move$text
             )
           })
         )
