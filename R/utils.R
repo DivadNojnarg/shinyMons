@@ -228,3 +228,24 @@ get_habitat_color <- function(name) {
     "rare" = "purple"
   )
 }
+
+get_type_color <- function(type) {
+  pokeColor <- switch(
+        type,
+        "normal" = "gray-lightest",
+        "fighting" = "red",
+        "flying" = "indigo",
+        "poison" = "purple-light",
+        "ground" = "yellow-lighter",
+        "rock" = "yellow-darker",
+        "bug" = "green-lighter",
+        "ghost" = "purple-dark",
+        "fire" = "orange",
+        "water" = "azure",
+        "grass" = "green",
+        "electric" = "yellow",
+        "psychic" = "pink",
+        "ice" = "azure-lighter",
+        "dragon" = "purple-darker"
+      )
+}

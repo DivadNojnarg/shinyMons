@@ -7,30 +7,6 @@ library(pushbar)
 library(shinyMons)
 library(waiter)
 
-source("pokeNames.R")
-
-# main data
-pokeMain <- readRDS("pokeMain")
-pokeDetails <- readRDS("pokeDetails")
-
-# subdata from main
-pokeLocations <- readRDS("pokeLocations")
-pokeMoves <- readRDS("pokeMoves")
-pokeTypes <- readRDS("pokeTypes")
-pokeEvolutions <- readRDS("pokeEvolutions")
-pokeAttacks <- readRDS("pokeAttacks")
-pokeEdges <- readRDS("pokeEdges")
-pokeGroups <- readRDS("pokeGroups")
-
-# pokemon sprites
-pokeSprites <- vapply(
-  seq_along(pokeNames),
-  FUN = function(i) {
-    pokeMain[[i]]$sprites$front_default
-  },
-  FUN.VALUE = character(1)
-)
-
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
@@ -139,7 +115,7 @@ shiny::shinyApp(
             column(
               width = 4,
               poke_infos_ui("infos"),
-              pokeTypeUi(id = "types"),
+              poke_types_ui("types"),
               pokeEvolveUi(id = "evol")
             ),
             column(
@@ -200,9 +176,8 @@ shiny::shinyApp(
 
     # stats module
     poke_stats_server("stats", selected = main$poke_select)
-    #callModule(module = pokeStats, id = "stats", mainData = pokeMain, details = pokeDetails, selected = main$pokeSelect)
     # types modules
-    #callModule(module = pokeType, id = "types", types = pokeTypes, selected = main$pokeSelect)
+    poke_types_server("types", selected = main$poke_select)
     # moves module
     #callModule(module = pokeMove, id = "moves", selected = main$pokeSelect, moves = pokeMoves)
 
