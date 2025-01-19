@@ -116,7 +116,7 @@ shiny::shinyApp(
               width = 4,
               poke_infos_ui("infos"),
               poke_types_ui("types"),
-              pokeEvolveUi(id = "evol")
+              poke_evol_ui(id = "evol")
             ),
             column(
               width = 8,
@@ -183,15 +183,7 @@ shiny::shinyApp(
     poke_locations_server("location", selected = main$poke_select)
 
     # evolutions module
-    #callModule(
-    #  module = pokeEvolve,
-    #  id = "evol",
-    #  mainData = pokeMain,
-    #  details = pokeDetails,
-    #  selected = main$pokeSelect,
-    #  shiny = main$pokeShiny,
-    #  evolutions = pokeEvolutions
-    #)
+    poke_evol_server("evol", selected = main$poke_select, shiny = main$is_shiny)
 
     # fights module
     #callModule(
