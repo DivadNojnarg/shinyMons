@@ -45,33 +45,30 @@ create_radar_stats <- function(pokemon) {
   # Prepare data
   data <- process_pokemon_stats(stats)
 
+  p <- data |>
+    e_charts(x) |>
+    e_radar(y, name = paste0(pokemon$name, " stats"), max = get_max_of_max()) |>
+    e_tooltip(trigger = "item") |>
+    e_legend(textStyle = list(color = "#000"))
+
   # Also adds previous pokemon stats to compare
   # Check that the evolution belongs to the first 151 pkmns ...
   evolutions <- pokemon$evolutions
 
   if (length(evolutions) > 0) {
-    evolution <- which(names(poke_data) == pokemon$name) + 1
-    tmp <- process_pokemon_stats(
-      poke_data[[evolution]]$stats
-    )
-    data$z <- tmp$y
-    data |>
-      e_charts(x) |>
-      e_radar(
-        y,
-        name = paste0(pokemon$name, " stats"),
-        max = get_max_of_max()
-      ) |>
-      e_radar(z, name = paste0(poke_data[[evolution]]$name, " stats")) |>
-      e_tooltip(trigger = "item") |>
-      e_legend(textStyle = list(color = "#000"))
-  } else {
-    data |>
-      e_charts(x) |>
-      e_radar(y, name = paste0(pokemon$name, " stats"), max = get_max_of_max()) |>
-      e_tooltip(trigger = "item") |>
-      e_legend(textStyle = list(color = "#000"))
+    last_pokemon_evol <- tail(evolutions[[1]]$chain, n = 1)
+
+    if (pokemon$name != last_pokemon_evol) {
+      evolution <- which(names(poke_data) == pokemon$name) + 1
+      tmp <- process_pokemon_stats(
+        poke_data[[evolution]]$stats
+      )
+      p$x$data[[1]]$z <- tmp$y
+      p <- p |>
+        e_radar(z, name = paste0(poke_data[[evolution]]$name, " stats"))
+    }
   }
+  p
 }
 
 #' UI module for generating the pokemon stats chart
