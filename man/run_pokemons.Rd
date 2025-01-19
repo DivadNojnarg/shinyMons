@@ -12,6 +12,6 @@ Unleash the pokemon app
 \examples{
 
 if (interactive()) {
- run_pokemon()
+  run_pokemon()
 }
 }
