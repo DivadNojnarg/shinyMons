@@ -24,7 +24,6 @@ pokeMoveUi <- function(id) {
 #'
 #' @export
 pokeMove <- function(input, output, session, selected, moves) {
-
   # take the whole ability dataframe
   pokeMoves <- reactive({
     req(!is.null(selected()))
@@ -33,7 +32,6 @@ pokeMove <- function(input, output, session, selected, moves) {
 
   # generate the card
   output$poke_moves <- renderPrint({
-
     tablerCard(
       title = paste0(selected(), " Moves"),
       statusSide = "top",
@@ -62,9 +60,7 @@ pokeMove <- function(input, output, session, selected, moves) {
           ),
           moveEffect
         )
-
       })
     )
   })
-
 }

@@ -24,18 +24,16 @@ pokeLocationUi <- function(id) {
 #'
 #' @export
 pokeLocation <- function(input, output, session, selected, locations) {
-
   pokeLocations <- reactive({
     req(!is.null(selected()))
     locations[[selected()]]$name
   })
 
   output$poke_locations <- renderUI({
-
     req(!is.null(selected()))
 
     tablerCard(
-      title = paste0("Where to find ",  selected(), " ?"),
+      title = paste0("Where to find ", selected(), " ?"),
       collapsible = FALSE,
       closable = FALSE,
       zoomable = FALSE,

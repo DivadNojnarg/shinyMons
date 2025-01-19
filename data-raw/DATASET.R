@@ -20,13 +20,13 @@ english_language <- function(l) {
 build_poke_data <- function(idx) {
   mclapply(idx, FUN = function(i) {
     tmp <- fromJSON(sprintf("%s/%s", poke_api, i), simplifyVector = FALSE)
-    #print(sprintf("Processing pokemon %s: %s", i, tmp$species$name))
+    # print(sprintf("Processing pokemon %s: %s", i, tmp$species$name))
     details <- fromJSON(tmp$species$url, simplifyVector = FALSE)
     evol_chain <- fromJSON(details$evolution_chain$url, simplifyVector = FALSE)$chain
-  
+
     # Extract English language
     lang_idx <- english_language(details$flavor_text_entries)
-  
+
     locations <- fromJSON(tmp$location_area_encounters, simplifyVector = FALSE)
     # we could dive into location$version_details to get
     # the encounter method, percentage of chance, ...
@@ -45,16 +45,16 @@ build_poke_data <- function(idx) {
     } else {
       locations <- c()
     }
-  
+
     sum_stats <- sum(vapply(tmp$stats, `[[`, "base_stat", FUN.VALUE = numeric(1)))
-  
+
     # Process stats: don't include stat url
     tmp$stats <- lapply(tmp$stats, function(stat) {
       stat$name <- stat$stat$name
       stat$stat <- NULL
       stat
     })
-  
+
     # Process types: extend by API values
     tmp$types <- dropNulls(
       lapply(tmp$types, function(type) {
@@ -67,14 +67,14 @@ build_poke_data <- function(idx) {
         }
       })
     )
-  
+
     # Process moves (can be super slow)
     tmp$moves <- dropNulls(
       lapply(tmp$moves, function(move) {
         first_gen <- vapply(move$version_group_details, function(d) {
           grepl("(red|blue|yellow)", d$version_group$name)
         }, FUN.VALUE = logical(1))
-  
+
         # Don't proceed if does not exist in first gen
         if (sum(first_gen) > 0) {
           data <- fromJSON(move$move$url, simplifyVector = FALSE)
@@ -92,7 +92,7 @@ build_poke_data <- function(idx) {
         }
       })
     )
-  
+
     # Aggregate data in one big list ...
     list(
       name = tmp$species$name,
@@ -120,12 +120,12 @@ build_poke_data <- function(idx) {
       is_lengendary = details$is_legendary, # Mewtho, Artikodin, ...
       is_mythical = details$is_mythical # Mew
     )
-  }, mc.cores = detectCores() -1 )
+  }, mc.cores = detectCores() - 1)
 }
 
 # NOTE: the api crashes if we run the 151 calls in a row ...
 poke_data <- build_poke_data(poke_ids)
-  
+
 poke_names <- vapply(poke_data, `[[`, "name", FUN.VALUE = character(1))
 names(poke_data) <- poke_names
 usethis::use_data(poke_data, overwrite = TRUE)

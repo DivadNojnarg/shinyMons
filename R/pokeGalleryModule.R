@@ -39,7 +39,6 @@ pokeGalleryUi <- function(id) {
 #'
 #' @export
 pokeGallery <- function(input, output, session, mainData, details, shiny) {
-
   range <- reactive(mainData[input$pokeRange[1]:input$pokeRange[2]])
 
   output$poke_gallery <- renderUI({

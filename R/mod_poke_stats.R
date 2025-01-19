@@ -99,7 +99,6 @@ poke_stats_server <- function(id, selected) {
   moduleServer(
     id,
     function(input, output, session) {
-
       other_stats_names <- reactive({
         req(selected())
         names(poke_data[[selected()]]$other_stats)
@@ -109,8 +108,7 @@ poke_stats_server <- function(id, selected) {
         tablerList(lapply(other_stats_names(), function(stat) {
           tablerListItem(
             class = "d-flex align-items-center",
-            switch(
-              stat,
+            switch(stat,
               "height" = icon("up-down"),
               "weight" = icon("weight-scale"),
               "base_happiness" = icon("face-smile"),
@@ -122,16 +120,16 @@ poke_stats_server <- function(id, selected) {
           )
         }))
       })
-  
+
       output$sum_stats <- renderText({
         poke_data[[selected()]]$sum_stats
       })
-  
+
       # Generate radar chart for pokemons
       output$poke_stats <- renderEcharts4r({
         req(selected())
         create_radar_stats(poke_data[[selected()]])
       })
-    } 
+    }
   )
 }

@@ -25,7 +25,6 @@ pokeOtherUi <- function(id) {
 #'
 #' @export
 pokeOther <- function(input, output, session, mainData, details) {
-
   ns <- session$ns
 
   # ########################################
@@ -34,7 +33,6 @@ pokeOther <- function(input, output, session, mainData, details) {
 
   # Height distribution
   output$distribPlot <- renderEcharts4r({
-
     heights <- vapply(
       X = seq_along(names(mainData)),
       FUN = function(i) {
@@ -68,7 +66,6 @@ pokeOther <- function(input, output, session, mainData, details) {
         e_histogram(w) %>%
         e_tooltip()
     }
-
   })
 
 
@@ -106,7 +103,7 @@ pokeOther <- function(input, output, session, mainData, details) {
   output$typesDistrib <- renderEcharts4r({
     types <- unlist(lapply(seq_along(names(mainData)), FUN = function(i) mainData[[i]]$types$type$name))
     types <- table(types)
-    #n <- seq_along(types)
+    # n <- seq_along(types)
     df <- data.frame(t = types)
     names(df) <- c("type", "n")
     df %>%
@@ -131,7 +128,6 @@ pokeOther <- function(input, output, session, mainData, details) {
       echarts4rOutput(outputId = ns("typesDistrib"))
     )
   })
-
 }
 
 

@@ -22,12 +22,12 @@ extract_from_list <- function(l, key = "name", type = character(1)) {
 #'
 #' @return A list.
 #' @keywords internal
-dropNulls <- function(x) { #nolint
+dropNulls <- function(x) { # nolint
   x[!vapply(x, is.null, FUN.VALUE = logical(1))]
 }
 
 #' Recursively find pokemon evolutions
-#' 
+#'
 #' When length(tmp$evolves_to) is 0, the function returns
 #' a list with aggregated pokemon names, ids, trigger, levels ...
 #'
@@ -44,7 +44,9 @@ find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object
   object <- c(object, if (details$trigger$name == "use-item") details$item$name else NA)
 
   tmp_id <- fromJSON(tmp$species$url, simplifyVector = FALSE)$id
-  if (tmp_id > 151) return(NULL)
+  if (tmp_id > 151) {
+    return(NULL)
+  }
 
   res <- list(
     chain = entry_point,
@@ -56,10 +58,12 @@ find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object
 
   if (length(tmp$evolves_to)) {
     evol_id <- fromJSON(tmp$evolves_to[[1]]$species$url, simplifyVector = FALSE)$id
-    if (evol_id > 151) return(res)
+    if (evol_id > 151) {
+      return(res)
+    }
     id <- c(id, tmp_id)
     find_evol(tmp$evolves_to[[1]], id, entry_point, trigger, level, object)
-  }  else {
+  } else {
     return(res)
   }
 }
@@ -72,14 +76,20 @@ find_evol <- function(tmp, id, entry_point, trigger = NULL, level = NULL, object
 #' @keywords internal
 find_evols <- function(l) {
   # Handle pokemons that just can't evolve at all
-  if (!length(l$evolves_to) && length(l$species$name) == 1) return(NULL)
+  if (!length(l$evolves_to) && length(l$species$name) == 1) {
+    return(NULL)
+  }
   id <- fromJSON(l$species$url, simplifyVector = FALSE)$id
   # Handle Hitmonchan and cie (that has a lower evolution but not from a baby ...)
-  if (id > 151) return(NULL)
+  if (id > 151) {
+    return(NULL)
+  }
   evols <- l$evolves_to
   evol_id <- fromJSON(evols[[1]]$species$url, simplifyVector = FALSE)$id
   # handle cases like onyx, ... that can evolve in second gen
-  if (evol_id > 151) return(NULL)
+  if (evol_id > 151) {
+    return(NULL)
+  }
 
   entry_point <- l$species$name
   # Handle evee (3 evolutions of stage 1)
@@ -99,7 +109,7 @@ find_evols <- function(l) {
 }
 
 #' Construct visNetwork ready pokemon data
-#' 
+#'
 #' Return a list of 2 dataframes, one for edges another for nodes.
 #'
 #' @param poke_data Pokemon data list.
@@ -140,7 +150,7 @@ build_network_props <- function(tmp, poke_data, i) {
 }
 
 #' Construct visNetwork pokemon families
-#' 
+#'
 #' Return a list of nodes and edges grouped by evolution.
 #'
 #' @param poke_data Pokemon data list. Passed to \link{build_network_props}.
@@ -179,18 +189,18 @@ build_poke_families <- function(poke_data) {
   to_remove <- which(duplicated(poke_nodes$id) == TRUE)
   poke_nodes <- poke_nodes[-to_remove, ]
 
-  poke_nodes$shape = rep("image", length(poke_nodes$id))
-  poke_nodes$value = rep(10, length(poke_nodes$id))
-  poke_edges$arrows = rep("to", length(poke_edges$title))
+  poke_nodes$shape <- rep("image", length(poke_nodes$id))
+  poke_nodes$value <- rep(10, length(poke_nodes$id))
+  poke_edges$arrows <- rep("to", length(poke_edges$title))
 
   list(
     poke_nodes = poke_nodes,
     poke_edges = poke_edges
-  ) 
+  )
 }
 
 #' Get pokemon front sprite
-#' 
+#'
 #' @param type Shiny or not Shiny. Boolean, default FALSE.
 #' @keywords internal
 get_front_sprites <- function(shiny = FALSE) {
@@ -202,8 +212,7 @@ get_front_sprites <- function(shiny = FALSE) {
 
 # TBD -> maybe dowload local copies of images ...
 get_habitat_landscape <- function(name) {
-  switch(
-    name,
+  switch(name,
     "grassland" = "https://pics.craiyon.com/2023-12-05/jeR-wXkaTWeDD1kiUkFtMA.webp",
     "mountain" = "https://pics.craiyon.com/2023-10-15/26fda473f71a422eb9542cff7e30f8a6.webp",
     "waters-edge" = "https://pics.craiyon.com/2024-09-21/qIO3hs14Q2e68jb7wSoIkQ.webp",
@@ -230,22 +239,21 @@ get_habitat_color <- function(name) {
 }
 
 get_type_color <- function(type) {
-  pokeColor <- switch(
-        type,
-        "normal" = "gray-lightest",
-        "fighting" = "red",
-        "flying" = "indigo",
-        "poison" = "purple-light",
-        "ground" = "yellow-lighter",
-        "rock" = "yellow-darker",
-        "bug" = "green-lighter",
-        "ghost" = "purple-dark",
-        "fire" = "orange",
-        "water" = "azure",
-        "grass" = "green",
-        "electric" = "yellow",
-        "psychic" = "pink",
-        "ice" = "azure-lighter",
-        "dragon" = "purple-darker"
-      )
+  pokeColor <- switch(type,
+    "normal" = "white",
+    "fighting" = "red",
+    "flying" = "cyan",
+    "poison" = "purple",
+    "ground" = "grey",
+    "rock" = "gray-dark",
+    "bug" = "lime",
+    "ghost" = "blue",
+    "fire" = "orange",
+    "water" = "info",
+    "grass" = "green",
+    "electric" = "yellow",
+    "psychic" = "pink",
+    "ice" = "azure",
+    "dragon" = "indigo"
+  )
 }

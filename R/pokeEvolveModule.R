@@ -27,7 +27,6 @@ pokeEvolveUi <- function(id) {
 #'
 #' @export
 pokeEvolve <- function(input, output, session, mainData, details, selected, shiny, evolutions) {
-
   # extract the data
   evolve_chain <- reactive({
     req(!is.null(selected()))
@@ -36,7 +35,6 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
 
   # treat data and generate the timeline
   output$poke_evolve <- renderUI({
-
     req(!is.null(selected()))
     fromSpecie <- details[[selected()]]$evolves_from_species
     chain <- evolve_chain()
@@ -140,7 +138,6 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
                 img(src = evolSprite),
                 if (trigger == "level-up") trigger else tagList(triggerName, img(src = triggerImage))
               )
-
             })
           )
         } else {
@@ -188,11 +185,8 @@ pokeEvolve <- function(input, output, session, mainData, details, selected, shin
               status = "danger"
             )
           }
-
         }
       }
     }
-
   })
-
 }

@@ -26,7 +26,6 @@ pokeAttackUi <- function(id) {
 #'
 #' @export
 pokeAttack <- function(input, output, session, attacks) {
-
   ns <- session$ns
 
 
@@ -68,7 +67,6 @@ pokeAttack <- function(input, output, session, attacks) {
 
 
   output$attackMeans <- renderEcharts4r({
-
     df <- data.frame(
       x = c(
         stats$power,
@@ -87,13 +85,11 @@ pokeAttack <- function(input, output, session, attacks) {
       e_charts() %>%
       e_boxplot(x) %>%
       e_title("Global Stats Means")
-
   })
 
 
   # radar chart of attacks
   output$attackStats <- renderEcharts4r({
-
     req(input$pokeAttackSelect)
     selected <- input$pokeAttackSelect
 
@@ -115,12 +111,10 @@ pokeAttack <- function(input, output, session, attacks) {
       e_charts(x) %>%
       e_radar(y, name = paste0(name, " Stats")) %>%
       e_tooltip(trigger = "item")
-
   })
 
   # box containing radar chart and other elements
   output$poke_attack <- renderUI({
-
     req(input$pokeAttackSelect)
     selected <- input$pokeAttackSelect
 
@@ -129,8 +123,7 @@ pokeAttack <- function(input, output, session, attacks) {
     power <- attacks[[selected]]$power
 
     # here some colors are not supported by tags. Need to fix it
-    typeColor <- switch(
-      attacks[[selected]]$type$name,
+    typeColor <- switch(attacks[[selected]]$type$name,
       "normal" = "gray-lightest",
       "fighting" = "red",
       "flying" = "indigo",

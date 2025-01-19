@@ -68,6 +68,6 @@ poke_select_server <- function(id, selected) {
           is_shiny = reactive(input$is_shiny)
         )
       )
-    } 
+    }
   )
 }

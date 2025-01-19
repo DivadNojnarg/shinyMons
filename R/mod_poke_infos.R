@@ -28,7 +28,7 @@ poke_infos_server <- function(id, selected, shiny) {
         # whereas in the main pokemon list, names start with a capital letter...
         req(!is.null(selected()))
 
-        habitat <- poke_data[[selected()]]$habitat 
+        habitat <- poke_data[[selected()]]$habitat
 
         tablerProfileCard(
           title = selected(),

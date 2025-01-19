@@ -48,7 +48,6 @@ pushBarContent <- NULL
 #'
 #' @export
 pokeNetwork <- function(input, output, session, mainData, details, families, groups, mobile) {
-
   ns <- session$ns
 
   #-------------------------------------------------------------------------
@@ -58,9 +57,7 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
 
   # the pushbar
   output$pushbarContent <- renderUI({
-
     tagList(
-
       h2("Nodes"),
       # nodes shape
       shinyWidgets::prettyRadioButtons(
@@ -111,7 +108,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         value = 500,
         max = 500
       ),
-
       hr(),
       h2("Edges"),
       # edges width
@@ -141,7 +137,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         value = 200,
         max = 600
       ),
-
       hr(),
       h2("Others"),
       prettyToggle(
@@ -185,7 +180,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   #-------------------------------------------------------------------------
 
   nodes <- reactive({
-
     req(!is.null(input$pokeNodesShape), !is.null(input$pokeNodesSize))
 
     df <- data.frame(
@@ -193,20 +187,19 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
       group = groups,
       shape = input$pokeNodesShape,
       label = pokeNames,
-      #fixed = list("x" = FALSE, "y" = FALSE),
+      # fixed = list("x" = FALSE, "y" = FALSE),
       size = input$pokeNodesSize,
       physics = TRUE,
       hidden = rep(FALSE, length(mainData)),
       stringsAsFactors = FALSE
     )
 
-    if (input$pokeNodesShape == "image") df$image <-  sprites
+    if (input$pokeNodesShape == "image") df$image <- sprites
 
     return(df)
   })
 
   edges <- reactive({
-
     req(!is.null(input$pokeEdgesWidth), !is.null(input$displayEdges))
 
     if (input$displayEdges) {
@@ -227,20 +220,20 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
 
   # below is a test to see if gif are supported (lag)
-  #sprites <- vapply(seq_along(pokeNames), FUN = function(i) {
+  # sprites <- vapply(seq_along(pokeNames), FUN = function(i) {
   #  paste0("http://www.pokestadium.com/sprites/xy/", mainData[[i]]$name, ".gif")
-  #}, FUN.VALUE = character(1))
+  # }, FUN.VALUE = character(1))
 
 
   output$pokeNet <- renderVisNetwork({
-
-    req(!is.null(input$nodesInterp),
-        !is.null(input$pokeNodesDrag),
-        !is.null(input$dragView),
-        !is.null(input$zoomView),
-        !is.null(input$nodeDistance),
-        !is.null(input$centralGravity),
-        !is.null(input$springLength)
+    req(
+      !is.null(input$nodesInterp),
+      !is.null(input$pokeNodesDrag),
+      !is.null(input$dragView),
+      !is.null(input$zoomView),
+      !is.null(input$nodeDistance),
+      !is.null(input$centralGravity),
+      !is.null(input$springLength)
     )
 
     visNetwork(nodes(), edges(), width = "100%") %>%
@@ -253,8 +246,7 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
           //Shiny.setInputValue('", ns("current_node_id_zoom"), "', 'null');
          }
         "
-      )
-      ) %>%
+      )) %>%
       visNodes(
         shapeProperties =
           list(
@@ -298,20 +290,19 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
 
   # increase the current node size on selection
   observeEvent(input$current_node_id, {
-
     selected_node <- input$current_node_id
     nodes <- nodes()
 
     # javascript returns null and not NULL like R
     if (!identical(selected_node, "null")) {
       nodes$size[selected_node] <- nodes$size[1] * 5
-      #nodes$hidden[-selected_node] <- rep(TRUE, length(nodes()$hidden) - 1)
-      visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
+      # nodes$hidden[-selected_node] <- rep(TRUE, length(nodes()$hidden) - 1)
+      visNetworkProxy(ns("pokeNet"), session) %>% # then reset the graph
         visUpdateNodes(nodes = nodes)
     } else {
       nodes$size <- input$pokeNodesSize
-      #nodes$hidden <- rep(FALSE, length(nodes$hidden))
-      visNetworkProxy(ns("pokeNet"), session) %>%  # then reset the graph
+      # nodes$hidden <- rep(FALSE, length(nodes$hidden))
+      visNetworkProxy(ns("pokeNet"), session) %>% # then reset the graph
         visUpdateNodes(nodes = nodes)
     }
   })
@@ -320,7 +311,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   # double click on node
 
   observeEvent(input$current_node_id_zoom, {
-
     selected <- input$current_node_id_zoom
 
     names <- data.frame(
@@ -363,5 +353,4 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   })
 
   return(list(selected = reactive(input$current_node_id_zoom)))
-
 }

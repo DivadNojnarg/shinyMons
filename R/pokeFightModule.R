@@ -43,7 +43,7 @@ compute_stat <- function(level, base_stat) {
   # It is of course rounded...
   # Formula taken from https://bulbapedia.bulbagarden.net/wiki/Statistic
   stat_var <- round(runif(1, 0, 20))
-  stat <- round(( (base_stat + stat_var) * 2 * level ) / 100 + 10 + level)
+  stat <- round(((base_stat + stat_var) * 2 * level) / 100 + 10 + level)
   return(stat)
 }
 
@@ -58,13 +58,12 @@ compute_stat <- function(level, base_stat) {
 #' @param attacks Object containing pokemon attacks.
 #' @importFrom stats runif
 generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
-
   # set up the game difficulty
   # might be adjusted ...
   coef <- switch(difficulty,
-                 "easy" = 1,
-                 "medium" = 1.2,
-                 "noway" = 2
+    "easy" = 1,
+    "medium" = 1.2,
+    "noway" = 2
   )
 
   poke_ids <- round(runif(n = 2, min = 1, max = 151))
@@ -202,7 +201,6 @@ select_attacks <- function(mainData, attacks, current_pokemon_id) {
 #' @importFrom stats runif
 #' @importFrom stringr str_to_title
 calculate_damages <- function(current_attack, current_pokemon, opponent, types) {
-
   attack_target <- current_attack$target$name
   attack_type <- current_attack$type$name
   damage_class <- current_attack$damage_class$name
@@ -290,9 +288,9 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   damages <- if (damage_class == "special") {
     attack_spe <- current_pokemon$attack_spe
     defense_spe <- opponent$defense_spe
-    ( ( ( (2 * level) / 5 + 2 ) * power * attack_spe / defense_spe ) / 50 + 2 ) * modifiyer
+    ((((2 * level) / 5 + 2) * power * attack_spe / defense_spe) / 50 + 2) * modifiyer
   } else {
-    ( ( ( (2 * level) / 5 + 2 ) * power * attack / defense ) / 50 + 2 ) * modifiyer
+    ((((2 * level) / 5 + 2) * power * attack / defense) / 50 + 2) * modifiyer
   }
 
   # Below I decided to integrate the accuracy stat since it is crucial
@@ -334,8 +332,6 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 #' @param damages Result of \link{calculate_damages} witht the current_attack.
 #' TRUE in this case.
 fight_History <- function(attacking, opponent, current_attack, damages) {
-
-
   # insert alert to send user feedback on the current attack results
   pokeName1 <- attacking$name
   pokeName2 <- opponent$name
@@ -400,7 +396,6 @@ fight_History <- function(attacking, opponent, current_attack, damages) {
 #'
 #' @export
 pokeFight <- function(input, output, session, mainData, sprites, attacks, types) {
-
   ns <- session$ns
 
   # Randomly selects who starts the fight and init variables
@@ -411,60 +406,60 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
 
   # create the pokemons when click on go
-  observeEvent(input$go,{
-
-    # generate pokemons
-    pokemons <- generate_pokemons(
-      mainData,
-      sprites,
-      difficulty = input$pokeDifficulty,
-      attacks = attacks
-    )
-
-    rv$poke1 <- pokemons[[1]]
-    rv$poke2 <- pokemons[[2]]
-
-
-    # Explicitly says who starts: delayed by the time of loader
-    confirmSweetAlert(
-      session = session,
-      inputId = ns("startFight"),
-      btn_labels = "Confirm",
-      title = NULL,
-      text = if (rv$turn == 1) {
-        fluidRow(
-          img(src = rv$poke1$sprite),
-          paste(rv$poke1$name, "starts!")
-        )
-      } else {
-        fluidRow(
-          img(src = rv$poke2$sprite),
-          paste(rv$poke2$name, "starts!")
-        )
-      },
-      html = TRUE
-    )
-
-
-    # show a spinner
-    show_waiter(
-      color = "#1e90ff",
-      tagList(
-        spin_folding_cube(),
-        "Loading your fight..."
+  observeEvent(input$go,
+    {
+      # generate pokemons
+      pokemons <- generate_pokemons(
+        mainData,
+        sprites,
+        difficulty = input$pokeDifficulty,
+        attacks = attacks
       )
-    )
-    Sys.sleep(2)
-    hide_waiter()
+
+      rv$poke1 <- pokemons[[1]]
+      rv$poke2 <- pokemons[[2]]
 
 
-  }, priority = 100000, ignoreInit = TRUE)
+      # Explicitly says who starts: delayed by the time of loader
+      confirmSweetAlert(
+        session = session,
+        inputId = ns("startFight"),
+        btn_labels = "Confirm",
+        title = NULL,
+        text = if (rv$turn == 1) {
+          fluidRow(
+            img(src = rv$poke1$sprite),
+            paste(rv$poke1$name, "starts!")
+          )
+        } else {
+          fluidRow(
+            img(src = rv$poke2$sprite),
+            paste(rv$poke2$name, "starts!")
+          )
+        },
+        html = TRUE
+      )
+
+
+      # show a spinner
+      show_waiter(
+        color = "#1e90ff",
+        tagList(
+          spin_folding_cube(),
+          "Loading your fight..."
+        )
+      )
+      Sys.sleep(2)
+      hide_waiter()
+    },
+    priority = 100000,
+    ignoreInit = TRUE
+  )
 
 
   # Fighting engine for pokemon 1
   lapply(seq_along(attacks), function(i) {
-
-    current_attack  <- names(attacks)[[i]]
+    current_attack <- names(attacks)[[i]]
 
     # depending on which pokemon starts...
 
@@ -472,7 +467,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     observeEvent(input[[paste0("poke1_", current_attack)]], {
       if (!rv$endGame) {
         if (rv$turn == 1) {
-
           # calculate damages
           damages <- calculate_damages(
             current_attack = attacks[[current_attack]],
@@ -517,7 +511,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     })
   })
 
-  observeEvent(input$poke2Confirm,{
+  observeEvent(input$poke2Confirm, {
     req(input$poke2Confirm)
     if (input$poke2Confirm) rv$turn <- 2
   })
@@ -527,7 +521,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   observeEvent(c(input$startFight, input$poke2Confirm), {
     if (!rv$endGame) {
       if (rv$turn == 2) {
-
         # handle the case the attacking pokemon is controlled by the computer
         rand_id <- sample(seq_along(rv$poke2$attacks), 1)
         current_attack <- rv$poke2$attacks[[rand_id]]$name
@@ -579,7 +572,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   })
 
 
-  observeEvent(input$poke1Confirm,{
+  observeEvent(input$poke1Confirm, {
     req(input$poke1Confirm)
     if (input$poke1Confirm) rv$turn <- 1
   })
@@ -624,7 +617,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   # dynamically updated
   lapply(1:2, function(i) {
     output[[paste0("pokeHP_", i)]] <- renderUI({
-
       req(input$go > 0)
 
       hp <- round(rv[[paste0("poke", i)]]$hp / rv[[paste0("poke", i)]]$hp_0 * 100)
@@ -649,7 +641,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
   # render the first pokemon box
   lapply(1:2, function(i) {
     output[[paste0("poke_", i)]] <- renderUI({
-
       req(input$go > 0)
 
       sprite <- rv[[paste0("poke", i)]]$sprite
@@ -668,7 +659,7 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       # chain fights with the same pokemon, it will be relevant.
       # Do not create any buttons for the second pokemon since all attacks
       # will be randomly selected... Surprise...
-      attackBttns <- if(i == 1) {
+      attackBttns <- if (i == 1) {
         lapply(seq_along(attacks), function(j) {
           fluidRow(
             tagAppendAttributes(
@@ -735,6 +726,4 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       )
     })
   })
-
 }
-
