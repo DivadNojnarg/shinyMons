@@ -81,8 +81,8 @@ poke_stats_ui <- function(id) {
   ns <- shiny::NS(id)
 
   tagList(
-    h1("Basic stats"),
-    tablerCard(uiOutput(ns("basic_stats"))),
+    uiOutput(ns("basic_stats")),
+    h1("Stats"),
     echarts4rOutput(ns("poke_stats"))
   )
 }
@@ -105,20 +105,27 @@ poke_stats_server <- function(id, selected) {
       })
 
       output$basic_stats <- renderUI({
-        tablerList(lapply(other_stats_names(), function(stat) {
-          tablerListItem(
-            class = "d-flex align-items-center",
-            switch(stat,
-              "height" = icon("up-down"),
-              "weight" = icon("weight-scale"),
-              "base_happiness" = icon("face-smile"),
-              "capture_rate" = icon("bowling-ball"),
-              "growth_rate" = icon("up-long")
-            ),
-            p(stat, class = "mx-2"),
-            poke_data[[selected()]]$other_stats[[stat]]
-          )
-        }))
+        tablerTable(
+          title = "Basic stats",
+          width = 12,
+          lapply(other_stats_names(), function(stat) {
+            tablerTableItem(
+              left = div(
+                class = "d-flex justify-content-around",
+                switch(
+                  stat,
+                  "height" = icon("up-down"),
+                  "weight" = icon("weight-scale"),
+                  "base_happiness" = icon("face-smile"),
+                  "capture_rate" = icon("bowling-ball"),
+                  "growth_rate" = icon("up-long")
+                ),
+                stat
+              ),
+              right = poke_data[[selected()]]$other_stats[[stat]]
+            )
+          })
+        )
       })
 
       output$sum_stats <- renderText({

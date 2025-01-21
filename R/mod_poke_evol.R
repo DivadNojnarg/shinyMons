@@ -7,7 +7,10 @@
 #' @rdname poke_evolve
 poke_evol_ui <- function(id) {
   ns <- shiny::NS(id)
-  visNetworkOutput(ns("poke_evolve_network"))
+  tagList(
+    h1("Evolutions"),
+    visNetworkOutput(ns("poke_evolve_network"))
+  )
 }
 
 #' Server module generating the pokemon evolution timeline
@@ -32,20 +35,46 @@ poke_evol_server <- function(id, selected, shiny) {
       })
 
       output$poke_evolve_network <- renderVisNetwork({
+        filtered_nodes <- poke_network$poke_nodes[
+          poke_network$poke_nodes$id %in% evol_chain()$id,
+          colnames(poke_network$poke_nodes) != "value"
+        ]
+
+        filtered_edges <- poke_network$poke_edges[
+          poke_network$poke_edges$from %in% evol_chain()$id,
+        ]
+
         visNetwork(
-          nodes = poke_network$poke_nodes[poke_network$poke_nodes$id %in% evol_chain()$id, ],
-          edges = poke_network$poke_edges[poke_network$poke_edges$from %in% evol_chain()$id, ],
+          nodes = cbind(
+            size = 100,
+            filtered_nodes
+          ),
+          edges = cbind(filtered_edges, arrows = "middle"),
         ) |>
-          visInteraction(selectable = TRUE) |>
-          visHierarchicalLayout()
+          visOptions(nodesIdSelection = TRUE) |>
+          visEdges(length = 400) |>
+          visInteraction(dragView = FALSE, zoomView = FALSE) |>
+          visHierarchicalLayout(direction = "LR")
       })
 
-      observeEvent({
-        req(input$poke_evolve_network_initialized, selected())
-      }, {
-        visNetworkProxy(ns("poke_evolve_network")) |>
-          visSelectNodes(id = which(evol_chain()$chain == selected()))
-      })
+      observeEvent(
+        {
+          req(input$poke_evolve_network_initialized, selected())
+        },
+        {
+          visNetworkProxy(ns("poke_evolve_network")) |>
+            visSelectNodes(id = which(evol_chain()$chain == selected()))
+        }
+      )
+
+      return(
+        list(
+          selected = reactive({
+            req(nchar(input$poke_evolve_network_selected) > 0)
+            input$poke_evolve_network_selected
+          })
+        )
+      )
     }
   )
 }

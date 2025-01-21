@@ -7,7 +7,10 @@
 #' @rdname poke-types
 poke_types_ui <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_types"))
+  tagList(
+    h1("Types"),
+    uiOutput(ns("poke_types"))
+  )
 }
 
 #' Server module generating the pokemon types info boxes
@@ -32,49 +35,53 @@ poke_types_server <- function(id, selected) {
           type_slot <- type$slot
           res <- type$damage_relations
           tagList(
-            h1("Type", type_slot, tablerTag(type_name, color = get_type_color(type_name))),
-            tablerTable(
-            title = tablerTag("Damages from"),
-            tablerTableItem(
-              left = "2X",
-              right = lapply(extract_from_list(res$double_damage_from), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
-            ),
-            tablerTableItem(
-              left = "0.5X",
-              right = lapply(extract_from_list(res$half_damage_from), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
-            ),
-            tablerTableItem(
-              left = "0",
-              right = lapply(extract_from_list(res$no_damage_from), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
+            customTablerTable(
+              title = paste(type_name, " type damages"),
+              status = get_type_color(type_name),
+              width = 12,
+              # card content
+              data = list(
+                list(
+                  Damages = "2X",
+                  From = lapply(
+                    extract_from_list(res$double_damage_from),
+                    \(name) {
+                      tablerTag(name, color = get_type_color(name))
+                    }
+                  ),
+                  To = lapply(
+                    extract_from_list(res$double_damage_to),
+                    \(name) {
+                      tablerTag(name, color = get_type_color(name))
+                    }
+                  )
+                ),
+                list(
+                  Damages = "1/2",
+                  From = lapply(
+                    extract_from_list(res$half_damage_from),
+                    \(name) {
+                      tablerTag(name, color = get_type_color(name))
+                    }
+                  ),
+                  To = lapply(
+                    extract_from_list(res$half_damage_to),
+                    \(name) {
+                      tablerTag(name, color = get_type_color(name))
+                    }
+                  )
+                ),
+                list(
+                  Damages = "0",
+                  From = lapply(extract_from_list(res$no_damage_from), \(name) {
+                    tablerTag(name, color = get_type_color(name))
+                  }),
+                  To = lapply(extract_from_list(res$no_damage_to), \(name) {
+                    tablerTag(name, color = get_type_color(name))
+                  })
+                )
+              )
             )
-          ),
-          tablerTable(
-            title = tablerTag("Damages to"),
-            tablerTableItem(
-              left = "2X",
-              right = lapply(extract_from_list(res$double_damage_to), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
-            ),
-            tablerTableItem(
-              left = "0.5X",
-              right = lapply(extract_from_list(res$half_damage_to), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
-            ),
-            tablerTableItem(
-              left = "0",
-              right = lapply(extract_from_list(res$no_damage_to), \(name) {
-                tablerTag(name, color = get_type_color(name))
-              })
-            )
-          )
           )
         })
       })

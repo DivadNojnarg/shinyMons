@@ -7,7 +7,10 @@
 #' @rdname poke-moves
 poke_moves_ui <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_moves"), class = "col-sm-12")
+  tagList(
+    h1("Moves"),
+    uiOutput(ns("poke_moves"))
+  )
 }
 
 #' Server module generating the pokemon interface
@@ -27,14 +30,22 @@ poke_moves_server <- function(id, selected) {
         req(selected())
         poke_moves <- poke_data[[selected()]]$moves
         customTablerTable(
-          title = paste0(selected(), " Moves"),
+          title = paste(
+            "Attacks that",
+            selected(),
+            "may learn during its growth."
+          ),
           width = 12,
           # card content
           data = lapply(poke_moves, FUN = function(move) {
             list(
               name = move$name,
               type = tablerTag(move$type, color = get_type_color(move$type)),
-              power = tablerProgress(100 * move$power / max(unlist(dropNulls(lapply(poke_attacks, `[[`, "power"))))),
+              power = tablerProgress(
+                100 *
+                  move$power /
+                  max(unlist(dropNulls(lapply(poke_attacks, `[[`, "power"))))
+              ),
               description = move$text
             )
           })

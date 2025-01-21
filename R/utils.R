@@ -284,7 +284,12 @@ get_type_color <- function(type) {
   )
 }
 
-customTablerTable <- function(data, title, width = 12) {
+customTablerTable <- function(
+  data,
+  title,
+  width = 12,
+  status = NULL
+) {
   tableCl <- "table card-table table-striped"
   if (!inherits(data, "list") && !inherits(data, "data.frame")) {
     stop("data must be a dataframe, tibble or list")
@@ -325,12 +330,12 @@ customTablerTable <- function(data, title, width = 12) {
   tableBody <- shiny::tags$tbody(table)
   tableTag <- shiny::tags$table(class = tableCl, tableHead, tableBody)
 
-  tablerCard(
+  tablerDash::tablerCard(
+    status = status,
     title = title,
     width = width,
     closable = FALSE,
     collapsible = FALSE,
-    zoomable = FALSE,
     overflow = TRUE,
     tableTag
   )

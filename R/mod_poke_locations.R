@@ -7,7 +7,10 @@
 #' @rdname poke-locations
 poke_locations_ui <- function(id) {
   ns <- shiny::NS(id)
-  uiOutput(ns("poke_locations"), class = "col-sm-12")
+  tagList(
+    h1("Locations"),
+    uiOutput(ns("poke_locations"))
+  )
 }
 
 #' Server module generating the pokemon location card
@@ -32,7 +35,7 @@ poke_locations_server <- function(id, selected) {
           collapsible = FALSE,
           closable = FALSE,
           zoomable = FALSE,
-          statusSide = "top",
+          overflow = TRUE,
           width = 12,
           if (!is.null(poke_locations)) {
             lapply(

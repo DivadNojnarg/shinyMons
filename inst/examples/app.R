@@ -66,7 +66,6 @@ shiny::shinyApp(
     ),
     title = "Gotta Catch'Em (Almost) All",
     body = tablerDashBody(
-
       # load pushbar dependencies
       pushbar_deps(),
       # laad the waiter dependencies
@@ -105,26 +104,30 @@ shiny::shinyApp(
       chooseSliderSkin("Round"),
 
       # use shinyEffects
-      setShadow(class = "galleryCard"),
-      setZoom(class = "galleryCard"),
+      shinyEffects::setShadow(class = "galleryCard"),
+      shinyEffects::setZoom(class = "galleryCard"),
 
       tablerTabItems(
         tablerTabItem(
           tabName = "PokeInfo",
           fluidRow(
             column(
-              width = 4,
+              width = 3,
               poke_infos_ui("infos"),
-              poke_types_ui("types"),
-              poke_evol_ui(id = "evol")
+              poke_stats_ui("stats")[[1]],
+              poke_locations_ui("location")
             ),
             column(
-              width = 8,
-              poke_stats_ui("stats"),
-              poke_moves_ui("moves"),
-              poke_locations_ui("location")
+              width = 5,
+              poke_stats_ui("stats")[c(2, 3)],
+              poke_evol_ui("evol"),
+            ),
+            column(
+              width = 4,
+              poke_types_ui("types")
             )
-          )
+          ),
+          poke_moves_ui("moves")
         ),
         tablerTabItem(
           tabName = "PokeList",
@@ -150,7 +153,6 @@ shiny::shinyApp(
     )
   ),
   server = function(input, output, session) {
-
     # determine whether we are on mobile or not
     # relies on a simple Shiny.onInputChange
     isMobile <- reactive(input$isMobile)
@@ -168,11 +170,19 @@ shiny::shinyApp(
     #  mobile = isMobile
     #)
 
+    rv <- reactiveValues(network_selected = NULL)
     # main module (data)
-    main <- poke_select_server("select", selected = reactive(NULL)) #network$selected
+    main <- poke_select_server(
+      "select",
+      selected = reactive(rv$network_selected)
+    )
 
     # infos module
-    poke_infos_server("infos", selected = main$poke_select, shiny = main$is_shiny)
+    poke_infos_server(
+      "infos",
+      selected = main$poke_select,
+      shiny = main$is_shiny
+    )
     # stats module
     poke_stats_server("stats", selected = main$poke_select)
     # types modules
@@ -183,7 +193,14 @@ shiny::shinyApp(
     poke_locations_server("location", selected = main$poke_select)
 
     # evolutions module
-    poke_evol_server("evol", selected = main$poke_select, shiny = main$is_shiny)
+    evol_out <- poke_evol_server(
+      "evol",
+      selected = main$poke_select,
+      shiny = main$is_shiny
+    )
+    observeEvent(evol_out$selected(), {
+      rv$network_selected <- as.numeric(evol_out$selected())
+    })
 
     # fights module
     #callModule(
@@ -201,6 +218,5 @@ shiny::shinyApp(
     #callModule(module = pokeAttack, id = "attacks", attacks = pokeAttacks)
     # other elements
     #callModule(module = pokeOther, id = "other", mainData = pokeMain, details = pokeDetails)
-
   }
 )
