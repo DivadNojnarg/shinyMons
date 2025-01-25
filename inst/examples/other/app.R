@@ -7,6 +7,8 @@ library(pushbar)
 library(shinyMons)
 library(waiter)
 
+deps <- htmltools::findDependencies(tablerDashPage())
+
 # shiny app code
 shiny::shinyApp(
   ui = tablerDashPage(
@@ -16,11 +18,6 @@ shiny::shinyApp(
       id = "mymenu",
       src = "https://www.ssbwiki.com/images/9/9c/Master_Ball_Origin.png",
       navMenu = tablerNavMenu(
-        tablerNavMenuItem(
-          tabName = "PokeInfo",
-          icon = "home",
-          "PokeInfo"
-        ),
         tablerNavMenuItem(
           tabName = "PokeList",
           icon = "box",
@@ -47,9 +44,6 @@ shiny::shinyApp(
           "PokeOther"
         )
       ),
-
-      poke_select_ui("select"),
-
       tablerDropdown(
         tablerDropdownItem(
           title = NULL,
@@ -77,19 +71,6 @@ shiny::shinyApp(
       # actually tablerDash would need a custom input/output binding
       # to solve this issue once for all
       tags$head(
-        tags$script(
-          "$(function () {
-            $('#mymenu .nav-item a').click(function(){
-              var tab = $(this).attr('id');
-              if (tab == 'tab-PokeInfo' || tab == 'tab-PokeList') {
-                $('#input-pokeChoice').show();
-              } else {
-                $('#input-pokeChoice').hide();
-              }
-            });
-           });"
-        ),
-
         # test whether mobile or not
         tags$script(
           "$(document).on('shiny:connected', function(event) {
@@ -108,27 +89,6 @@ shiny::shinyApp(
       shinyEffects::setZoom(class = "galleryCard"),
 
       tablerTabItems(
-        tablerTabItem(
-          tabName = "PokeInfo",
-          fluidRow(
-            column(
-              width = 3,
-              poke_infos_ui("infos"),
-              poke_stats_ui("stats")[[1]],
-              poke_locations_ui("location")
-            ),
-            column(
-              width = 5,
-              poke_stats_ui("stats")[c(2, 3)],
-              poke_evol_ui("evol"),
-            ),
-            column(
-              width = 4,
-              poke_types_ui("types")
-            )
-          ),
-          poke_moves_ui("moves")
-        ),
         tablerTabItem(
           tabName = "PokeList",
           pokeGalleryUi(id = "gallery")
@@ -169,38 +129,6 @@ shiny::shinyApp(
     #  groups = pokeGroups,
     #  mobile = isMobile
     #)
-
-    rv <- reactiveValues(network_selected = NULL)
-    # main module (data)
-    main <- poke_select_server(
-      "select",
-      selected = reactive(rv$network_selected)
-    )
-
-    # infos module
-    poke_infos_server(
-      "infos",
-      selected = main$poke_select,
-      shiny = main$is_shiny
-    )
-    # stats module
-    poke_stats_server("stats", selected = main$poke_select)
-    # types modules
-    poke_types_server("types", selected = main$poke_select)
-    # moves module
-    poke_moves_server("moves", selected = main$poke_select)
-    # location
-    poke_locations_server("location", selected = main$poke_select)
-
-    # evolutions module
-    evol_out <- poke_evol_server(
-      "evol",
-      selected = main$poke_select,
-      shiny = main$is_shiny
-    )
-    observeEvent(evol_out$selected(), {
-      rv$network_selected <- as.numeric(evol_out$selected())
-    })
 
     # fights module
     #callModule(

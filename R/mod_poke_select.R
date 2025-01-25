@@ -11,7 +11,13 @@ poke_select_ui <- function(id) {
     pickerInput(
       inputId = ns("poke_select"),
       width = NULL,
-      options = list(style = "btn-primary"),
+      options = pickerOptions(
+        style = "btn-primary",
+        liveSearch = TRUE,
+        liveSearchPlaceholder = "Plop",
+        virtualScroll = TRUE,
+        size = 10
+      ),
       choices = names(poke_data),
       multiple = FALSE
     ),
