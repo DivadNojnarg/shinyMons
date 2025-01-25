@@ -15,6 +15,7 @@ ui <- function(request) {
       class = "container-fluid my-5",
       poke_select_ui("select"),
       fluidRow(
+        class = "my-5",
         column(
           width = 3,
           poke_infos_ui("infos"),

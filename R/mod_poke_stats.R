@@ -111,7 +111,7 @@ poke_stats_server <- function(id, selected) {
           lapply(other_stats_names(), function(stat) {
             tablerTableItem(
               left = div(
-                class = "d-flex justify-content-around",
+                class = "d-flex justify-content-between",
                 switch(
                   stat,
                   "height" = icon("up-down"),
@@ -120,7 +120,13 @@ poke_stats_server <- function(id, selected) {
                   "capture_rate" = icon("bowling-ball"),
                   "growth_rate" = icon("up-long")
                 ),
-                stat
+                if (stat == "base_happiness") {
+                  "happiness"
+                } else if (stat == "capture_rate") {
+                  "capture rate"
+                } else {
+                  stat
+                }
               ),
               right = poke_data[[selected()]]$other_stats[[stat]]
             )
