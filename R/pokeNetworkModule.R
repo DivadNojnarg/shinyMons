@@ -11,7 +11,10 @@ pokeNetworkUi <- function(id) {
       column(
         width = 1,
         align = "left",
-        tagAppendAttributes(actionButton(ns("open"), "Network Options"), class = "btn-outline-primary")
+        tagAppendAttributes(
+          actionButton(ns("open"), "Network Options"),
+          class = "btn-outline-primary"
+        )
       ),
       column(
         width = 11,
@@ -28,10 +31,7 @@ pokeNetworkUi <- function(id) {
   )
 }
 
-
-
 pushBarContent <- NULL
-
 
 #' Server module for generating the pokeNetwork section
 #'
@@ -44,10 +44,17 @@ pushBarContent <- NULL
 #' @param groups List containing data for grouping pokemons by evolution family.
 #' @param mobile Shiny input checking if the app is running on a cellphone/tablet.
 #'
-#' @import shinyWidgets visNetwork pushbar tablerDash
-#'
 #' @export
-pokeNetwork <- function(input, output, session, mainData, details, families, groups, mobile) {
+pokeNetwork <- function(
+  input,
+  output,
+  session,
+  mainData,
+  details,
+  families,
+  groups,
+  mobile
+) {
   ns <- session$ns
 
   #-------------------------------------------------------------------------
@@ -205,7 +212,10 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
     if (input$displayEdges) {
       data.frame(
         width = input$pokeEdgesWidth,
-        color = list(color = c(rep("black", length(families$from))), highlight = "blue"),
+        color = list(
+          color = c(rep("black", length(families$from))),
+          highlight = "blue"
+        ),
         dashes = TRUE,
         smooth = FALSE,
         hidden = FALSE,
@@ -217,13 +227,16 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
   })
 
   pokeNames <- names(mainData)
-  sprites <- vapply(seq_along(pokeNames), FUN = function(i) mainData[[i]]$sprites$front_default, FUN.VALUE = character(1))
+  sprites <- vapply(
+    seq_along(pokeNames),
+    FUN = function(i) mainData[[i]]$sprites$front_default,
+    FUN.VALUE = character(1)
+  )
 
   # below is a test to see if gif are supported (lag)
   # sprites <- vapply(seq_along(pokeNames), FUN = function(i) {
   #  paste0("http://www.pokestadium.com/sprites/xy/", mainData[[i]]$name, ".gif")
   # }, FUN.VALUE = character(1))
-
 
   output$pokeNet <- renderVisNetwork({
     req(
@@ -237,29 +250,49 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
     )
 
     visNetwork(nodes(), edges(), width = "100%") %>%
-      visEvents(selectNode = paste0("function(nodes) { Shiny.setInputValue('", ns("current_node_id"), "', nodes.nodes); }")) %>%
+      visEvents(
+        selectNode = paste0(
+          "function(nodes) { Shiny.setInputValue('",
+          ns("current_node_id"),
+          "', nodes.nodes); }"
+        )
+      ) %>%
       # add the doubleclick for nodes (zoom view)
-      visNetwork::visEvents(doubleClick = paste0("function(nodes) { Shiny.setInputValue('", ns("current_node_id_zoom"), "', nodes.nodes); }")) %>%
-      visEvents(deselectNode = paste0(
-        "function(nodes) {
-          Shiny.setInputValue('", ns("current_node_id"), "', 'null');
-          //Shiny.setInputValue('", ns("current_node_id_zoom"), "', 'null');
+      visNetwork::visEvents(
+        doubleClick = paste0(
+          "function(nodes) { Shiny.setInputValue('",
+          ns("current_node_id_zoom"),
+          "', nodes.nodes); }"
+        )
+      ) %>%
+      visEvents(
+        deselectNode = paste0(
+          "function(nodes) {
+          Shiny.setInputValue('",
+          ns("current_node_id"),
+          "', 'null');
+          //Shiny.setInputValue('",
+          ns("current_node_id_zoom"),
+          "', 'null');
          }
         "
-      )) %>%
+        )
+      ) %>%
       visNodes(
-        shapeProperties =
-          list(
-            useBorderWithImage = FALSE,
-            interpolation = input$nodesInterp # time consumming
-          )
+        shapeProperties = list(
+          useBorderWithImage = FALSE,
+          interpolation = input$nodesInterp # time consumming
+        )
       ) %>%
       visEdges(arrows = "to") %>%
       visOptions(
         highlightNearest = FALSE,
         clickToUse = FALSE,
         manipulation = FALSE, # to manually add nodes and edges. Could be interesting ...
-        collapse = list(enabled = FALSE, clusterOptions = list(shape = "square")),
+        collapse = list(
+          enabled = FALSE,
+          clusterOptions = list(shape = "square")
+        ),
         autoResize = TRUE,
         nodesIdSelection = FALSE,
         selectedBy = "group"
@@ -287,7 +320,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
       )
   })
 
-
   # increase the current node size on selection
   observeEvent(input$current_node_id, {
     selected_node <- input$current_node_id
@@ -306,7 +338,6 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
         visUpdateNodes(nodes = nodes)
     }
   })
-
 
   # double click on node
 
@@ -334,7 +365,9 @@ pokeNetwork <- function(input, output, session, mainData, details, families, gro
           column(
             width = 2,
             align = "right",
-            HTML('<a href="#" data-dismiss="modal" class="btn btn-outline-primary">Close</a>')
+            HTML(
+              '<a href="#" data-dismiss="modal" class="btn btn-outline-primary">Close</a>'
+            )
           )
         ),
         tablerTable(

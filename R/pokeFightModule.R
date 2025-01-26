@@ -4,12 +4,14 @@
 #'
 #' @return a \code{shiny::\link[shiny]{tagList}} containing UI elements
 #' @export
-#' @import shinyWidgets
 pokeFightUi <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     fluidRow(
-      tagAppendAttributes(actionButton(ns("go"), "Goooo!!!!"), class = "btn-outline-primary mx-2"),
+      tagAppendAttributes(
+        actionButton(ns("go"), "Goooo!!!!"),
+        class = "btn-outline-primary mx-2"
+      ),
       prettyRadioButtons(
         inputId = ns("pokeDifficulty"),
         label = "Difficulty",
@@ -21,7 +23,8 @@ pokeFightUi <- function(id) {
         status = "info"
       )
     ),
-    br(), br(),
+    br(),
+    br(),
     fluidRow(
       uiOutput(ns("poke_1"), class = "col-sm-6"),
       uiOutput(ns("poke_2"), class = "col-sm-6")
@@ -29,12 +32,11 @@ pokeFightUi <- function(id) {
   )
 }
 
-
 #' Function that calculate a given stat of a pokemon
 #' based on its level.
 #' @param level Current pokemon level.
 #' @param base_stat Stat to be scaled.
-#' @importFrom stats runif
+#'
 #' @note To be used in \link{generate_pokemons}.
 compute_stat <- function(level, base_stat) {
   # generate a variable stat number so that if
@@ -47,8 +49,6 @@ compute_stat <- function(level, base_stat) {
   return(stat)
 }
 
-
-
 #' Function that generate 2 random pokemons.
 #' Levels are between 1 and 100 and ids are between
 #' 1 and 151
@@ -56,15 +56,10 @@ compute_stat <- function(level, base_stat) {
 #' @param sprites Object containing pokemon images.
 #' @param difficulty Game difficulty.
 #' @param attacks Object containing pokemon attacks.
-#' @importFrom stats runif
 generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
   # set up the game difficulty
   # might be adjusted ...
-  coef <- switch(difficulty,
-    "easy" = 1,
-    "medium" = 1.2,
-    "noway" = 2
-  )
+  coef <- switch(difficulty, "easy" = 1, "medium" = 1.2, "noway" = 2)
 
   poke_ids <- round(runif(n = 2, min = 1, max = 151))
   poke_lvl1 <- round(runif(n = 1, min = 1, max = 100))
@@ -141,14 +136,11 @@ generate_pokemons <- function(mainData, sprites, difficulty, attacks) {
   return(list(pokemon1, pokemon2))
 }
 
-
 #' Function that list all possible learnable moves for a pokemon
 #' and select only 4 moves.
 #' @param mainData Object containing the main pokemon data.
 #' @param attacks Object containing all pokemon attacks data.
 #' @param current_pokemon_id Id of the randomly generated pokemon.
-#' @importFrom stats runif
-#' @importFrom stringr str_split
 #' @note Limitations: only physical moves are considered for the moment. This function
 #' has to be called inside \link{generate_pokemons}.
 select_attacks <- function(mainData, attacks, current_pokemon_id) {
@@ -188,19 +180,18 @@ select_attacks <- function(mainData, attacks, current_pokemon_id) {
   return(temp_attacks)
 }
 
-
-
-
-
 #' Function that calculates the damages of an attack on a given opponent
 #' @param current_attack The currently selected attack.
 #' @param current_pokemon Id of the randomly generated pokemon who is attacking.
 #' @param opponent Opponent type. Useful for effectiveness calculations.
 #' @param types Object containing all pokemons types strenght and weaknesses.
 #' @note As already explained, I only consider physical attacks...
-#' @importFrom stats runif
-#' @importFrom stringr str_to_title
-calculate_damages <- function(current_attack, current_pokemon, opponent, types) {
+calculate_damages <- function(
+  current_attack,
+  current_pokemon,
+  opponent,
+  types
+) {
   attack_target <- current_attack$target$name
   attack_type <- current_attack$type$name
   damage_class <- current_attack$damage_class$name
@@ -215,9 +206,13 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   random <- runif(n = 1, min = 0.85, max = 1)
 
-  targets <- if (attack_target == "all-opponents" | attack_target == "all-other-pokemon") {
+  targets <- if (
+    attack_target == "all-opponents" | attack_target == "all-other-pokemon"
+  ) {
     0.75
-  } else if (attack_target == "selected-pokemon" | attack_target == "random-opponent") {
+  } else if (
+    attack_target == "selected-pokemon" | attack_target == "random-opponent"
+  ) {
     1
   }
 
@@ -227,7 +222,6 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   } else {
     1
   }
-
 
   # Below we determine if the current attack is effecient
   # against the opponent. For that, we extract the opponent resistances
@@ -288,7 +282,8 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
   damages <- if (damage_class == "special") {
     attack_spe <- current_pokemon$attack_spe
     defense_spe <- opponent$defense_spe
-    ((((2 * level) / 5 + 2) * power * attack_spe / defense_spe) / 50 + 2) * modifiyer
+    ((((2 * level) / 5 + 2) * power * attack_spe / defense_spe) / 50 + 2) *
+      modifiyer
   } else {
     ((((2 * level) / 5 + 2) * power * attack / defense) / 50 + 2) * modifiyer
   }
@@ -320,9 +315,6 @@ calculate_damages <- function(current_attack, current_pokemon, opponent, types) 
 
   return(damages)
 }
-
-
-
 
 #' Function that generates a timelineItem for each attack the pokemon does.
 #'
@@ -379,8 +371,6 @@ fight_History <- function(attacking, opponent, current_attack, damages) {
   )
 }
 
-
-
 #' Server module for generating the pokeFight section
 #'
 #' @param input Shiny inputs.
@@ -391,22 +381,32 @@ fight_History <- function(attacking, opponent, current_attack, damages) {
 #' @param attacks Object containing pokemon attacks.
 #' @param types Object containing all pokemon types.
 #'
-#' @import tablerDash echarts4r waiter
-#' @importFrom stats rnorm
-#'
 #' @export
-pokeFight <- function(input, output, session, mainData, sprites, attacks, types) {
+pokeFight <- function(
+  input,
+  output,
+  session,
+  mainData,
+  sprites,
+  attacks,
+  types
+) {
   ns <- session$ns
 
   # Randomly selects who starts the fight and init variables
   # This booleans will be update all along the current fight
   # to create a turn by turn system...
   who_starts <- sample(1:2, 1)
-  rv <- reactiveValues(turn = who_starts, poke1 = NULL, poke2 = NULL, endGame = FALSE)
-
+  rv <- reactiveValues(
+    turn = who_starts,
+    poke1 = NULL,
+    poke2 = NULL,
+    endGame = FALSE
+  )
 
   # create the pokemons when click on go
-  observeEvent(input$go,
+  observeEvent(
+    input$go,
     {
       # generate pokemons
       pokemons <- generate_pokemons(
@@ -418,7 +418,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
 
       rv$poke1 <- pokemons[[1]]
       rv$poke2 <- pokemons[[2]]
-
 
       # Explicitly says who starts: delayed by the time of loader
       confirmSweetAlert(
@@ -440,7 +439,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
         html = TRUE
       )
 
-
       # show a spinner
       show_waiter(
         color = "#1e90ff",
@@ -455,7 +453,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     priority = 100000,
     ignoreInit = TRUE
   )
-
 
   # Fighting engine for pokemon 1
   lapply(seq_along(attacks), function(i) {
@@ -516,7 +513,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     if (input$poke2Confirm) rv$turn <- 2
   })
 
-
   # Fighting engine for pokemon 2
   observeEvent(c(input$startFight, input$poke2Confirm), {
     if (!rv$endGame) {
@@ -571,13 +567,10 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     }
   })
 
-
   observeEvent(input$poke1Confirm, {
     req(input$poke1Confirm)
     if (input$poke1Confirm) rv$turn <- 1
   })
-
-
 
   # when HP is 0, the game is lost or won depending on the pokemon
   observe({
@@ -619,7 +612,9 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
     output[[paste0("pokeHP_", i)]] <- renderUI({
       req(input$go > 0)
 
-      hp <- round(rv[[paste0("poke", i)]]$hp / rv[[paste0("poke", i)]]$hp_0 * 100)
+      hp <- round(
+        rv[[paste0("poke", i)]]$hp / rv[[paste0("poke", i)]]$hp_0 * 100
+      )
 
       tablerProgress(
         value = hp,
@@ -636,7 +631,6 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
       )
     })
   })
-
 
   # render the first pokemon box
   lapply(1:2, function(i) {
@@ -722,7 +716,10 @@ pokeFight <- function(input, output, session, mainData, sprites, attacks, types)
             if (i == 1) attackBttns
           )
         ),
-        tablerTimeline(id = paste0(name, "_fightCard"), style = "max-height: 400px; overflow-y: auto;")
+        tablerTimeline(
+          id = paste0(name, "_fightCard"),
+          style = "max-height: 400px; overflow-y: auto;"
+        )
       )
     })
   })

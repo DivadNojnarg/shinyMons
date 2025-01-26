@@ -40,8 +40,6 @@ poke_select_ui <- function(id) {
 #' @param id Module id.
 #' @param selected Object containing the selected pokemon in the network, if not NULL.
 #'
-#' @import shinyWidgets
-#'
 #' @export
 poke_select_server <- function(id, selected) {
   moduleServer(

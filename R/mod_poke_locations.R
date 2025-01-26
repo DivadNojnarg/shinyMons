@@ -17,8 +17,6 @@ poke_locations_ui <- function(id) {
 #'
 #' @param selected Input containing the selected pokemon index.
 #'
-#' @importFrom tablerDash tablerCard
-#'
 #' @export
 #' @rdname poke-locations
 poke_locations_server <- function(id, selected) {

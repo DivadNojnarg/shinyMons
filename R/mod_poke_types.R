@@ -17,8 +17,6 @@ poke_types_ui <- function(id) {
 #'
 #' @param selected Input containing the selected pokemon index.
 #'
-#' @import tablerDash
-#'
 #' @export
 #' @rdname poke-types
 poke_types_server <- function(id, selected) {

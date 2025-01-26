@@ -19,7 +19,6 @@ get_max_stats <- function(stat = NULL) {
   if (is.null(stat)) res else pull(res, stat)
 }
 
-#' @import dplyr
 get_max_of_max <- function(data = get_max_stats()) {
   cols <- colnames(data)
   data |>
@@ -91,8 +90,6 @@ poke_stats_ui <- function(id) {
 #'
 #' @param id Module id.
 #' @param selected Input containing the selected pokemon index.
-#'
-#' @import tablerDash
 #'
 #' @export
 poke_stats_server <- function(id, selected) {

@@ -13,7 +13,6 @@ pokeAttackUi <- function(id) {
   )
 }
 
-
 #' Server module for generating the pokeAttacks section
 #'
 #' @param input Shiny inputs.
@@ -21,13 +20,9 @@ pokeAttackUi <- function(id) {
 #' @param session Shiny session.
 #' @param attacks Data containing all pokemon abilities in the first generation.
 #'
-#' @import tablerDash echarts4r
-#' @importFrom stats rnorm
-#'
 #' @export
 pokeAttack <- function(input, output, session, attacks) {
   ns <- session$ns
-
 
   output$poke_attack_select <- renderUI({
     fluidRow(
@@ -44,7 +39,6 @@ pokeAttack <- function(input, output, session, attacks) {
       )
     )
   })
-
 
   # below we calculate the mean values for each stat
   # mean values
@@ -64,7 +58,6 @@ pokeAttack <- function(input, output, session, attacks) {
   })
 
   names(stats) <- names_stats
-
 
   output$attackMeans <- renderEcharts4r({
     df <- data.frame(
@@ -86,7 +79,6 @@ pokeAttack <- function(input, output, session, attacks) {
       e_boxplot(x) %>%
       e_title("Global Stats Means")
   })
-
 
   # radar chart of attacks
   output$attackStats <- renderEcharts4r({
@@ -123,7 +115,8 @@ pokeAttack <- function(input, output, session, attacks) {
     power <- attacks[[selected]]$power
 
     # here some colors are not supported by tags. Need to fix it
-    typeColor <- switch(attacks[[selected]]$type$name,
+    typeColor <- switch(
+      attacks[[selected]]$type$name,
       "normal" = "gray-lightest",
       "fighting" = "red",
       "flying" = "indigo",
@@ -178,11 +171,19 @@ pokeAttack <- function(input, output, session, attacks) {
               right = h3(attacks[[selected]]$pp)
             ),
             tablerTableItem(
-              left = tablerTag(name = "Accuracy", rounded = TRUE, color = "orange"),
+              left = tablerTag(
+                name = "Accuracy",
+                rounded = TRUE,
+                color = "orange"
+              ),
               right = h3(attacks[[selected]]$accuracy)
             ),
             tablerTableItem(
-              left = tablerTag(name = "Priority", rounded = TRUE, color = "blue"),
+              left = tablerTag(
+                name = "Priority",
+                rounded = TRUE,
+                color = "blue"
+              ),
               right = h3(attacks[[selected]]$priority)
             )
           )
@@ -211,7 +212,11 @@ pokeAttack <- function(input, output, session, attacks) {
       ),
       fluidRow(
         # index 44 corresponds to English
-        paste0("Description: ", attacks[[selected]]$flavor_text_entries$flavor_text[44]), br(),
+        paste0(
+          "Description: ",
+          attacks[[selected]]$flavor_text_entries$flavor_text[44]
+        ),
+        br(),
         tablerTag(
           name = "Type of damages",
           rounded = FALSE,
@@ -222,7 +227,6 @@ pokeAttack <- function(input, output, session, attacks) {
       )
     )
   })
-
 
   # treemap of attack types
   attackTypes <- sapply(seq_along(attacks), function(i) attacks[[i]]$type$name)
@@ -238,7 +242,6 @@ pokeAttack <- function(input, output, session, attacks) {
       e_charts() %>%
       e_treemap(parent, child, value)
   })
-
 
   output$poke_attacks_types <- renderUI({
     tablerCard(
@@ -256,7 +259,6 @@ pokeAttack <- function(input, output, session, attacks) {
     )
   })
 }
-
 
 # make R CMD check happy
 globalVariables("parent")

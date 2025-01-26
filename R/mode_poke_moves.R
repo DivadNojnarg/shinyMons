@@ -17,8 +17,6 @@ poke_moves_ui <- function(id) {
 #'
 #' @param selected Input containing the selected pokemon index.
 #'
-#' @import tablerDash
-#'
 #' @export
 #' @rdname poke-moves
 poke_moves_server <- function(id, selected) {

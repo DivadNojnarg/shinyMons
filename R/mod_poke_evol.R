@@ -18,8 +18,6 @@ poke_evol_ui <- function(id) {
 #' @param selected Input containing the selected pokemon index.
 #' @param shiny Whether to display a shiny version. FALSE by default.
 #'
-#' @import tablerDash
-#'
 #' @export
 #' @rdname poke_evolve
 poke_evol_server <- function(id, selected, shiny) {
