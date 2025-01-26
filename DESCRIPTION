@@ -19,6 +19,8 @@ Imports: shiny,
     jsonlite,
     waiter,
     dplyr
+Suggests:
+    bslib
 Remotes: RinteRface/tablerDash, JohnCoene/pushbar, JohnCoene/waiter
 URL: https://github.com/DivadNojnarg/shinyMons
 BugReports: https://github.com/DivadNojnarg/shinyMons/issues

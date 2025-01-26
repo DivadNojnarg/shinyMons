@@ -340,3 +340,33 @@ customTablerTable <- function(
     tableTag
   )
 }
+
+#' Create shinylive iframe
+#'
+#' Useful for pkgdown website
+#'
+#' @param url app url. A shinylive link.
+#' @param mode How to display the shinylive app. Default to app mode.
+#' @param header Whether to display the shinylive header. Default to TRUE.
+#' @keywords internal
+create_app_link <- function(url, mode = c("app", "editor"), header = TRUE) {
+  mode <- match.arg(mode)
+
+  if (mode != "editor") url <- gsub("editor", mode, url)
+
+  if (!header) {
+    url <- paste0(url, "&h=0")
+  }
+
+  shiny::tags$iframe(
+    # To allow the content to fill the full screen card
+    class = "html-fill-item",
+    src = url,
+    height = "700",
+    width = "100%",
+    style = "border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem;",
+    allowfullscreen = "",
+    allow = "autoplay",
+    `data-external` = "1"
+  )
+}

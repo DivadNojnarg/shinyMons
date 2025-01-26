@@ -14,21 +14,21 @@ ui <- function(request) {
     div(
       class = "container-fluid my-5",
       poke_select_ui("select"),
-      fluidRow(
-        class = "my-5",
-        column(
-          width = 3,
+      div(
+        class = "row my-5",
+        div(
+          class = "col-lg-3 col-md-6",
           poke_infos_ui("infos"),
           poke_stats_ui("stats")[[1]],
           poke_locations_ui("location")
         ),
-        column(
-          width = 5,
+        div(
+          class = "col-lg-5 col-md-6",
           poke_stats_ui("stats")[c(2, 3)],
           poke_evol_ui("evol"),
         ),
-        column(
-          width = 4,
+        div(
+          class = "col-lg-4 col-md-12",
           poke_types_ui("types")
         )
       ),
