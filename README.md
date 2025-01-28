@@ -7,6 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/shinyMons)](https://cran.r-project.org/package=shinyMons)
+[![R-CMD-check](https://github.com/DivadNojnarg/shinyMons/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/DivadNojnarg/shinyMons/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 > shiny app for pokemons
