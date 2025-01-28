@@ -62,6 +62,7 @@ poke_select_server <- function(id, selected) {
         updatePickerInput(
           session,
           inputId = "poke_select",
+          selected = input$poke_select,
           choices = poke_names,
           choicesOpt = list(
             content = sprintf(

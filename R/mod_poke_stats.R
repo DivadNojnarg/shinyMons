@@ -102,30 +102,33 @@ poke_stats_server <- function(id, selected) {
       })
 
       output$basic_stats <- renderUI({
-        tablerTable(
+        customTablerTable(
           title = "Basic stats",
           width = 12,
-          lapply(other_stats_names(), function(stat) {
-            tablerTableItem(
-              left = div(
-                class = "d-flex justify-content-between",
-                switch(
-                  stat,
-                  "height" = icon("up-down"),
-                  "weight" = icon("weight-scale"),
-                  "base_happiness" = icon("face-smile"),
-                  "capture_rate" = icon("bowling-ball"),
-                  "growth_rate" = icon("up-long")
-                ),
-                if (stat == "base_happiness") {
-                  "happiness"
-                } else if (stat == "capture_rate") {
-                  "capture rate"
-                } else {
-                  stat
-                }
-              ),
-              right = poke_data[[selected()]]$other_stats[[stat]]
+          # card content
+          data = lapply(other_stats_names(), function(stat) {
+            stat_icon <- switch(
+              stat,
+              "height" = icon("up-down"),
+              "weight" = icon("weight-scale"),
+              "base_happiness" = icon("face-smile"),
+              "capture_rate" = icon("bowling-ball"),
+              "growth_rate" = icon("up-long")
+            )
+
+            stat_name <- if (stat == "base_happiness") {
+              "happiness"
+            } else if (stat == "capture_rate") {
+              "capture rate"
+            } else {
+              stat
+            }
+
+            stat_name <- HTML(paste(stat_icon, stat_name))
+
+            list(
+              name = stat_name,
+              value = poke_data[[selected()]]$other_stats[[stat]]
             )
           })
         )

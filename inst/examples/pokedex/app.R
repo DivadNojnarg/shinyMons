@@ -72,6 +72,7 @@ server <- function(input, output, session) {
     selected = main$poke_select,
     shiny = main$is_shiny
   )
+
   observeEvent(evol_out$selected(), {
     rv$network_selected <- as.numeric(evol_out$selected())
   })

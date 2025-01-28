@@ -54,7 +54,9 @@ server <- function(input, output, session) {
   # main module (data)
   main <- poke_select_server(
     "select",
-    selected = reactive(rv$network_selected)
+    selected = reactive({
+      rv$network_selected
+    })
   )
 
   # infos module
@@ -78,6 +80,7 @@ server <- function(input, output, session) {
     selected = main$poke_select,
     shiny = main$is_shiny
   )
+
   observeEvent(evol_out$selected(), {
     rv$network_selected <- as.numeric(evol_out$selected())
   })

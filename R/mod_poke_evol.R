@@ -8,7 +8,7 @@
 poke_evol_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    h1("Evolutions"),
+    h1("Evolution family"),
     visNetworkOutput(ns("poke_evolve_network"))
   )
 }
@@ -44,26 +44,20 @@ poke_evol_server <- function(id, selected, shiny) {
 
         visNetwork(
           nodes = cbind(
-            size = 100,
+            size = 80,
             filtered_nodes
           ),
-          edges = cbind(filtered_edges, arrows = "middle"),
+          edges = cbind(
+            filtered_edges,
+            arrows = "middle",
+            color = "#494f56"
+          ),
         ) |>
           visOptions(nodesIdSelection = TRUE) |>
-          visEdges(length = 400) |>
+          visEdges(length = 300) |>
           visInteraction(dragView = FALSE, zoomView = FALSE) |>
-          visHierarchicalLayout(direction = "LR")
+          visLayout(randomSeed = 123)
       })
-
-      observeEvent(
-        {
-          req(input$poke_evolve_network_initialized, selected())
-        },
-        {
-          visNetworkProxy(ns("poke_evolve_network")) |>
-            visSelectNodes(id = which(evol_chain()$chain == selected()))
-        }
-      )
 
       return(
         list(
