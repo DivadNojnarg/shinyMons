@@ -34,16 +34,21 @@ ui <- function(request) {
       ),
       poke_moves_ui("moves")
     ),
+    useWaiter(),
+    waiterShowOnLoad(html = tagList(spin_fading_circles(), "Loading ...")),
     tabler_deps
   )
 }
 
 server <- function(input, output, session) {
+  waiter_hide()
   rv <- reactiveValues(network_selected = NULL)
   # main module (data)
   main <- poke_select_server(
     "select",
-    selected = reactive(rv$network_selected)
+    selected = reactive({
+      rv$network_selected
+    })
   )
 
   # infos module

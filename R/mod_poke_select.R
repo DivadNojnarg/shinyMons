@@ -50,16 +50,11 @@ poke_select_server <- function(id, selected) {
       poke_names <- names(poke_data)
       # Update choices
       observeEvent(selected(), {
+        if (poke_names[selected()] == input$poke_select) return(NULL)
         updatePickerInput(
           session,
           inputId = "poke_select",
-          selected = if (!is.null(selected())) {
-            if (poke_names[selected()] != input$poke_select)
-              poke_names[selected()]
-          } else {
-            if (!is.null(input$poke_select)) input$poke_select else
-              poke_names[[1]]
-          }
+          selected = poke_names[selected()]
         )
       })
 
