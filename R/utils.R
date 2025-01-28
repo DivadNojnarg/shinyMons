@@ -221,7 +221,7 @@ build_poke_families <- function(poke_data) {
 
 #' Get pokemon front sprite
 #'
-#' @param type Shiny or not Shiny. Boolean, default FALSE.
+#' @param shiny Shiny sprite version.
 #' @keywords internal
 get_front_sprites <- function(shiny = FALSE) {
   setNames(

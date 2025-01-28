@@ -440,7 +440,7 @@ pokeFight <- function(
       )
 
       # show a spinner
-      show_waiter(
+      waiter_show(
         color = "#1e90ff",
         tagList(
           spin_folding_cube(),
@@ -448,7 +448,7 @@ pokeFight <- function(
         )
       )
       Sys.sleep(2)
-      hide_waiter()
+      waiter_hide()
     },
     priority = 100000,
     ignoreInit = TRUE

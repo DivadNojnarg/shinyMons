@@ -73,6 +73,8 @@ pokeAttack <- function(input, output, session, attacks) {
       )
     )
 
+    x <- NULL
+
     df %>%
       group_by(grp) %>%
       e_charts() %>%
@@ -98,6 +100,8 @@ pokeAttack <- function(input, output, session, attacks) {
       x = c("accuracy", "power", "pp"),
       y = c(accuracy, power, pp)
     )
+
+    x <- y <- NULL
 
     df %>%
       e_charts(x) %>%

@@ -7,7 +7,7 @@
 get_front_sprites(shiny = FALSE)
 }
 \arguments{
-\item{type}{Shiny or not Shiny. Boolean, default FALSE.}
+\item{shiny}{Shiny sprite version.}
 }
 \description{
 Get pokemon front sprite
