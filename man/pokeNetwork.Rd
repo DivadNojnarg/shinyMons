@@ -4,8 +4,16 @@
 \alias{pokeNetwork}
 \title{Server module for generating the pokeNetwork section}
 \usage{
-pokeNetwork(input, output, session, mainData, details, families, groups,
-  mobile)
+pokeNetwork(
+  input,
+  output,
+  session,
+  mainData,
+  details,
+  families,
+  groups,
+  mobile
+)
 }
 \arguments{
 \item{input}{Shiny inputs.}

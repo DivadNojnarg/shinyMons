@@ -2,9 +2,26 @@
 % Please edit documentation in R/shinyMons-package.R
 \docType{package}
 \name{shinyMons}
-\alias{shinyMons}
 \alias{shinyMons-package}
+\alias{shinyMons}
 \title{shinyMons}
 \description{
-shinyMons
+Discover everything you want to know about your favorites pokemon. Data are taken from the awesome API \url{https://pokeapi.co}.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/DivadNojnarg/shinyMons}
+  \item Report bugs at \url{https://github.com/DivadNojnarg/shinyMons/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: David Granjon \email{dgranjon@ymail.com}
+
+Other contributors:
+\itemize{
+  \item  RinteRface [copyright holder]
+}
+
 }

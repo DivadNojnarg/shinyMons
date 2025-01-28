@@ -24,8 +24,6 @@ pokeGalleryUi <- function(id) {
   )
 }
 
-
-
 #' Server module generating the pokemon gallery interface
 #'
 #' @param input Shiny inputs.
@@ -35,11 +33,8 @@ pokeGalleryUi <- function(id) {
 #' @param details Object containing extra pokemon details.
 #' @param shiny Whether to display a shiny version. FALSE by default.
 #'
-#' @importFrom tablerDash tablerMediaCard
-#'
 #' @export
 pokeGallery <- function(input, output, session, mainData, details, shiny) {
-
   range <- reactive(mainData[input$pokeRange[1]:input$pokeRange[2]])
 
   output$poke_gallery <- renderUI({
@@ -62,7 +57,10 @@ pokeGallery <- function(input, output, session, mainData, details, shiny) {
           width = 4,
           paste0("Pokemon: ", range()[[i]]$id)
         )
-        cardTag$children[[1]] <- tagAppendAttributes(cardTag$children[[1]], class = "galleryCard")
+        cardTag$children[[1]] <- tagAppendAttributes(
+          cardTag$children[[1]],
+          class = "galleryCard"
+        )
         cardTag
       })
     )

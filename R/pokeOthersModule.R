@@ -12,7 +12,6 @@ pokeOtherUi <- function(id) {
   )
 }
 
-
 #' Server module generating other stats chart
 #'
 #' @param input Shiny inputs.
@@ -21,11 +20,8 @@ pokeOtherUi <- function(id) {
 #' @param mainData Object containing the main pokemon data.
 #' @param details Object containing extra pokemon details.
 #'
-#' @import echarts4r tablerDash
-#'
 #' @export
 pokeOther <- function(input, output, session, mainData, details) {
-
   ns <- session$ns
 
   # ########################################
@@ -34,7 +30,6 @@ pokeOther <- function(input, output, session, mainData, details) {
 
   # Height distribution
   output$distribPlot <- renderEcharts4r({
-
     heights <- vapply(
       X = seq_along(names(mainData)),
       FUN = function(i) {
@@ -50,7 +45,6 @@ pokeOther <- function(input, output, session, mainData, details) {
       },
       FUN.VALUE = numeric(1)
     )
-
 
     n <- seq_along(names(mainData))
     df <- data.frame(n = n, h = heights, w = weights)
@@ -68,9 +62,7 @@ pokeOther <- function(input, output, session, mainData, details) {
         e_histogram(w) %>%
         e_tooltip()
     }
-
   })
-
 
   output$poke_distrib <- renderUI({
     tablerCard(
@@ -97,16 +89,19 @@ pokeOther <- function(input, output, session, mainData, details) {
     )
   })
 
-
   # ########################################
   # Types stats: global height and weight
   # ########################################
 
-
   output$typesDistrib <- renderEcharts4r({
-    types <- unlist(lapply(seq_along(names(mainData)), FUN = function(i) mainData[[i]]$types$type$name))
+    types <- unlist(
+      lapply(
+        seq_along(names(mainData)),
+        FUN = function(i) mainData[[i]]$types$type$name
+      )
+    )
     types <- table(types)
-    #n <- seq_along(types)
+    # n <- seq_along(types)
     df <- data.frame(t = types)
     names(df) <- c("type", "n")
     df %>%
@@ -114,7 +109,6 @@ pokeOther <- function(input, output, session, mainData, details) {
       e_pie(n, roseType = "radius") %>%
       e_tooltip()
   })
-
 
   output$poke_types_distrib <- renderUI({
     tablerCard(
@@ -131,9 +125,7 @@ pokeOther <- function(input, output, session, mainData, details) {
       echarts4rOutput(outputId = ns("typesDistrib"))
     )
   })
-
 }
-
 
 # make R CMD check happy
 globalVariables("h")

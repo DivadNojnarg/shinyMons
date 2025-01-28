@@ -4,3 +4,10 @@
 ^cran-comments\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^data-raw$
+^README\.Rmd$
+^\.github$
+^index\.Rmd$
+^index\.html$ 
+^index\.md$
+pkgdown
