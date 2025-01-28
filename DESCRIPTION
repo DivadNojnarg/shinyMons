@@ -21,8 +21,7 @@ Imports: shiny,
     dplyr
 Suggests:
     bslib
-Remotes: RinteRface/tablerDash, JohnCoene/pushbar, JohnCoene/waiter
-URL: https://github.com/DivadNojnarg/shinyMons
+URL: https://github.com/DivadNojnarg/shinyMons, https://divadnojnarg.github.io/shinyMons/
 BugReports: https://github.com/DivadNojnarg/shinyMons/issues
 License: GPL-2
 Encoding: UTF-8

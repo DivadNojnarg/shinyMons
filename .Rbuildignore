@@ -11,3 +11,4 @@
 ^index\.html$ 
 ^index\.md$
 pkgdown
+^pkgdown$
